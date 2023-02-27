@@ -1,2 +1,2 @@
 # rcsb-idmapper
-IdMapper service extracted from Arches
+org.rcsb.idmapper.IdMapper service extracted from Arches
