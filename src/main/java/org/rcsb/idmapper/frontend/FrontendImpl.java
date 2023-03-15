@@ -1,7 +1,5 @@
 package org.rcsb.idmapper.frontend;
 
-import org.rcsb.idmapper.backend.Task;
-
 import java.util.Iterator;
 
 /**

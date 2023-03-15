@@ -11,7 +11,72 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
+
+        <slf4j.version>1.7.36</slf4j.version>
+        <log4j.version>2.17.2</log4j.version>
+        <rxjava.varion>3.1.6</rxjava.varion>
+        <mongodb-driver.version>4.9.0</mongodb-driver.version>
+
+        <rcsb.common.version>2.7.0</rcsb.common.version>
+        <rcsb.mojave.model.version>1.37.2</rcsb.mojave.model.version>
     </properties>
+
+    <dependencies>
+
+        <!-- Model module contains JSON schemas + Java classes generated from schemas:
+            POJOs, Enums, field name constants for core and meta schemas -->
+        <dependency>
+            <groupId>org.rcsb</groupId>
+            <artifactId>rcsb-mojave-model</artifactId>
+            <version>${rcsb.mojave.model.version}</version>
+        </dependency>
+
+        <!-- Common repo contains manually curated constants, e.g. DW collection names -->
+        <dependency>
+            <groupId>org.rcsb</groupId>
+            <artifactId>rcsb-common</artifactId>
+            <version>${rcsb.common.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.reactivex.rxjava3</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>${rxjava.varion}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mongodb/mongodb-driver-reactivestreams -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-reactivestreams</artifactId>
+            <version>${mongodb-driver.version}</version>
+        </dependency>
+
+        <!-- Logging dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- Binding for Log4J -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Log4j API and Core implementation required for binding -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>
