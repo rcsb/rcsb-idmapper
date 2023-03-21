@@ -1,27 +1,16 @@
 package org.rcsb.idmapper.backend.data;
 
 import com.mongodb.ConnectionString;
-import com.mongodb.reactivestreams.client.FindPublisher;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import org.bson.Document;
 import org.rcsb.idmapper.backend.Repository;
 import org.rcsb.idmapper.backend.data.subscribers.EntryCollectionSubscriber;
 import org.rcsb.idmapper.backend.data.subscribers.PolymerEntityCollectionSubscriber;
-import org.rcsb.idmapper.utils.OperationSubscriber;
-import org.rcsb.mojave.CoreConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.io.IOException;
-
-import static com.mongodb.client.model.Projections.*;
-import static org.rcsb.common.constants.MongoCollections.COLL_ENTRY;
-import static org.rcsb.common.constants.MongoCollections.COLL_POLYMER_ENTITY;
 
 /**
  * This class is responsible for communication with upstream data source (MongoDb)
@@ -59,30 +48,10 @@ public class DataProvider {
         return mongoClient;
     }
 
-    private void fetchFromCollection(String collName, String containerName, OperationSubscriber<Document> worker) {
-        FindPublisher<Document> publisher = db.getCollection(collName)
-                .find()
-                .projection(fields(excludeId(), include(containerName)));
-        Flowable.fromPublisher(publisher)
-                .subscribeOn(Schedulers.io())
-                .subscribe(worker);
-        worker.run();
-    }
+    public void initialize(Repository r) {
+        new CollectionFetcher(new EntryCollectionSubscriber(r), db).run();
+        new CollectionFetcher(new PolymerEntityCollectionSubscriber(r), db).run();
 
-    public void initialize(Repository repository) {
-        streamEntryCollection(repository);
-        streamPolymerEntityCollection(repository);
-        System.out.println("ok");
-    }
-
-    private void streamEntryCollection(Repository r) {
-        OperationSubscriber<Document> s = new EntryCollectionSubscriber(r);
-        fetchFromCollection(COLL_ENTRY, CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, s);
-    }
-
-    private void streamPolymerEntityCollection(Repository r) {
-        OperationSubscriber<Document> s = new PolymerEntityCollectionSubscriber(r);
-        fetchFromCollection(COLL_POLYMER_ENTITY, CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, s);
     }
 
     private void streamBranchedEntityCollection(Repository r) {

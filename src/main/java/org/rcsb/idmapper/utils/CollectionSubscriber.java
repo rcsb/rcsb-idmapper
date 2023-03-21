@@ -15,9 +15,12 @@ import org.slf4j.LoggerFactory;
  * @author Yana Rose
  * @since X.Y.Z
  */
-public class OperationSubscriber<T> extends ObservableSubscriber<T> implements Runnable {
+public class CollectionSubscriber<T> extends ObservableSubscriber<T> implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(OperationSubscriber.class);
+    private static final Logger logger = LoggerFactory.getLogger(CollectionSubscriber.class);
+
+    public String categoryName;
+    public String collectionName;
 
     @Override
     public void onSubscribe(final Subscription s) {

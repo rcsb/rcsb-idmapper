@@ -2,12 +2,14 @@ package org.rcsb.idmapper.backend.data.subscribers;
 
 import org.bson.Document;
 import org.rcsb.idmapper.backend.Repository;
-import org.rcsb.idmapper.utils.OperationSubscriber;
+import org.rcsb.idmapper.utils.CollectionSubscriber;
 import org.rcsb.mojave.CoreConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+
+import static org.rcsb.common.constants.MongoCollections.COLL_ENTRY;
 
 /**
  * For every {@link Document} item that publisher emits, it will parse entry to children mappings,
@@ -19,7 +21,7 @@ import java.util.List;
  * @author Yana Rose
  * @since X.Y.Z
  */
-public class EntryCollectionSubscriber extends OperationSubscriber<Document> {
+public class EntryCollectionSubscriber extends CollectionSubscriber<Document> {
 
     private static final Logger logger = LoggerFactory.getLogger(EntryCollectionSubscriber.class);
 
@@ -27,6 +29,8 @@ public class EntryCollectionSubscriber extends OperationSubscriber<Document> {
 
     public EntryCollectionSubscriber(Repository r) {
         repository = r;
+        collectionName = COLL_ENTRY;
+        categoryName = CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS;
     }
 
     @Override
