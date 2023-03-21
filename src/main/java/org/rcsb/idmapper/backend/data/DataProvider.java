@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+import java.io.IOException;
 
 import static com.mongodb.client.model.Projections.*;
 import static org.rcsb.common.constants.MongoCollections.COLL_ENTRY;
@@ -34,29 +35,28 @@ import static org.rcsb.common.constants.MongoCollections.COLL_POLYMER_ENTITY;
  * @author ingvord
  * @author Yana Rose
  */
-public class DataProvider implements Closeable {
+public class DataProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(DataProvider.class);
 
     private MongoDatabase db;
-    private MongoClient mongoClient;
-    private boolean connectionOpened;
 
-    public void connect() {
+    public Closeable connect() {
         //TODO provide connection string via configuration
         String connectionString = "mongodb://updater:w31teQuerie5@10.20.3.153:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000";
         var databaseName = new ConnectionString(connectionString).getDatabase();
         if (databaseName == null)
             throw new IllegalArgumentException("DWH database name MUST be provided in the connection string URI as: mongodb://user:pwd@host:port/db_name?authSource=admin");
+        MongoClient mongoClient;
         try {
             mongoClient = MongoClients.create(connectionString);
-            connectionOpened = true;
             logger.info("Connected to MongoDB using: {}", connectionString);
         } catch (Exception e) {
             logger.error("Unable to connect to MongoDB using: {}", connectionString);
             throw e;
         }
         db = mongoClient.getDatabase(databaseName);
+        return mongoClient;
     }
 
     private void fetchFromCollection(String collName, String containerName, OperationSubscriber<Document> worker) {
@@ -108,13 +108,5 @@ public class DataProvider implements Closeable {
     private void subscribeToNonPolymerInstance(Repository r) {
         //COLL_NONPOLYMER_ENTITY_INSTANCE,
         //CoreConstants.RCSB_NONPOLYMER_ENTITY_INSTANCE_CONTAINER_IDENTIFIERS
-    }
-
-    @Override
-    public void close() {
-        if (connectionOpened) { // release resources
-            mongoClient.close();
-            logger.info("MongoDB connection is closed");
-        }
     }
 }
