@@ -19,7 +19,7 @@ public class AppUtils {
      * @param array2 second array
      * @return resulting array contains data from {@param array1} and {@param array2}
      */
-    public static String[] expandArray(String[] array1, String[] array2) {
+    public static String[] concatenateArrays(String[] array1, String[] array2) {
         String[] updated = new String[array1.length+array2.length];
         System.arraycopy(array1, 0, updated, 0, array1.length);
         System.arraycopy(array2, 0, updated, array1.length, array2.length);
@@ -40,7 +40,7 @@ public class AppUtils {
         if (values == null || values.size() == 0)
             return;
         String[] existingValues = map.getOrDefault(key, new String[]{});
-        String[] updatedValues = expandArray(existingValues, collectionToStringArray(values));
+        String[] updatedValues = concatenateArrays(existingValues, collectionToStringArray(values));
         map.put(key, updatedValues);
     }
 }
