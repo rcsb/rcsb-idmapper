@@ -36,7 +36,7 @@ public class PolymerEntityCollectionSubscriber extends CollectionSubscriber<Docu
     @Override
     public void onNext(final Document document) {
         try {
-            Document container = document.get(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, Document.class);
+            Document container = document.get(categoryName, Document.class);
             String entity = container.getString(CoreConstants.RCSB_ID);
 
             List<String> polymerInstances = container.getList(CoreConstants.ASYM_IDS, String.class);

@@ -36,7 +36,7 @@ public class EntryCollectionSubscriber extends CollectionSubscriber<Document> {
     @Override
     public void onNext(final Document document) {
         try {
-            Document container = document.get(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, Document.class);
+            Document container = document.get(categoryName, Document.class);
             String entry = container.getString(CoreConstants.ENTRY_ID);
 
             Integer pubmed = container.getInteger(CoreConstants.PUBMED_ID);
