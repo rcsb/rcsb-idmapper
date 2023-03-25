@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import io.reactivex.rxjava3.core.Observable;
 import org.rcsb.idmapper.backend.Repository;
 import org.rcsb.idmapper.backend.data.subscribers.EntryCollectionSubscriber;
 import org.rcsb.idmapper.backend.data.subscribers.PolymerEntityCollectionSubscriber;
@@ -26,7 +27,7 @@ import java.io.Closeable;
  */
 public class DataProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(DataProvider.class);
 
     private MongoDatabase db;
 
@@ -49,9 +50,10 @@ public class DataProvider {
     }
 
     public void initialize(Repository r) {
-        new CollectionFetcher(new EntryCollectionSubscriber(r), db).run();
-        new CollectionFetcher(new PolymerEntityCollectionSubscriber(r), db).run();
-
+        Observable.merge(
+                new CollectionFetcher(new EntryCollectionSubscriber(r), db).call(),
+                new CollectionFetcher(new PolymerEntityCollectionSubscriber(r), db).call()
+        ).blockingSubscribe();
     }
 
     private void streamBranchedEntityCollection(Repository r) {
