@@ -1,5 +1,7 @@
 package org.rcsb.idmapper.backend;
 
+import com.google.common.collect.ObjectArrays;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,26 +25,12 @@ public class Repository {
     private final Map<String, String[]> polymerEntityToPolymerInstance = new ConcurrentHashMap<>();
     private final Map<String, String[]> polymerEntityToMolecularDefinition = new ConcurrentHashMap<>();
 
-    /**
-     * Concatenates two arrays
-     *
-     * @param array1 first array
-     * @param array2 second array
-     * @return resulting array contains data from {@param array1} and {@param array2}
-     */
-    private String[] concatenateArrays(String[] array1, String[] array2) {
-        String[] updated = new String[array1.length+array2.length];
-        System.arraycopy(array1, 0, updated, 0, array1.length);
-        System.arraycopy(array2, 0, updated, array1.length, array2.length);
-        return updated;
-    }
-
     private void addNonEmptyValues(Map<String, String[]> map, String key, Collection<String> values) {
         if (values == null || values.size() == 0)
             return;
-        String[] existingValues = map.getOrDefault(key, new String[]{});
-        String[] updatedValues = concatenateArrays(existingValues, values.toArray(new String[0]));
-        map.put(key, updatedValues);
+        String[] existing = map.getOrDefault(key, new String[]{});
+        String[] updated = ObjectArrays.concat(existing, values.toArray(new String[0]), String.class);
+        map.put(key, updated);
     }
 
     public void addEntryToAssemblyMapping(String entryId, List<String> assemblyIds) {
