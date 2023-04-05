@@ -3,7 +3,9 @@ package org.rcsb.idmapper;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.DataProvider;
 import org.rcsb.idmapper.backend.Repository;
-import org.rcsb.idmapper.frontend.FrontendImpl;
+import org.rcsb.idmapper.frontend.Frontend;
+import org.rcsb.idmapper.frontend.FrontendContext;
+import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
 import org.rcsb.idmapper.middleware.MiddlewareImpl;
 
 public class IdMapper {
@@ -13,8 +15,8 @@ public class IdMapper {
                 new Repository()
         );
 
-        var frontend = new FrontendImpl();
         //TODO there may be multiple frontends e.g. one for RSocket, another for Undertow. Hence a factory will be needed
+        var frontend = new UndertowFrontendImpl<>(8080);
 
         var middleware = new MiddlewareImpl();
         middleware.connect(frontend, backend);
@@ -25,9 +27,10 @@ public class IdMapper {
         //TODO initialize other frontends
 
         backend.start();
-        frontend.start();
+        var future = frontend.start();
         //TODO start other frontends
 
+//        future.join();
         //TODO stop
     }
 }
