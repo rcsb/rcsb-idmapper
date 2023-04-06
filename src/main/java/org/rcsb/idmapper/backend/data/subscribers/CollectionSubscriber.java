@@ -1,5 +1,6 @@
 package org.rcsb.idmapper.backend.data.subscribers;
 
+import org.bson.Document;
 import org.rcsb.idmapper.backend.Repository;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -9,23 +10,19 @@ import org.slf4j.LoggerFactory;
 /**
  * A Subscriber that immediately requests Publisher to start streaming data
  *
- * @param <T> The publishers result type
- *
  * Created on 3/10/23.
  *
  * TODO: fix @since tag
  * @author Yana Rose
  * @since X.Y.Z
  */
-public class CollectionSubscriber<T> implements Subscriber<T> {
+public class CollectionSubscriber implements Subscriber<Document> {
 
     private final Logger logger = LoggerFactory.getLogger(CollectionSubscriber.class);
 
     public final String categoryName;
     public final String collectionName;
     public final Repository repository;
-
-    private Long documentCount;
 
     public CollectionSubscriber(final String coll, final String cat, final Repository r) {
         this.collectionName = coll;
@@ -35,15 +32,11 @@ public class CollectionSubscriber<T> implements Subscriber<T> {
 
     @Override
     public void onSubscribe(final Subscription s) {
-        s.request(documentCount);
-    }
-
-    public void setDocumentCount(Long documentCount) {
-        this.documentCount = documentCount;
+        s.request(Long.MAX_VALUE);
     }
 
     @Override
-    public void onNext(T t) { }
+    public void onNext(Document t) { }
 
     @Override
     public void onError(Throwable t) {
@@ -54,7 +47,7 @@ public class CollectionSubscriber<T> implements Subscriber<T> {
 
     @Override
     public void onComplete() {
-        logger.info("Processed [ {} ] data in [ {} ] documents from [ {} ] collection ",
-                categoryName, documentCount, collectionName);
+        logger.info("Processed [ {} ] data in documents from [ {} ] collection ",
+                categoryName, collectionName);
     }
 }

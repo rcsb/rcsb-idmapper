@@ -18,7 +18,7 @@ import static org.rcsb.common.constants.MongoCollections.COLL_POLYMER_ENTITY;
  * @author Yana Rose
  * @since X.Y.Z
  */
-public class PolymerEntityCollectionSubscriber extends CollectionSubscriber<Document> {
+public class PolymerEntityCollectionSubscriber extends CollectionSubscriber {
 
     public PolymerEntityCollectionSubscriber(Repository r) {
         super(COLL_POLYMER_ENTITY, CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, r);

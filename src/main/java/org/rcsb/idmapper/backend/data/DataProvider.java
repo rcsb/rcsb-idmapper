@@ -1,17 +1,23 @@
 package org.rcsb.idmapper.backend.data;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.reactivestreams.client.FindPublisher;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import org.bson.Document;
 import org.rcsb.idmapper.backend.Repository;
+import org.rcsb.idmapper.backend.data.subscribers.CollectionSubscriber;
 import org.rcsb.idmapper.backend.data.subscribers.EntryCollectionSubscriber;
 import org.rcsb.idmapper.backend.data.subscribers.PolymerEntityCollectionSubscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+
+import static com.mongodb.client.model.Projections.*;
 
 /**
  * This class is responsible for communication with upstream data source (MongoDb)
@@ -49,10 +55,21 @@ public class DataProvider {
         return mongoClient;
     }
 
+    private Flowable<Document> lazyFetchFromCollection(CollectionSubscriber s) {
+        return Flowable.defer(() -> {
+            FindPublisher<Document> publisher = db.getCollection(s.collectionName)
+                    .find()
+                    .projection(fields(excludeId(), include(s.categoryName)));
+            publisher.subscribe(s);
+            return Flowable.fromPublisher(publisher)
+                    .subscribeOn(Schedulers.io());
+        });
+    }
+
     public void initialize(Repository r) {
-        Observable.merge(
-                new CollectionFetcher(new EntryCollectionSubscriber(r), db).call(),
-                new CollectionFetcher(new PolymerEntityCollectionSubscriber(r), db).call()
+        Flowable.merge(
+            lazyFetchFromCollection(new EntryCollectionSubscriber(r)),
+            lazyFetchFromCollection(new PolymerEntityCollectionSubscriber(r))
         ).blockingSubscribe();
     }
 

@@ -18,7 +18,7 @@ import static org.rcsb.common.constants.MongoCollections.COLL_ENTRY;
  * @author Yana Rose
  * @since X.Y.Z
  */
-public class EntryCollectionSubscriber extends CollectionSubscriber<Document> {
+public class EntryCollectionSubscriber extends CollectionSubscriber {
 
     public EntryCollectionSubscriber(Repository r) {
         super(COLL_ENTRY, CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, r);
