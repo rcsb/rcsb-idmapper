@@ -30,7 +30,7 @@ public class IdMapper {
         var future = frontend.start();
         //TODO start other frontends
 
-//        future.join();
+        future.join();
         //TODO stop
     }
 }
