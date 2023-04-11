@@ -1,6 +1,6 @@
 package org.rcsb.idmapper.backend;
 
-import com.google.common.collect.ObjectArrays;
+import org.apache.commons.lang3.ArrayUtils;
 import org.rcsb.common.constants.IdentifierSeparator;
 
 import java.util.*;
@@ -33,9 +33,7 @@ public class Repository {
     private void addNonEmptyValues(Map<String, String[]> map, String key, Collection<String> values) {
         if (values == null || values.size() == 0)
             return;
-        String[] existing = map.getOrDefault(key, new String[]{});
-        String[] updated = ObjectArrays.concat(existing, values.toArray(new String[0]), String.class);
-        map.put(key, updated);
+        map.merge(key, values.toArray(String[]::new), ArrayUtils::addAll);
     }
 
     private List<String> createCombinedIdentifiers(String idComp1, List<String> idsComp2, String sep) {
