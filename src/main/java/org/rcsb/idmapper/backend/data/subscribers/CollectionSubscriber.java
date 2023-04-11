@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author Yana Rose
  * @since X.Y.Z
  */
-public class CollectionSubscriber implements Subscriber<Document> {
+public abstract class CollectionSubscriber implements Subscriber<Document> {
 
     private final Logger logger = LoggerFactory.getLogger(CollectionSubscriber.class);
 
@@ -36,7 +36,7 @@ public class CollectionSubscriber implements Subscriber<Document> {
     }
 
     @Override
-    public void onNext(Document t) { }
+    public abstract void onNext(Document t);
 
     @Override
     public void onError(Throwable t) {

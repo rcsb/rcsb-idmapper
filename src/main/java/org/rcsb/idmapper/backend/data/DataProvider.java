@@ -9,13 +9,13 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.bson.Document;
 import org.rcsb.idmapper.backend.Repository;
-import org.rcsb.idmapper.backend.data.subscribers.CollectionSubscriber;
-import org.rcsb.idmapper.backend.data.subscribers.EntryCollectionSubscriber;
-import org.rcsb.idmapper.backend.data.subscribers.PolymerEntityCollectionSubscriber;
+import org.rcsb.idmapper.backend.data.subscribers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+import java.time.Duration;
+import java.time.Instant;
 
 import static com.mongodb.client.model.Projections.*;
 
@@ -55,7 +55,7 @@ public class DataProvider {
         return mongoClient;
     }
 
-    private Flowable<Document> lazyFetchFromCollection(CollectionSubscriber s) {
+    private Flowable<Document> lazyCollectionFetch(CollectionSubscriber s) {
         return Flowable.defer(() -> {
             FindPublisher<Document> publisher = db.getCollection(s.collectionName)
                     .find()
@@ -67,34 +67,16 @@ public class DataProvider {
     }
 
     public void initialize(Repository r) {
-        Flowable.merge(
-            lazyFetchFromCollection(new EntryCollectionSubscriber(r)),
-            lazyFetchFromCollection(new PolymerEntityCollectionSubscriber(r))
+        logger.info("Starting data provider initialization");
+        Instant start = Instant.now();
+        Flowable.mergeArray(
+                lazyCollectionFetch(new EntryCollectionSubscriber(r)),
+                lazyCollectionFetch(new PolymerEntityCollectionSubscriber(r)),
+                lazyCollectionFetch(new BranchedEntityCollectionSubscriber(r)),
+                lazyCollectionFetch(new NonPolymerEntityCollectionSubscriber(r)),
+                lazyCollectionFetch(new ChemComponentsCollectionSubscriber(r))
         ).blockingSubscribe();
-    }
-
-    private void streamBranchedEntityCollection(Repository r) {
-        //COLL_BRANCHED_ENTITY,
-        //CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS;
-    }
-
-    private void streamNonPolymerEntityCollection(Repository r) {
-        //COLL_NONPOLYMER_ENTITY,
-        //CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS
-    }
-
-    private void streamPolymerInstanceCollection(Repository r) {
-        //COLL_POLYMER_ENTITY_INSTANCE,
-        //CoreConstants.RCSB_POLYMER_ENTITY_INSTANCE_CONTAINER_IDENTIFIERS
-    }
-
-    private void subscribeToBranchedInstance(Repository r) {
-        //COLL_BRANCHED_ENTITY_INSTANCE,
-        //CoreConstants.RCSB_BRANCHED_ENTITY_INSTANCE_CONTAINER_IDENTIFIERS
-    }
-
-    private void subscribeToNonPolymerInstance(Repository r) {
-        //COLL_NONPOLYMER_ENTITY_INSTANCE,
-        //CoreConstants.RCSB_NONPOLYMER_ENTITY_INSTANCE_CONTAINER_IDENTIFIERS
+        logger.info("Data provider is ready. Time took to initialize: [ {} ] minutes",
+                Duration.between(start, Instant.now()).toMinutes());
     }
 }

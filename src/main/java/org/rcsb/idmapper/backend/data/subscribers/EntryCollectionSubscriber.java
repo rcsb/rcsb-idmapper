@@ -31,10 +31,10 @@ public class EntryCollectionSubscriber extends CollectionSubscriber {
             String entry = container.getString(CoreConstants.ENTRY_ID);
 
             Integer pubmed = container.getInteger(CoreConstants.PUBMED_ID);
-            repository.addEntryToPubmedMapping(entry, pubmed);
+            repository.addEntryToPubmed(entry, pubmed);
 
             List<String> assemblies = container.getList(CoreConstants.ASSEMBLY_IDS, String.class);
-            repository.addEntryToAssemblyMapping(entry, assemblies);
+            repository.addEntryToAssembly(entry, assemblies);
 
             List<String> polymerEntities = container.getList(CoreConstants.POLYMER_ENTITY_IDS, String.class);
             repository.addEntryToPolymerEntity(entry, polymerEntities);
