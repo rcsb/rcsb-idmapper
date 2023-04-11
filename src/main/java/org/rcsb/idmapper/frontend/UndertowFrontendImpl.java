@@ -1,6 +1,6 @@
 package org.rcsb.idmapper.frontend;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.rxjava3.subjects.Subject;
@@ -12,10 +12,9 @@ import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.util.AttachmentKey;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
+import org.rcsb.idmapper.IdMapper;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
@@ -32,13 +31,13 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
 
     private final HttpHandler rootHandler = new RoutingHandler()
             .get("/", new IamOkHandler())
-            .post("/translate", new BlockingHandler(//effectively offloads to XNIO thread, hence thread per request model :(
+            .post(IdMapper.TRANSLATE, new BlockingHandler(//effectively offloads to XNIO thread, hence thread per request model :(
                     new ExtractJson<>(TranslateInput.class,
                             new TaskEmitterHandler())))
-            .post("/group", new BlockingHandler(
+            .post(IdMapper.GROUP, new BlockingHandler(
                     new ExtractJson<>(GroupInput.class,
                             new TaskEmitterHandler())))
-            .post("/all", new BlockingHandler(
+            .post(IdMapper.ALL, new BlockingHandler(
                     new ExtractJson<>(AllInput.class,
                             new TaskEmitterHandler())));
 
@@ -75,11 +74,12 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
                 .getResponseHeaders()
                 .add(Headers.CONTENT_TYPE, APPLICATION_JSON);
 
-        try (var outputStream = new BufferedOutputStream(exchange.getOutputStream())) {
+        try (var writer = new OutputStreamWriter(
+                new BufferedOutputStream(exchange.getOutputStream()))) {
 
-            var mapper = new ObjectMapper();
+            var mapper = new Gson();
 
-            mapper.writeValue(outputStream, context.output);
+            mapper.toJson(context.output, writer);
         }
         catch (IOException exception){
             exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -121,9 +121,11 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
         public void handleRequest(HttpServerExchange exchange) throws Exception {
             var blocking = exchange.startBlocking();
 
-            ObjectMapper mapper = new ObjectMapper();
+            var mapper = new Gson();
             //TODO reactive or async to avoid blocking call here
-            var input = mapper.readValue(new BufferedInputStream(blocking.getInputStream()), clazz);//will simply return 500 if json is invalid
+            var input = mapper.fromJson(
+                    new InputStreamReader(
+                            new BufferedInputStream(blocking.getInputStream())), clazz);//will simply return 500 if json is invalid
 
             var context = FrontendContext.create(input, exchange);
 
