@@ -24,8 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import static org.rcsb.idmapper.IdMapper.*;
 
 public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements Frontend {
-    private final PublishSubject<T> upstream = PublishSubject.create();
-    private final PublishSubject<T> downstream = PublishSubject.create();
     private final int port;
     private RSocketServer server;
     private Disposable disposable;
