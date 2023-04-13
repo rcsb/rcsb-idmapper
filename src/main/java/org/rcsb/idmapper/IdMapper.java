@@ -5,7 +5,6 @@ import org.rcsb.idmapper.backend.DataProvider;
 import org.rcsb.idmapper.backend.Repository;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
-import org.rcsb.idmapper.middleware.MiddlewareImpl;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -23,13 +22,8 @@ public class IdMapper {
         );
 
         //TODO there may be multiple frontends e.g. one for RSocket, another for Undertow. Hence a factory will be needed
-        var undertow = new UndertowFrontendImpl<>(DEFAULT_HTTP_PORT);
-        var rsocket = new RSocketFrontendImpl<>(DEFAULT_RSOCKET_PORT);
-
-        var middleware = new MiddlewareImpl();
-        middleware.connect(undertow, backend);
-        middleware.connect(rsocket, backend);
-        //TODO connect other frontends
+        var undertow = new UndertowFrontendImpl<>(backend, DEFAULT_HTTP_PORT);
+        var rsocket = new RSocketFrontendImpl<>(backend, DEFAULT_RSOCKET_PORT);
 
         backend.initialize();
         undertow.initialize();

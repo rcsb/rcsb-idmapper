@@ -13,19 +13,17 @@ import io.undertow.util.AttachmentKey;
 import io.undertow.util.Headers;
 import io.undertow.util.StatusCodes;
 import org.rcsb.idmapper.IdMapper;
+import org.rcsb.idmapper.backend.BackendImpl;
 
 import java.io.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>> implements Frontend<T> {
+public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>> implements Frontend {
     public static final String APPLICATION_JSON = "application/json";
     public static final String TEXT_PLAIN = "text/plain; charset=utf-8";
     private final AttachmentKey<T> contextAttachmentKey = AttachmentKey.create(FrontendContext.class);
-    /**
-     * Effectively glues Frontend with Backend in Middleware, see {@link org.rcsb.idmapper.middleware.MiddlewareImpl}
-     */
-    private final Subject<T> subject = PublishSubject.create();
+    private final BackendImpl backend;
     private final int port;
     private Undertow server;
 
@@ -33,16 +31,17 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
             .get("/", new IamOkHandler())
             .post(IdMapper.TRANSLATE, new BlockingHandler(//effectively offloads to XNIO thread, hence thread per request model :(
                     new ExtractJson<>(TranslateInput.class,
-                            new TaskEmitterHandler())))
+                            new TaskDispatcherHandler(new SendResponseHandler()))))
             .post(IdMapper.GROUP, new BlockingHandler(
                     new ExtractJson<>(GroupInput.class,
-                            new TaskEmitterHandler())))
+                            new TaskDispatcherHandler(new SendResponseHandler()))))
             .post(IdMapper.ALL, new BlockingHandler(
                     new ExtractJson<>(AllInput.class,
-                            new TaskEmitterHandler())));
+                            new TaskDispatcherHandler(new SendResponseHandler()))));
 
 
-    public UndertowFrontendImpl(int port) {
+    public UndertowFrontendImpl(BackendImpl backend, int port) {
+        this.backend = backend;
         this.port = port;
     }
 
@@ -63,39 +62,6 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
 
     public void close() {
         server.stop();
-        subject.onComplete();
-    }
-
-    //TODO should be encapsulated into HttpHandler?
-    public void sendResponse(T context) {
-        var exchange = context.supplements;
-        if(exchange.isResponseComplete()) throw new IllegalStateException("Response must not be completed at this stage");
-        exchange
-                .getResponseHeaders()
-                .add(Headers.CONTENT_TYPE, APPLICATION_JSON);
-
-        try (var writer = new OutputStreamWriter(
-                new BufferedOutputStream(exchange.getOutputStream()))) {
-
-            var mapper = new Gson();
-
-            mapper.toJson(context.output, writer);
-        }
-        catch (IOException exception){
-            exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
-            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, TEXT_PLAIN);
-            exchange.getResponseSender().send(String.format("Internal server error: %s", exception.getMessage()));
-        }
-    }
-
-    public Observable<T> observe() {
-        return Observable.wrap(subject);
-    }
-
-    public static void main(String[] args) {
-        var front = new UndertowFrontendImpl(8080);
-        front.initialize();
-        front.start();
     }
 
     private class IamOkHandler implements HttpHandler {
@@ -134,21 +100,39 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
         }
     }
 
-    private class TaskEmitterHandler implements HttpHandler {
+    private class TaskDispatcherHandler implements HttpHandler {
+        private final HttpHandler next;
+
+        private TaskDispatcherHandler(HttpHandler next) {
+            this.next = next;
+        }
+
         @Override
         public void handleRequest(HttpServerExchange exchange) throws Exception {
             var context = exchange.getAttachment(contextAttachmentKey);
-            subject.onNext(context);
-            //TODO do we want downstream subject here?
-            /**
-             * <java>
-             *     downstream.subscribe(context -> {
-             *          UndertowFrontendImpl.this.sendResponse(context)
-             *       }
-             *     )
-             * </java>
-             */
+            var output = backend.dispatch(context.input);
 
+            exchange.putAttachment(contextAttachmentKey, (T)context.setOutput(output));
+            next.handleRequest(exchange);
+        }
+    }
+
+    private class SendResponseHandler implements HttpHandler {
+        @Override
+        public void handleRequest(HttpServerExchange exchange) throws Exception {
+            if(exchange.isResponseComplete()) throw new IllegalStateException("Response must not be completed at this stage");
+            exchange
+                    .getResponseHeaders()
+                    .add(Headers.CONTENT_TYPE, APPLICATION_JSON);
+
+            try (var writer = new OutputStreamWriter(
+                    new BufferedOutputStream(exchange.getOutputStream()))) {
+                var context = exchange.getAttachment(contextAttachmentKey);
+
+                var mapper = new Gson();
+
+                mapper.toJson(context.output, writer);
+            }
         }
     }
 }
