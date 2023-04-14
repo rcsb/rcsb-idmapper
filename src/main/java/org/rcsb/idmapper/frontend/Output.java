@@ -8,4 +8,5 @@ package org.rcsb.idmapper.frontend;
  * @author ingvord
  */
 public class Output {
+    public String value = "Alles gut!";
 }

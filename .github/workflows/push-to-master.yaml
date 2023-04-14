@@ -1,0 +1,13 @@
+name: Push2Master
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  push-to-master:
+    uses: rcsb/devops-cicd-github-actions/.github/workflows/push-to-master.yaml@master
+    with:
+      distribution: "production_idmapper"
+      type: "skip"
