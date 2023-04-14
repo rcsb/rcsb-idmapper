@@ -1,7 +1,8 @@
 package org.rcsb.idmapper.backend;
 
 
-import java.util.concurrent.Callable;
+import org.rcsb.idmapper.frontend.Input;
+import org.rcsb.idmapper.frontend.Output;
 
 /**
  * This class is responsible for communication with upstream data provider via {@link DataProvider} as well as storing
@@ -29,9 +30,9 @@ public class BackendImpl {
         //TODO close connection etc
     }
 
-    public Task dispatch(Task task){
+    public Output dispatch(Input task){
         //TODO dispatch and perform task
-        return task;
+        return new Output();
     }
 
 }

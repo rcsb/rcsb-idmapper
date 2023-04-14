@@ -3,31 +3,38 @@ package org.rcsb.idmapper;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.DataProvider;
 import org.rcsb.idmapper.backend.Repository;
-import org.rcsb.idmapper.frontend.FrontendImpl;
-import org.rcsb.idmapper.middleware.MiddlewareImpl;
+import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
+import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
+
+import java.util.concurrent.CompletableFuture;
 
 public class IdMapper {
+    public static final int DEFAULT_HTTP_PORT = 8080;
+    public static final int DEFAULT_RSOCKET_PORT = 7000;
+    public static final String TRANSLATE = "/translate";
+    public static final String GROUP = "/group";
+    public static final String ALL = "/all";
+
     public static void main(String[] args) {
         var backend = new BackendImpl(
                 new DataProvider(),
                 new Repository()
         );
 
-        var frontend = new FrontendImpl();
         //TODO there may be multiple frontends e.g. one for RSocket, another for Undertow. Hence a factory will be needed
-
-        var middleware = new MiddlewareImpl();
-        middleware.connect(frontend, backend);
-        //TODO connect other frontends
+        var undertow = new UndertowFrontendImpl<>(backend, DEFAULT_HTTP_PORT);
+        var rsocket = new RSocketFrontendImpl<>(backend, DEFAULT_RSOCKET_PORT);
 
         backend.initialize();
-        frontend.initialize();
+        undertow.initialize();
+        rsocket.initialize();
         //TODO initialize other frontends
 
         backend.start();
-        frontend.start();
-        //TODO start other frontends
-
+        CompletableFuture.allOf(
+                undertow.start(),
+                rsocket.start()
+        ).join();
         //TODO stop
     }
 }
