@@ -28,9 +28,12 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
     private RSocketServer server;
     private Disposable disposable;
     private final ServerTransport<CloseableChannel> transport;
+
     private RSocket rSocket = new RSocket() {
+        private final Gson gson = new Gson();
+
         private Input extractInput(Payload payload){
-            var gson = new Gson();
+
             switch (payload.getMetadataUtf8()){
                 case TRANSLATE:
                     return gson.fromJson(payload.getDataUtf8(), TranslateInput.class);

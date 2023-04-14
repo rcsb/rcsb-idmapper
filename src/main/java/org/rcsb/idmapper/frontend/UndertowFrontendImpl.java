@@ -78,6 +78,8 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
         private final HttpHandler next;
         private final Class<V> clazz;
 
+        private final Gson mapper = new Gson();
+
         private ExtractJson(Class<V> clazz, HttpHandler next) {
             this.next = next;
             this.clazz = clazz;
@@ -87,7 +89,6 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
         public void handleRequest(HttpServerExchange exchange) throws Exception {
             var blocking = exchange.startBlocking();
 
-            var mapper = new Gson();
             //TODO reactive or async to avoid blocking call here
             var input = mapper.fromJson(
                     new InputStreamReader(
@@ -118,6 +119,8 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
     }
 
     private class SendResponseHandler implements HttpHandler {
+        private final Gson mapper = new Gson();
+
         @Override
         public void handleRequest(HttpServerExchange exchange) throws Exception {
             if(exchange.isResponseComplete()) throw new IllegalStateException("Response must not be completed at this stage");
@@ -128,8 +131,6 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
             try (var writer = new OutputStreamWriter(
                     new BufferedOutputStream(exchange.getOutputStream()))) {
                 var context = exchange.getAttachment(contextAttachmentKey);
-
-                var mapper = new Gson();
 
                 mapper.toJson(context.output, writer);
             }
