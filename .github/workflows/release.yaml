@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      major:
+        description: 'Major version'
+        required: true
+      minor:
+        description: 'Minor version'
+        required: true
+      patch:
+        description: 'Patch version'
+        required: true
+      skip-tests:
+        description: 'Skip tests'
+        type: boolean
+        default: true
+        required: false
+
+jobs:
+  release:
+    uses: rcsb/devops-cicd-github-actions/.github/workflows/release.yaml@master
+    with:
+      major: ${{ inputs.major }}
+      minor: ${{ inputs.minor }}
+      patch: ${{ inputs.patch }}
+      skip-tests: ${{ inputs.skip-tests }}
+      distribution: "production_idmapper"
+      type: "jar"
