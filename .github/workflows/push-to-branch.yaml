@@ -10,4 +10,4 @@ jobs:
     uses: rcsb/devops-cicd-github-actions/.github/workflows/push-to-branch.yaml@master
     with:
       distribution: "${{ github.ref_name }}_idmapper"
-      type: "jar"
+      type: "skip"
