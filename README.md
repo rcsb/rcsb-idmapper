@@ -1,2 +1,2 @@
 # rcsb-idmapper
-org.rcsb.idmapper.IdMapper service extracted from Arches
+ID Mapper is designed to facilitate the mapping of PDB and related identifiers. 

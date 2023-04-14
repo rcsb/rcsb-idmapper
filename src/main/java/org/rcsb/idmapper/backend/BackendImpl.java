@@ -1,5 +1,7 @@
 package org.rcsb.idmapper.backend;
 
+import org.rcsb.idmapper.backend.data.DataProvider;
+import java.io.Closeable;
 
 import org.rcsb.idmapper.frontend.Input;
 import org.rcsb.idmapper.frontend.Output;
@@ -8,25 +10,32 @@ import org.rcsb.idmapper.frontend.Output;
  * This class is responsible for communication with upstream data provider via {@link DataProvider} as well as storing
  * data in the {@link Repository}
  *
- *
  * @since 27 Feb 2023
  * @author ingvord
  */
 public class BackendImpl {
+
+    private final DataProvider dataProvider;
+    private final Repository repository;
+
     public BackendImpl(DataProvider dataProvider, Repository repository){
-
+        this.dataProvider = dataProvider;
+        this.repository = repository;
     }
 
-    public void initialize(){
+    public void initialize() throws Exception {
         //TODO fetch data from DataProvider into Repository
+        try (Closeable closeable = dataProvider.connect()) {
+            dataProvider.initialize(repository);
+        }
     }
 
-    public void start(){
+    public void start() {
         //TODO mark this one as ready to dispatch
     }
 
     //TODO replace with close and implement Closeable
-    public void stop(){
+    public void stop() {
         //TODO close connection etc
     }
 
@@ -34,5 +43,4 @@ public class BackendImpl {
         //TODO dispatch and perform task
         return new Output();
     }
-
 }

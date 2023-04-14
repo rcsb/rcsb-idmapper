@@ -1,14 +1,19 @@
 package org.rcsb.idmapper;
 
 import org.rcsb.idmapper.backend.BackendImpl;
-import org.rcsb.idmapper.backend.DataProvider;
 import org.rcsb.idmapper.backend.Repository;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
 
 import java.util.concurrent.CompletableFuture;
+import org.rcsb.idmapper.backend.data.DataProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IdMapper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IdMapper.class);
+
     public static final int DEFAULT_HTTP_PORT = 8080;
     public static final int DEFAULT_RSOCKET_PORT = 7000;
     public static final String TRANSLATE = "/translate";
@@ -25,16 +30,20 @@ public class IdMapper {
         var undertow = new UndertowFrontendImpl<>(backend, DEFAULT_HTTP_PORT);
         var rsocket = new RSocketFrontendImpl<>(backend, DEFAULT_RSOCKET_PORT);
 
-        backend.initialize();
-        undertow.initialize();
-        rsocket.initialize();
-        //TODO initialize other frontends
+        try {
+            backend.initialize();
+            undertow.initialize();
+            rsocket.initialize();
 
-        backend.start();
-        CompletableFuture.allOf(
-                undertow.start(),
-                rsocket.start()
-        ).join();
-        //TODO stop
+            backend.start();
+            CompletableFuture.allOf(
+                    undertow.start(),
+                    rsocket.start()
+            ).join();
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        } finally {
+            backend.stop();
+        }
     }
 }
