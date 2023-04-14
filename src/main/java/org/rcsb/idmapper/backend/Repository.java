@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @author Yana Rose
  */
 public class Repository {
-
+    // direct mappings
     private final Map<String, String[]> entryToAssembly = new ConcurrentHashMap<>();
     private final Map<String, String[]> entryToPubmed = new ConcurrentHashMap<>();
     private final Map<String, String[]> entryToPolymerEntity = new ConcurrentHashMap<>();
@@ -29,11 +29,27 @@ public class Repository {
     private final Map<String, String[]> nonPolymerEntityToInstance = new ConcurrentHashMap<>();
     private final Map<String, String[]> nonPolymerEntityToComps = new ConcurrentHashMap<>();
     private final Map<String, String[]> compsToDrugBank = new ConcurrentHashMap<>();
+    // reverse mappings
+    private final Map<String, String[]> assemblyToEntry = new ConcurrentHashMap<>();
+    private final Map<String, String[]> pubmedToEntry = new ConcurrentHashMap<>();
+    private final Map<String, String[]> polymerEntityToEntry = new ConcurrentHashMap<>();
+    private final Map<String, String[]> branchedEntityToEntry = new ConcurrentHashMap<>();
+    private final Map<String, String[]> nonPolymerEntityToEntry = new ConcurrentHashMap<>();
+    private final Map<String, String[]> polymerInstanceToEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> compsToPolymerEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> uniprotToPolymerEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> branchedInstanceToEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> compsToBranchedEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> nonPolymerInstanceToEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> compsToNonPolymerEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> drugBankToComps = new ConcurrentHashMap<>();
 
-    private void addNonEmptyValues(Map<String, String[]> map, String key, Collection<String> values) {
-        if (values == null || values.size() == 0)
-            return;
-        map.merge(key, values.toArray(String[]::new), ArrayUtils::addAll);
+    private void addNonEmptyValues(Map<String, String[]> direct, Map<String, String[]> reverse,
+                                   String key, Collection<String> values) {
+        if (values == null || values.size() == 0) return;
+        direct.merge(key, values.toArray(String[]::new), ArrayUtils::addAll);
+        values.forEach(v -> reverse.merge(v, new String[]{key}, ArrayUtils::addAll));
+
     }
 
     private List<String> createCombinedIdentifiers(String idComp1, List<String> idsComp2, String sep) {
@@ -54,67 +70,67 @@ public class Repository {
     }
 
     public void addEntryToAssembly(String entryId, List<String> assemblyIds) {
-        addNonEmptyValues(entryToAssembly, entryId, createAssemblyIdentifiers(entryId, assemblyIds));
+        addNonEmptyValues(entryToAssembly, assemblyToEntry, entryId, createAssemblyIdentifiers(entryId, assemblyIds));
     }
 
     public void addEntryToPubmed(String entryId, Integer pubmedId) {
         if (pubmedId ==  null) return;
-        addNonEmptyValues(entryToPubmed, entryId, Collections.singleton(String.valueOf(pubmedId)));
+        addNonEmptyValues(entryToPubmed, pubmedToEntry, entryId, Collections.singleton(String.valueOf(pubmedId)));
     }
 
     public void addEntryToPolymerEntity(String entryId, List<String> entityIds) {
-        addNonEmptyValues(entryToPolymerEntity, entryId, createEntityIdentifiers(entryId, entityIds));
+        addNonEmptyValues(entryToPolymerEntity, polymerEntityToEntry, entryId, createEntityIdentifiers(entryId, entityIds));
     }
 
     public void addEntryToBranchedEntity(String entryId, List<String> entityIds) {
-        addNonEmptyValues(entryToBranchedEntity, entryId, createEntityIdentifiers(entryId, entityIds));
+        addNonEmptyValues(entryToBranchedEntity, branchedEntityToEntry, entryId, createEntityIdentifiers(entryId, entityIds));
     }
 
     public void addEntryToNonPolymerEntity(String entryId, List<String> entityIds) {
-        addNonEmptyValues(entryToNonPolymerEntity, entryId, createEntityIdentifiers(entryId, entityIds));
+        addNonEmptyValues(entryToNonPolymerEntity, nonPolymerEntityToEntry, entryId, createEntityIdentifiers(entryId, entityIds));
     }
 
     public void addPolymerEntityToInstance(String entryId, String entityId, List<String> instanceIds) {
-        addNonEmptyValues(polymerEntityToInstance, entityId, createInstanceIdentifiers(entryId, instanceIds));
+        addNonEmptyValues(polymerEntityToInstance, polymerInstanceToEntity, entityId, createInstanceIdentifiers(entryId, instanceIds));
     }
 
     public void addPolymerEntityToCcd(String entityId, List<String> molIds) {
-        addNonEmptyValues(polymerEntityToComps, entityId, molIds);
+        addNonEmptyValues(polymerEntityToComps, compsToPolymerEntity, entityId, molIds);
     }
 
     public void addPolymerEntityToBird(String entityId, String molId) {
         if (molId == null) return;
-        addNonEmptyValues(polymerEntityToComps, entityId, Collections.singleton(molId));
+        addNonEmptyValues(polymerEntityToComps, compsToPolymerEntity, entityId, Collections.singleton(molId));
     }
 
     public void addBranchedEntityToInstance(String entry, String entityId, List<String> instanceIds) {
-        addNonEmptyValues(branchedEntityToInstance, entityId, createInstanceIdentifiers(entry, instanceIds));
+        addNonEmptyValues(branchedEntityToInstance, branchedInstanceToEntity, entityId, createInstanceIdentifiers(entry, instanceIds));
     }
 
     public void addBranchedEntityToCcd(String entityId, List<String> molIds) {
-        addNonEmptyValues(branchedEntityToComps, entityId, molIds);
+        addNonEmptyValues(branchedEntityToComps, compsToBranchedEntity, entityId, molIds);
     }
 
     public void addBranchedEntityToBird(String entityId, String molId) {
         if (molId == null) return;
-        addNonEmptyValues(branchedEntityToComps, entityId, Collections.singleton(molId));
+        addNonEmptyValues(branchedEntityToComps, compsToBranchedEntity, entityId, Collections.singleton(molId));
     }
 
     public void addNonPolymerEntityToInstance(String entry, String entityId, List<String> instanceIds) {
-        addNonEmptyValues(nonPolymerEntityToInstance, entityId, createInstanceIdentifiers(entry, instanceIds));
+        addNonEmptyValues(nonPolymerEntityToInstance, nonPolymerInstanceToEntity, entityId, createInstanceIdentifiers(entry, instanceIds));
     }
 
     public void addNonPolymerEntityToComps(String entityId, String molId) {
         if (molId == null) return;
-        addNonEmptyValues(nonPolymerEntityToComps, entityId, Collections.singleton(molId));
+        addNonEmptyValues(nonPolymerEntityToComps, compsToNonPolymerEntity, entityId, Collections.singleton(molId));
     }
 
     public void addPolymerEntityToUniprot(String entityId, List<String> uniprotIds) {
-        addNonEmptyValues(polymerEntityToUniprot, entityId, uniprotIds);
+        addNonEmptyValues(polymerEntityToUniprot, uniprotToPolymerEntity, entityId, uniprotIds);
     }
 
     public void addChemCompsToDrugBank(String compId, String drugBankId) {
         if (drugBankId == null) return;
-        addNonEmptyValues(compsToDrugBank, compId, Collections.singleton(drugBankId));
+        addNonEmptyValues(compsToDrugBank, drugBankToComps, compId, Collections.singleton(drugBankId));
     }
 }
