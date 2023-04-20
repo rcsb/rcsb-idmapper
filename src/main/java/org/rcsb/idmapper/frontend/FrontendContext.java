@@ -1,5 +1,8 @@
 package org.rcsb.idmapper.frontend;
 
+import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.frontend.output.Output;
+
 //@Immutable
 public class FrontendContext<T> {
     public final Input input;
