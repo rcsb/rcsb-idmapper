@@ -5,6 +5,7 @@ import org.rcsb.idmapper.backend.Repository;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.slf4j.Logger;
@@ -19,10 +20,14 @@ public class IdMapper {
     public static final String TRANSLATE = "/translate";
     public static final String GROUP = "/group";
     public static final String ALL = "/all";
+    public static final String MONGODB_URI = "MONGODB_URI";
 
     public static void main(String[] args) {
+
+        var connectionString = Objects.requireNonNull(System.getenv(MONGODB_URI),
+                String.format("The environment variable [ %s ] with Mongo database connection string (URI) must be set", MONGODB_URI));
         var backend = new BackendImpl(
-                new DataProvider(),
+                new DataProvider(connectionString),
                 new Repository()
         );
 
