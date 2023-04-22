@@ -1,7 +1,7 @@
 package org.rcsb.idmapper;
 
 import org.rcsb.idmapper.backend.BackendImpl;
-import org.rcsb.idmapper.backend.Repository;
+import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
 

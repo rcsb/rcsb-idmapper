@@ -11,6 +11,8 @@ import org.rcsb.idmapper.IdMapper;
 import org.rcsb.idmapper.frontend.input.GroupInput;
 import org.rcsb.idmapper.frontend.input.Input;
 
+import java.util.List;
+
 import static org.rcsb.idmapper.IdMapper.GROUP;
 
 //TODO use test containers library to spin up this container (possibly with some limited data provider) and run the tests
@@ -26,7 +28,7 @@ public class RSocketTestClient {
         GroupInput groupInput = new GroupInput();
 
         for (int i = 0; i < 3; i++) {
-            groupInput.id = "4HHB";
+            groupInput.ids = List.of("4HHB");
             groupInput.aggregation_method = Input.AggregationMethod.values()[i];
             client
                     .requestResponse(ByteBufPayload.create(new Gson().toJson(groupInput),GROUP))

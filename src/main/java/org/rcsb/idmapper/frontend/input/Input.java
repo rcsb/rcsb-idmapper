@@ -10,16 +10,17 @@ public abstract class Input {
 
     public enum Type {
         entry,
+        assembly,
         polymer_entity,
+        branched_entity,
         non_polymer_entity,
         polymer_instance,
-        assembly,
-        mol_definition
-    }
-
-    public enum ContentType {
-        experimental,
-        computational
+        branched_instance,
+        non_polymer_instance,
+        mol_definition,
+        drug_bank,
+        pubmed,
+        uniprot
     }
 
     public enum AggregationMethod {

@@ -1,9 +1,8 @@
 package org.rcsb.idmapper.frontend;
 
-import com.google.gson.Gson;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.subjects.PublishSubject;
-import io.reactivex.rxjava3.subjects.Subject;
+import com.google.common.collect.Multimap;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.*;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -11,11 +10,15 @@ import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.util.AttachmentKey;
 import io.undertow.util.Headers;
-import io.undertow.util.StatusCodes;
 import org.rcsb.idmapper.IdMapper;
 import org.rcsb.idmapper.backend.BackendImpl;
+import org.rcsb.idmapper.frontend.input.AllInput;
+import org.rcsb.idmapper.frontend.input.GroupInput;
+import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.frontend.input.TranslateInput;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
@@ -119,7 +122,12 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
     }
 
     private class SendResponseHandler implements HttpHandler {
-        private final Gson mapper = new Gson();
+        private final Gson mapper = new GsonBuilder()
+                .serializeNulls()
+                .setPrettyPrinting()
+                .enableComplexMapKeySerialization()
+                .registerTypeAdapter(Multimap.class, new MultiMapAdapter())
+                .create();
 
         @Override
         public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -134,6 +142,27 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
 
                 mapper.toJson(context.output, writer);
             }
+        }
+    }
+
+    private static final class MultiMapAdapter implements JsonSerializer<Multimap<String,String>> {
+        private static final Type asMapReturnType;
+        static {
+            try {
+                asMapReturnType = Multimap.class.getDeclaredMethod("asMap").getGenericReturnType();
+            } catch (NoSuchMethodException e) {
+                throw new AssertionError(e);
+            }
+        }
+
+        @Override
+        public JsonElement serialize(Multimap<String, String> src, Type typeOfSrc, JsonSerializationContext context) {
+            return context.serialize(src.asMap(), asMapType(typeOfSrc));
+        }
+
+
+        private static Type asMapType(Type multimapType) {
+            return TypeToken.of(multimapType).resolveType(asMapReturnType).getType();
         }
     }
 }
