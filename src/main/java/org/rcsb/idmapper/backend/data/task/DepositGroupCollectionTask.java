@@ -28,7 +28,10 @@ public class DepositGroupCollectionTask extends CollectionTask {
         return () -> {
             Document container = document.get(fields.get(0), Document.class);
             String group = container.getString(CoreConstants.GROUP_ID);
+            String provenance = container.getString(CoreConstants.GROUP_PROVENANCE_ID);
             List<String> members = container.getList(CoreConstants.GROUP_MEMBER_IDS, String.class);
+
+            repository.getGroupRepository().addGroupProvenance(group, provenance);
             repository.getGroupRepository()
                     .addGroupMembers(Input.AggregationMethod.matching_deposit_group_id, null, group, members);
 

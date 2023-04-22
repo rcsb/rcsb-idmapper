@@ -1,5 +1,6 @@
 package org.rcsb.idmapper.backend.data;
 
+import io.reactivex.rxjava3.core.Observable;
 import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.data.repository.*;
 import org.rcsb.idmapper.frontend.input.Input;
@@ -44,6 +45,14 @@ public class Repository {
         return component;
     }
 
+    private String[] transit(String[] ids, Input.Type from, Input.Type to, ContentType ct) {
+         return Observable.fromArray(ids)
+                 .flatMap(id -> Observable.fromArray(lookup(id, from, to, ct)))
+                 .toList()
+                 .blockingGet()
+                 .toArray(String[]::new);
+    }
+
     public String[] lookup(String id, Input.Type from, Input.Type to, ContentType ct) {
         switch (from) {
             case entry -> {
@@ -60,16 +69,53 @@ public class Repository {
                     case non_polymer_entity -> {
                         return getStructureRepository(ct).getEntryToNonPolymerEntity().getOrDefault(id, EMPTY_STR_ARRAY);
                     }
+                    case polymer_instance -> {
+                        var entityIds = getStructureRepository(ct).getEntryToPolymerEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entityIds, Input.Type.polymer_entity, Input.Type.polymer_instance, ct);
+                    }
+                    case branched_instance -> {
+                        var entityIds = getStructureRepository(ct).getEntryToBranchedEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entityIds, Input.Type.branched_entity, Input.Type.branched_instance, ct);
+                    }
+                    case non_polymer_instance -> {
+                        var entityIds = getStructureRepository(ct).getEntryToNonPolymerEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entityIds, Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ct);
+                    }
+                    case mol_definition -> {
+                        return getStructureRepository(ct).getEntryToComps().getOrDefault(id, EMPTY_STR_ARRAY);
+                    }
+                    case drug_bank -> {
+                        var compIds = getStructureRepository(ct).getEntryToComps().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(compIds, Input.Type.mol_definition, Input.Type.drug_bank, ct);
+                    }
                     case pubmed -> {
                         return getStructureRepository(ct).getEntryToPubmed().getOrDefault(id, EMPTY_STR_ARRAY);
+                    }
+                    case uniprot -> {
+                        var entityIds = getStructureRepository(ct).getEntryToPolymerEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entityIds, Input.Type.polymer_entity, Input.Type.uniprot, ct);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + to);
                 }
             }
             case assembly -> {
+                var entryIds = getStructureRepository(ct).getAssemblyToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
                 switch (to) {
                     case entry -> {
-                        return getStructureRepository(ct).getAssemblyToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return entryIds;
+                    }
+                    case polymer_entity -> {
+                        return transit(entryIds, Input.Type.entry, Input.Type.polymer_entity, ct);
+                    }
+                    case polymer_instance -> {
+                        var entityIds = transit(entryIds, Input.Type.entry, Input.Type.polymer_entity, ct);
+                        return transit(entityIds, Input.Type.polymer_entity, Input.Type.polymer_instance, ct);
+                    }
+                    case non_polymer_entity -> {
+                        return transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
+                    }
+                    case mol_definition -> {
+                        return transit(entryIds, Input.Type.entry, Input.Type.mol_definition, ct);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + to);
                 }
@@ -78,6 +124,14 @@ public class Repository {
                 switch (to) {
                     case entry -> {
                         return getStructureRepository(ct).getPolymerEntityToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
+                    }
+                    case branched_entity -> {
+                        var entryIds = getStructureRepository(ct).getPolymerEntityToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entryIds, Input.Type.entry, Input.Type.branched_entity, ct);
+                    }
+                    case non_polymer_entity -> {
+                        var entryIds = getStructureRepository(ct).getPolymerEntityToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
                     }
                     case polymer_instance -> {
                         return getStructureRepository(ct).getPolymerEntityToInstance().getOrDefault(id, EMPTY_STR_ARRAY);
@@ -121,8 +175,21 @@ public class Repository {
             }
             case polymer_instance -> {
                 switch (to) {
+                    case entry -> {
+                        var entityIds = getStructureRepository(ct).getPolymerInstanceToEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entityIds, Input.Type.polymer_entity, Input.Type.entry, ct);
+                    }
+                    case assembly -> {
+                        var entityIds = getStructureRepository(ct).getPolymerInstanceToEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                        var entryIds = transit(entityIds, Input.Type.polymer_entity, Input.Type.entry, ct);
+                        return transit(entryIds, Input.Type.entry, Input.Type.assembly, ct);
+                    }
                     case polymer_entity -> {
                         return getStructureRepository(ct).getPolymerInstanceToEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                    }
+                    case mol_definition -> {
+                        var entityIds = getStructureRepository(ct).getPolymerInstanceToEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entityIds, Input.Type.polymer_entity, Input.Type.mol_definition, ct);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + to);
                 }
@@ -145,6 +212,13 @@ public class Repository {
             }
             case mol_definition -> {
                 switch (to) {
+                    case entry -> {
+                        return getStructureRepository(ct).getCompsToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
+                    }
+                    case assembly -> {
+                        var entryIds = getStructureRepository(ct).getCompsToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entryIds, Input.Type.entry, Input.Type.assembly, ct);
+                    }
                     case polymer_entity -> {
                         return getStructureRepository(ct).getCompsToPolymerEntity().getOrDefault(id, EMPTY_STR_ARRAY);
                     }
@@ -154,32 +228,20 @@ public class Repository {
                     case non_polymer_entity -> {
                         return getStructureRepository(ct).getCompsToNonPolymerEntity().getOrDefault(id, EMPTY_STR_ARRAY);
                     }
+                    case polymer_instance -> {
+                        var entityIds = getStructureRepository(ct).getCompsToPolymerEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entityIds, Input.Type.polymer_entity, Input.Type.polymer_instance, ct);
+                    }
                     case drug_bank -> {
                         return component.getCompsToDrugBank().getOrDefault(id, EMPTY_STR_ARRAY);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + to);
                 }
             }
-            case drug_bank -> {
+            case group -> {
                 switch (to) {
-                    case mol_definition -> {
-                        return component.getDrugBankToComps().getOrDefault(id, EMPTY_STR_ARRAY);
-                    }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
-                }
-            }
-            case pubmed -> {
-                switch (to) {
-                    case entry -> {
-                        return getStructureRepository(ct).getPubmedToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
-                    }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
-                }
-            }
-            case uniprot -> {
-                switch (to) {
-                    case polymer_entity -> {
-                        return getStructureRepository(ct).getUniprotToPolymerEntity().getOrDefault(id, EMPTY_STR_ARRAY);
+                    case group_provenance -> {
+                        return group.getGroupToProvenance().getOrDefault(id, EMPTY_STR_ARRAY);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + to);
                 }

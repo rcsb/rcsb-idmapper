@@ -18,6 +18,8 @@ public class StructureRepository extends AnyRepository {
     private final Map<String, String[]> entryToPolymerEntity = new ConcurrentHashMap<>();
     private final Map<String, String[]> entryToBranchedEntity = new ConcurrentHashMap<>();
     private final Map<String, String[]> entryToNonPolymerEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> entryToComps = new ConcurrentHashMap<>();
+
     private final Map<String, String[]> polymerEntityToInstance = new ConcurrentHashMap<>();
     private final Map<String, String[]> polymerEntityToComps = new ConcurrentHashMap<>();
     private final Map<String, String[]> polymerEntityToUniprot = new ConcurrentHashMap<>();
@@ -38,6 +40,7 @@ public class StructureRepository extends AnyRepository {
     private final Map<String, String[]> compsToBranchedEntity = new ConcurrentHashMap<>();
     private final Map<String, String[]> nonPolymerInstanceToEntity = new ConcurrentHashMap<>();
     private final Map<String, String[]> compsToNonPolymerEntity = new ConcurrentHashMap<>();
+    private final Map<String, String[]> compsToEntry = new ConcurrentHashMap<>();
 
     public void addEntryToAssembly(String entryId, List<String> assemblyIds) {
         var ids = createAssemblyIdentifiers(entryId, assemblyIds);
@@ -70,6 +73,12 @@ public class StructureRepository extends AnyRepository {
         addNonEmptyValuesReverse(nonPolymerEntityToEntry, entryId, ids);
     }
 
+    public void addEntryToComps(String entryId, List<String> compIds) {
+        var ids = createCompIdentifiers(compIds);
+        addNonEmptyValues(entryToComps, entryId, ids);
+        addNonEmptyValuesReverse(compsToEntry, entryId, ids);
+    }
+
     public void addPolymerEntityToInstance(String entryId, String entityId, List<String> instanceIds) {
         var ids = createInstanceIdentifiers(entryId, instanceIds);
         addNonEmptyValues(polymerEntityToInstance, entityId, ids);
@@ -77,8 +86,9 @@ public class StructureRepository extends AnyRepository {
     }
 
     public void addPolymerEntityToCcd(String entityId, List<String> compIds) {
-        addNonEmptyValues(polymerEntityToComps, entityId, compIds.toArray(String[]::new));
-        addNonEmptyValuesReverse(compsToPolymerEntity, entityId, compIds.toArray(String[]::new));
+        var ids = createCompIdentifiers(compIds);
+        addNonEmptyValues(polymerEntityToComps, entityId, ids);
+        addNonEmptyValuesReverse(compsToPolymerEntity, entityId, ids);
     }
 
     public void addPolymerEntityToBird(String entityId, String compId) {
@@ -95,8 +105,9 @@ public class StructureRepository extends AnyRepository {
     }
 
     public void addBranchedEntityToCcd(String entityId, List<String> compIds) {
-        addNonEmptyValues(branchedEntityToComps, entityId, compIds.toArray(String[]::new));
-        addNonEmptyValuesReverse(compsToBranchedEntity, entityId, compIds.toArray(String[]::new));
+        var ids = createCompIdentifiers(compIds);
+        addNonEmptyValues(branchedEntityToComps, entityId, ids);
+        addNonEmptyValuesReverse(compsToBranchedEntity, entityId, ids);
     }
 
     public void addBranchedEntityToBird(String entityId, String compId) {
@@ -218,5 +229,13 @@ public class StructureRepository extends AnyRepository {
 
     public Map<String, String[]> getCompsToNonPolymerEntity() {
         return compsToNonPolymerEntity;
+    }
+
+    public Map<String, String[]> getEntryToComps() {
+        return entryToComps;
+    }
+
+    public Map<String, String[]> getCompsToEntry() {
+        return compsToEntry;
     }
 }

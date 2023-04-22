@@ -35,6 +35,11 @@ public class AnyRepository {
         return token2.stream().map(id -> String.join(sep, token1, id)).toArray(String[]::new);
     }
 
+    String[] createCompIdentifiers(List<String> compIds) {
+        if (compIds == null) return new String[0];
+        return compIds.toArray(String[]::new);
+    }
+
     String[] createAssemblyIdentifiers(String entryId, List<String> assemblyIds) {
         return createCombinedIdentifiers(entryId, assemblyIds, IdentifierSeparator.ASSEMBLY_SEPARATOR);
     }

@@ -42,10 +42,12 @@ public class BranchedEntityCollectionTask extends CollectionTask {
 
             List<String> monomers = container.getList(CoreConstants.CHEM_COMP_MONOMERS, String.class);
             sr.addBranchedEntityToCcd(entity, monomers);
+            sr.addEntryToComps(entry, monomers);
             ar.addComponents(monomers);
 
             String prd = container.getString(CoreConstants.CHEM_REF_DEF_ID);
             sr.addBranchedEntityToBird(entity, prd);
+            sr.addEntryToComps(entry, List.of(prd));
             ar.addComponents(List.of(prd));
         };
     }

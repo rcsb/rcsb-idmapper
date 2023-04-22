@@ -44,6 +44,7 @@ public class NonPolymerEntityCollectionTask extends CollectionTask {
             // CCD or BIRD
             String compId = container.getString(CoreConstants.CHEM_REF_DEF_ID);
             sr.addNonPolymerEntityToComps(entity, compId);
+            sr.addEntryToComps(entry, List.of(compId));
             ar.addComponents(List.of(compId));
         };
     }

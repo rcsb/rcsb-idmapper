@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GroupRepository extends AnyRepository {
 
+    private final Map<String, String[]> groupToProvenance = new ConcurrentHashMap<>();
+
     private final Map<Input.AggregationMethod,
             Map<String, String[]>> identity = new ConcurrentHashMap<>(); // members ID -> group IDs
 
@@ -20,9 +22,16 @@ public class GroupRepository extends AnyRepository {
             Map<Integer, // similarity cutoff
                 Map<String, String[]>>> similarity = new ConcurrentHashMap<>(); // members ID -> group IDs
 
+    public void addGroupProvenance(String groupId, String provenanceId) {
+        groupToProvenance.put(groupId, new String[]{provenanceId});
+    }
+
     public void addGroupMembers(Input.AggregationMethod method, Integer cutoff, String gId, List<String> mIds) {
         var gIds = new String[]{gId};
         mIds.forEach(mId -> addNonEmptyValues(getMemberToGroup(method, cutoff), mId, gIds));
+    }
+    public Map <String, String[]> getGroupToProvenance() {
+        return groupToProvenance;
     }
 
     public Map<String, String[]> getMemberToGroup(Input.AggregationMethod method, Integer cutoff) {

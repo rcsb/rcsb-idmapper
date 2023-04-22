@@ -20,7 +20,9 @@ public abstract class Input {
         mol_definition,
         drug_bank,
         pubmed,
-        uniprot
+        uniprot,
+        group,
+        group_provenance
     }
 
     public enum AggregationMethod {
