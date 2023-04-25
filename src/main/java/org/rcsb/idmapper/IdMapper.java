@@ -3,6 +3,7 @@ package org.rcsb.idmapper;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.Repository;
+import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
 import org.slf4j.Logger;
@@ -32,8 +33,9 @@ public class IdMapper {
         );
 
         //TODO there may be multiple frontends e.g. one for RSocket, another for Undertow. Hence a factory will be needed
-        var undertow = new UndertowFrontendImpl<>(backend, DEFAULT_HTTP_PORT);
-        var rsocket = new RSocketFrontendImpl<>(backend, DEFAULT_RSOCKET_PORT);
+        var mapper = new JsonMapper().create();
+        var undertow = new UndertowFrontendImpl<>(backend, DEFAULT_HTTP_PORT, mapper);
+        var rsocket = new RSocketFrontendImpl<>(backend, DEFAULT_RSOCKET_PORT, mapper);
 
         try {
             backend.initialize();

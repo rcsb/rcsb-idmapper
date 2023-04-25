@@ -29,17 +29,16 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
     private final ServerTransport<CloseableChannel> transport;
 
     private RSocket rSocket = new RSocket() {
-        private final Gson gson = new Gson();
 
         private Input extractInput(Payload payload){
 
             switch (payload.getMetadataUtf8()){
                 case TRANSLATE:
-                    return gson.fromJson(payload.getDataUtf8(), TranslateInput.class);
+                    return mapper.fromJson(payload.getDataUtf8(), TranslateInput.class);
                 case GROUP:
-                    return gson.fromJson(payload.getDataUtf8(), GroupInput.class);
+                    return mapper.fromJson(payload.getDataUtf8(), GroupInput.class);
                 case ALL:
-                    return gson.fromJson(payload.getDataUtf8(), AllInput.class);
+                    return mapper.fromJson(payload.getDataUtf8(), AllInput.class);
             }
             throw new IllegalArgumentException(String.format("Unknown command: %s", payload.getDataUtf8()));
         }
@@ -52,12 +51,14 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
         }
     };
 
+    private final Gson mapper;
     private final BackendImpl backend;
 
-    public RSocketFrontendImpl(BackendImpl backend, int port) {
+    public RSocketFrontendImpl(BackendImpl backend, int port, Gson m) {
         this.port = port;
         this.transport = TcpServerTransport.create("0.0.0.0", port);
         this.backend = backend;
+        this.mapper = m;
     }
 
     @Override

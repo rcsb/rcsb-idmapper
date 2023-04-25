@@ -1,7 +1,6 @@
 package org.rcsb.idmapper.frontend;
 
 import com.google.common.collect.Multimap;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -21,7 +20,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
@@ -32,6 +30,7 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
     private final BackendImpl backend;
     private final int port;
     private Undertow server;
+    private final Gson mapper;
 
     private final HttpHandler rootHandler = new RoutingHandler()
             .get("/", new IamOkHandler())
@@ -46,9 +45,10 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
                             new TaskDispatcherHandler(new SendResponseHandler()))));
 
 
-    public UndertowFrontendImpl(BackendImpl backend, int port) {
+    public UndertowFrontendImpl(BackendImpl backend, int port, Gson m) {
         this.backend = backend;
         this.port = port;
+        this.mapper = m;
     }
 
     public void initialize() {
@@ -83,8 +83,6 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
     private class ExtractJson<V extends Input> implements HttpHandler {
         private final HttpHandler next;
         private final Class<V> clazz;
-
-        private final Gson mapper = new Gson();
 
         private ExtractJson(Class<V> clazz, HttpHandler next) {
             this.next = next;
@@ -125,12 +123,6 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
     }
 
     private class SendResponseHandler implements HttpHandler {
-        private final Gson mapper = new GsonBuilder()
-                .serializeNulls()
-                .setPrettyPrinting()
-                .enableComplexMapKeySerialization()
-                .registerTypeAdapter(Multimap.class, new MultiMapAdapter())
-                .create();
 
         @Override
         public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -142,30 +134,8 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
             try (var writer = new OutputStreamWriter(
                     new BufferedOutputStream(exchange.getOutputStream()))) {
                 var context = exchange.getAttachment(contextAttachmentKey);
-
                 mapper.toJson(context.output, writer);
             }
-        }
-    }
-
-    private static final class MultiMapAdapter implements JsonSerializer<Multimap<String,String>> {
-        private static final Type asMapReturnType;
-        static {
-            try {
-                asMapReturnType = Multimap.class.getDeclaredMethod("asMap").getGenericReturnType();
-            } catch (NoSuchMethodException e) {
-                throw new AssertionError(e);
-            }
-        }
-
-        @Override
-        public JsonElement serialize(Multimap<String, String> src, Type typeOfSrc, JsonSerializationContext context) {
-            return context.serialize(src.asMap(), asMapType(typeOfSrc));
-        }
-
-
-        private static Type asMapType(Type multimapType) {
-            return TypeToken.of(multimapType).resolveType(asMapReturnType).getType();
         }
     }
 }
