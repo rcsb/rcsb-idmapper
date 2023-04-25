@@ -37,18 +37,24 @@ public class BranchedEntityCollectionTask extends CollectionTask {
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 
-            List<String> instances = container.getList(CoreConstants.ASYM_IDS, String.class);
-            sr.addBranchedEntityToInstance(entry, entity, instances);
+            if (container.containsKey(CoreConstants.ASYM_IDS)) {
+                List<String> instances = container.getList(CoreConstants.ASYM_IDS, String.class);
+                sr.addBranchedEntityToInstance(entry, entity, instances);
+            }
 
-            List<String> monomers = container.getList(CoreConstants.CHEM_COMP_MONOMERS, String.class);
-            sr.addBranchedEntityToCcd(entity, monomers);
-            sr.addEntryToComps(entry, monomers);
-            ar.addComponents(monomers);
+            if (container.containsKey(CoreConstants.CHEM_COMP_MONOMERS)) {
+                List<String> monomers = container.getList(CoreConstants.CHEM_COMP_MONOMERS, String.class);
+                sr.addBranchedEntityToCcd(entity, monomers);
+                sr.addEntryToComps(entry, monomers);
+                ar.addComponents(monomers);
+            }
 
-            String prd = container.getString(CoreConstants.CHEM_REF_DEF_ID);
-            sr.addBranchedEntityToBird(entity, prd);
-            sr.addEntryToComps(entry, List.of(prd));
-            ar.addComponents(List.of(prd));
+            if (container.containsKey(CoreConstants.CHEM_REF_DEF_ID)) {
+                String prd = container.getString(CoreConstants.CHEM_REF_DEF_ID);
+                sr.addBranchedEntityToBird(entity, prd);
+                sr.addEntryToComps(entry, List.of(prd));
+                ar.addComponents(List.of(prd));
+            }
         };
     }
 }

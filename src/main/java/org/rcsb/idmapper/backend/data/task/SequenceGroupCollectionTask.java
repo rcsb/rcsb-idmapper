@@ -32,7 +32,7 @@ public class SequenceGroupCollectionTask extends CollectionTask {
             List<String> members = container.getList(CoreConstants.GROUP_MEMBER_IDS, String.class);
 
             Document stats = document.get(fields.get(1), Document.class);
-            Integer cutoff = stats.getInteger(CoreConstants.SIMILARITY_CUTOFF);
+            Integer cutoff = stats.getDouble(CoreConstants.SIMILARITY_CUTOFF).intValue();
 
             repository.getGroupRepository().addGroupProvenance(group, provenance);
             repository.getGroupRepository()

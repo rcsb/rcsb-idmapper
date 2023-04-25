@@ -24,22 +24,22 @@ public class AllRepository extends AnyRepository {
 
     public void addAssemblies(String entryId, List<String> assemblyIds) {
         String[] ids = createAssemblyIdentifiers(entryId, assemblyIds);
-        addNonEmptyValues(this.assemblyIds, ids);
+        addValuesToList(this.assemblyIds, ids);
     }
 
     public void addPolymerEntities(String entryId, List<String> entityIds) {
         String[] ids = createEntityIdentifiers(entryId, entityIds);
-        addNonEmptyValues(polymerEntityIds, ids);
+        addValuesToList(polymerEntityIds, ids);
     }
 
     public void addNonPolymerEntities(String entryId, List<String> entityIds) {
         String[] ids = createEntityIdentifiers(entryId, entityIds);
-        addNonEmptyValues(nonPolymerEntityIds, ids);
+        addValuesToList(nonPolymerEntityIds, ids);
     }
 
     public void addPolymerInstances(String entryId, List<String> instanceIds) {
         String[] ids = createInstanceIdentifiers(entryId, instanceIds);
-        addNonEmptyValues(polymerInstanceIds, ids);
+        addValuesToList(polymerInstanceIds, ids);
     }
 
     public void addComponents(List<String> compIds) {

@@ -3,7 +3,9 @@ package org.rcsb.idmapper.backend.data.repository;
 import org.apache.commons.lang3.ArrayUtils;
 import org.rcsb.common.constants.IdentifierSeparator;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -13,30 +15,26 @@ import java.util.stream.Stream;
  */
 public class AnyRepository {
 
-    void addNonEmptyValues(Collection<String> toBeExtended, String[] toBeAdded) {
-        if (toBeAdded == null || toBeAdded.length == 0) return;
+    void addValuesToList(List<String> toBeExtended, String[] toBeAdded) {
         toBeExtended.addAll(Arrays.asList(toBeAdded));
     }
 
-    void addNonEmptyValues(Map<String, String[]> toBeExtended,
-                                   String toBeAddedKey, String[] toBeAddedValues) {
-        if (toBeAddedValues == null || toBeAddedValues.length == 0) return;
+    void addValuesToMap(Map<String, String[]> toBeExtended,
+                        String toBeAddedKey, String[] toBeAddedValues) {
         toBeExtended.merge(toBeAddedKey, toBeAddedValues, ArrayUtils::addAll);
     }
 
-    void addNonEmptyValuesReverse(Map<String, String[]> toBeExtended,
-                                  String toBeAddedKey, String[] toBeAddedValues) {
-        if (toBeAddedValues == null || toBeAddedValues.length == 0) return;
-        Stream.of(toBeAddedValues).forEach(v -> toBeExtended.merge(v, new String[]{toBeAddedKey}, ArrayUtils::addAll));
+    void addValuesToMapReverse(Map<String, String[]> toBeExtended,
+                               String toBeAddedKey, String[] toBeAddedValues) {
+        Stream.of(toBeAddedValues).forEach(v -> toBeExtended
+                .merge(v, new String[]{toBeAddedKey}, ArrayUtils::addAll));
     }
 
     String[] createCombinedIdentifiers(String token1, List<String> token2, String sep) {
-        if (token2 == null) return new String[0];
         return token2.stream().map(id -> String.join(sep, token1, id)).toArray(String[]::new);
     }
 
     String[] createCompIdentifiers(List<String> compIds) {
-        if (compIds == null) return new String[0];
         return compIds.toArray(String[]::new);
     }
 

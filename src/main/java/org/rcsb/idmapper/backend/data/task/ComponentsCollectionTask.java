@@ -1,7 +1,6 @@
 package org.rcsb.idmapper.backend.data.task;
 
 import org.bson.Document;
-
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.mojave.CoreConstants;
 
@@ -29,8 +28,10 @@ public class ComponentsCollectionTask extends CollectionTask {
         return () -> {
             Document container = document.get(fields.get(0), Document.class);
             String comp = container.getString(CoreConstants.COMP_ID);
-            String drug = container.getString(CoreConstants.DRUGBANK_ID);
-            repository.getComponentRepository().addChemCompsToDrugBank(comp, drug);
+            if (container.containsKey(CoreConstants.DRUGBANK_ID)) {
+                String drug = container.getString(CoreConstants.DRUGBANK_ID);
+                repository.getComponentRepository().addChemCompsToDrugBank(comp, drug);
+            }
         };
     }
 }

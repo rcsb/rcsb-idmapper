@@ -41,23 +41,33 @@ public class EntryCollectionTask extends CollectionTask {
 
             ar.addEntry(entry);
 
-            Integer pubmed = container.getInteger(CoreConstants.PUBMED_ID);
-            sr.addEntryToPubmed(entry, pubmed);
+            if (container.containsKey(CoreConstants.PUBMED_ID)) {
+                Integer pubmed = container.getInteger(CoreConstants.PUBMED_ID);
+                sr.addEntryToPubmed(entry, pubmed);
+            }
 
-            List<String> assemblies = container.getList(CoreConstants.ASSEMBLY_IDS, String.class);
-            sr.addEntryToAssembly(entry, assemblies);
-            ar.addAssemblies(entry, assemblies);
+            if (container.containsKey(CoreConstants.ASSEMBLY_IDS)) {
+                List<String> assemblies = container.getList(CoreConstants.ASSEMBLY_IDS, String.class);
+                sr.addEntryToAssembly(entry, assemblies);
+                ar.addAssemblies(entry, assemblies);
+            }
 
-            List<String> polymerEntities = container.getList(CoreConstants.POLYMER_ENTITY_IDS, String.class);
-            sr.addEntryToPolymerEntity(entry, polymerEntities);
-            ar.addPolymerEntities(entry, polymerEntities);
+            if (container.containsKey(CoreConstants.POLYMER_ENTITY_IDS)) {
+                List<String> polymerEntities = container.getList(CoreConstants.POLYMER_ENTITY_IDS, String.class);
+                sr.addEntryToPolymerEntity(entry, polymerEntities);
+                ar.addPolymerEntities(entry, polymerEntities);
+            }
 
-            List<String> branchedEntities = container.getList(CoreConstants.BRANCHED_ENTITY_IDS, String.class);
-            sr.addEntryToBranchedEntity(entry, branchedEntities);
+            if (container.containsKey(CoreConstants.BRANCHED_ENTITY_IDS)) {
+                List<String> branchedEntities = container.getList(CoreConstants.BRANCHED_ENTITY_IDS, String.class);
+                sr.addEntryToBranchedEntity(entry, branchedEntities);
+            }
 
-            List<String> nonPolymerEntities = container.getList(CoreConstants.NON_POLYMER_ENTITY_IDS, String.class);
-            sr.addEntryToNonPolymerEntity(entry, nonPolymerEntities);
-            ar.addNonPolymerEntities(entry, nonPolymerEntities);
+            if (container.containsKey(CoreConstants.NON_POLYMER_ENTITY_IDS)) {
+                List<String> nonPolymerEntities = container.getList(CoreConstants.NON_POLYMER_ENTITY_IDS, String.class);
+                sr.addEntryToNonPolymerEntity(entry, nonPolymerEntities);
+                ar.addNonPolymerEntities(entry, nonPolymerEntities);
+            }
         };
     }
 }

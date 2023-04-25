@@ -28,7 +28,7 @@ public class GroupRepository extends AnyRepository {
 
     public void addGroupMembers(Input.AggregationMethod method, Integer cutoff, String gId, List<String> mIds) {
         var gIds = new String[]{gId};
-        mIds.forEach(mId -> addNonEmptyValues(getMemberToGroup(method, cutoff), mId, gIds));
+        mIds.forEach(mId -> addValuesToMap(getMemberToGroup(method, cutoff), mId, gIds));
     }
     public Map <String, String[]> getGroupToProvenance() {
         return groupToProvenance;

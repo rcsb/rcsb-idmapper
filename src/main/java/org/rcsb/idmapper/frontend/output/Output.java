@@ -1,12 +1,10 @@
 package org.rcsb.idmapper.frontend.output;
 
 /**
- * Represents output provided to downstream client e.g. Arches
+ * Created on 4/25/23.
  *
- *
- * @since 27 Feb 2023
- * @author ingvord
+ * @author Yana Rose
  */
-public interface Output<T> {
-    T getResults();
+public abstract class Output<T> {
+    abstract T getResults();
 }

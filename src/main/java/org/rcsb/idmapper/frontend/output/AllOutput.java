@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author Yana Rose
  */
-public class AllOutput implements Output<List<String>> {
+public class AllOutput extends Output<List<String>> {
 
     public List<String> results = new ArrayList<>();
 

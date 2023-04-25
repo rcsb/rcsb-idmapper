@@ -38,14 +38,17 @@ public class NonPolymerEntityCollectionTask extends CollectionTask {
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 
-            List<String> instances = container.getList(CoreConstants.ASYM_IDS, String.class);
-            sr.addNonPolymerEntityToInstance(entry, entity, instances);
+            if (container.containsKey(CoreConstants.ASYM_IDS)) {
+                List<String> instances = container.getList(CoreConstants.ASYM_IDS, String.class);
+                sr.addNonPolymerEntityToInstance(entry, entity, instances);
+            }
 
-            // CCD or BIRD
-            String compId = container.getString(CoreConstants.CHEM_REF_DEF_ID);
-            sr.addNonPolymerEntityToComps(entity, compId);
-            sr.addEntryToComps(entry, List.of(compId));
-            ar.addComponents(List.of(compId));
+            if (container.containsKey(CoreConstants.CHEM_REF_DEF_ID)) {
+                String compId = container.getString(CoreConstants.CHEM_REF_DEF_ID);
+                sr.addNonPolymerEntityToComps(entity, compId);
+                sr.addEntryToComps(entry, List.of(compId));
+                ar.addComponents(List.of(compId));
+            }
         };
     }
 }

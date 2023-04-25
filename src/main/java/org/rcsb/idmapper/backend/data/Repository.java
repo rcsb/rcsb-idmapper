@@ -2,12 +2,17 @@ package org.rcsb.idmapper.backend.data;
 
 import io.reactivex.rxjava3.core.Observable;
 import org.rcsb.common.constants.ContentType;
-import org.rcsb.idmapper.backend.data.repository.*;
+import org.rcsb.idmapper.backend.data.repository.AllRepository;
+import org.rcsb.idmapper.backend.data.repository.ComponentRepository;
+import org.rcsb.idmapper.backend.data.repository.GroupRepository;
+import org.rcsb.idmapper.backend.data.repository.StructureRepository;
 import org.rcsb.idmapper.frontend.input.Input;
 
 import java.util.List;
 
 /**
+ * Gateway to concrete implementations of repositories
+ *
  * Created on 4/19/23.
  *
  * @author Yana Rose
@@ -99,22 +104,25 @@ public class Repository {
                 }
             }
             case assembly -> {
-                var entryIds = getStructureRepository(ct).getAssemblyToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
                 switch (to) {
                     case entry -> {
-                        return entryIds;
+                        return getStructureRepository(ct).getAssemblyToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
                     }
                     case polymer_entity -> {
+                        var entryIds = getStructureRepository(ct).getAssemblyToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
                         return transit(entryIds, Input.Type.entry, Input.Type.polymer_entity, ct);
                     }
+                    case non_polymer_entity -> {
+                        var entryIds = getStructureRepository(ct).getAssemblyToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
+                        return transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
+                    }
                     case polymer_instance -> {
+                        var entryIds = getStructureRepository(ct).getAssemblyToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
                         var entityIds = transit(entryIds, Input.Type.entry, Input.Type.polymer_entity, ct);
                         return transit(entityIds, Input.Type.polymer_entity, Input.Type.polymer_instance, ct);
                     }
-                    case non_polymer_entity -> {
-                        return transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
-                    }
                     case mol_definition -> {
+                        var entryIds = getStructureRepository(ct).getAssemblyToEntry().getOrDefault(id, EMPTY_STR_ARRAY);
                         return transit(entryIds, Input.Type.entry, Input.Type.mol_definition, ct);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + to);

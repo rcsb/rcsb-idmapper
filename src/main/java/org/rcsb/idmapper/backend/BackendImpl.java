@@ -4,17 +4,16 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.apache.commons.lang3.tuple.Pair;
 import org.rcsb.idmapper.backend.data.DataProvider;
-import java.io.Closeable;
-
 import org.rcsb.idmapper.backend.data.Repository;
-
 import org.rcsb.idmapper.frontend.input.AllInput;
 import org.rcsb.idmapper.frontend.input.GroupInput;
 import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.frontend.input.TranslateInput;
 import org.rcsb.idmapper.frontend.output.AllOutput;
 import org.rcsb.idmapper.frontend.output.Output;
-import org.rcsb.idmapper.frontend.input.TranslateInput;
 import org.rcsb.idmapper.frontend.output.TranslateOutput;
+
+import java.io.Closeable;
 
 /**
  * This class is responsible for communication with upstream data provider

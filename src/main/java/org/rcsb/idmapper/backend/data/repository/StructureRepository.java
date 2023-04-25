@@ -1,7 +1,8 @@
 package org.rcsb.idmapper.backend.data.repository;
 
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,7 +20,6 @@ public class StructureRepository extends AnyRepository {
     private final Map<String, String[]> entryToBranchedEntity = new ConcurrentHashMap<>();
     private final Map<String, String[]> entryToNonPolymerEntity = new ConcurrentHashMap<>();
     private final Map<String, String[]> entryToComps = new ConcurrentHashMap<>();
-
     private final Map<String, String[]> polymerEntityToInstance = new ConcurrentHashMap<>();
     private final Map<String, String[]> polymerEntityToComps = new ConcurrentHashMap<>();
     private final Map<String, String[]> polymerEntityToUniprot = new ConcurrentHashMap<>();
@@ -44,95 +44,95 @@ public class StructureRepository extends AnyRepository {
 
     public void addEntryToAssembly(String entryId, List<String> assemblyIds) {
         var ids = createAssemblyIdentifiers(entryId, assemblyIds);
-        addNonEmptyValues(entryToAssembly, entryId, ids);
-        addNonEmptyValuesReverse(assemblyToEntry, entryId, ids);
+        addValuesToMap(entryToAssembly, entryId, ids);
+        addValuesToMapReverse(assemblyToEntry, entryId, ids);
     }
 
     public void addEntryToPubmed(String entryId, Integer pubmedId) {
         if (pubmedId ==  null) return;
         var ids = new String[]{String.valueOf(pubmedId)};
-        addNonEmptyValues(entryToPubmed, entryId, ids);
-        addNonEmptyValuesReverse(pubmedToEntry, entryId, ids);
+        addValuesToMap(entryToPubmed, entryId, ids);
+        //addNonEmptyValuesReverse(pubmedToEntry, entryId, ids);
     }
 
     public void addEntryToPolymerEntity(String entryId, List<String> entityIds) {
         var ids = createEntityIdentifiers(entryId, entityIds);
-        addNonEmptyValues(entryToPolymerEntity, entryId, ids);
-        addNonEmptyValuesReverse(polymerEntityToEntry, entryId, ids);
+        addValuesToMap(entryToPolymerEntity, entryId, ids);
+        addValuesToMapReverse(polymerEntityToEntry, entryId, ids);
     }
 
     public void addEntryToBranchedEntity(String entryId, List<String> entityIds) {
         var ids = createEntityIdentifiers(entryId, entityIds);
-        addNonEmptyValues(entryToBranchedEntity, entryId, ids);
-        addNonEmptyValuesReverse(branchedEntityToEntry, entryId, ids);
+        addValuesToMap(entryToBranchedEntity, entryId, ids);
+        addValuesToMapReverse(branchedEntityToEntry, entryId, ids);
     }
 
     public void addEntryToNonPolymerEntity(String entryId, List<String> entityIds) {
         var ids = createEntityIdentifiers(entryId, entityIds);
-        addNonEmptyValues(entryToNonPolymerEntity, entryId, ids);
-        addNonEmptyValuesReverse(nonPolymerEntityToEntry, entryId, ids);
+        addValuesToMap(entryToNonPolymerEntity, entryId, ids);
+        addValuesToMapReverse(nonPolymerEntityToEntry, entryId, ids);
     }
 
     public void addEntryToComps(String entryId, List<String> compIds) {
         var ids = createCompIdentifiers(compIds);
-        addNonEmptyValues(entryToComps, entryId, ids);
-        addNonEmptyValuesReverse(compsToEntry, entryId, ids);
+        addValuesToMap(entryToComps, entryId, ids);
+        addValuesToMapReverse(compsToEntry, entryId, ids);
     }
 
     public void addPolymerEntityToInstance(String entryId, String entityId, List<String> instanceIds) {
         var ids = createInstanceIdentifiers(entryId, instanceIds);
-        addNonEmptyValues(polymerEntityToInstance, entityId, ids);
-        addNonEmptyValuesReverse(polymerInstanceToEntity, entityId, ids);
+        addValuesToMap(polymerEntityToInstance, entityId, ids);
+        addValuesToMapReverse(polymerInstanceToEntity, entityId, ids);
     }
 
     public void addPolymerEntityToCcd(String entityId, List<String> compIds) {
         var ids = createCompIdentifiers(compIds);
-        addNonEmptyValues(polymerEntityToComps, entityId, ids);
-        addNonEmptyValuesReverse(compsToPolymerEntity, entityId, ids);
+        addValuesToMap(polymerEntityToComps, entityId, ids);
+        addValuesToMapReverse(compsToPolymerEntity, entityId, ids);
     }
 
     public void addPolymerEntityToBird(String entityId, String compId) {
         if (compId == null) return;
         var ids = new String[]{compId};
-        addNonEmptyValues(polymerEntityToComps, entityId, ids);
-        addNonEmptyValuesReverse(compsToPolymerEntity, entityId, ids);
+        addValuesToMap(polymerEntityToComps, entityId, ids);
+        addValuesToMapReverse(compsToPolymerEntity, entityId, ids);
     }
 
     public void addBranchedEntityToInstance(String entry, String entityId, List<String> instanceIds) {
         var ids = createInstanceIdentifiers(entry, instanceIds);
-        addNonEmptyValues(branchedEntityToInstance, entityId, ids);
-        addNonEmptyValuesReverse(branchedInstanceToEntity, entityId, ids);
+        addValuesToMap(branchedEntityToInstance, entityId, ids);
+        addValuesToMapReverse(branchedInstanceToEntity, entityId, ids);
     }
 
     public void addBranchedEntityToCcd(String entityId, List<String> compIds) {
         var ids = createCompIdentifiers(compIds);
-        addNonEmptyValues(branchedEntityToComps, entityId, ids);
-        addNonEmptyValuesReverse(compsToBranchedEntity, entityId, ids);
+        addValuesToMap(branchedEntityToComps, entityId, ids);
+        addValuesToMapReverse(compsToBranchedEntity, entityId, ids);
     }
 
     public void addBranchedEntityToBird(String entityId, String compId) {
         if (compId == null) return;
         var ids = new String[]{compId};
-        addNonEmptyValues(branchedEntityToComps, entityId, ids);
-        addNonEmptyValuesReverse(compsToBranchedEntity, entityId, ids);
+        addValuesToMap(branchedEntityToComps, entityId, ids);
+        addValuesToMapReverse(compsToBranchedEntity, entityId, ids);
     }
 
     public void addNonPolymerEntityToInstance(String entry, String entityId, List<String> instanceIds) {
         var ids = createInstanceIdentifiers(entry, instanceIds);
-        addNonEmptyValues(nonPolymerEntityToInstance, entityId, ids);
-        addNonEmptyValuesReverse(nonPolymerInstanceToEntity, entityId, ids);
+        addValuesToMap(nonPolymerEntityToInstance, entityId, ids);
+        addValuesToMapReverse(nonPolymerInstanceToEntity, entityId, ids);
     }
 
     public void addNonPolymerEntityToComps(String entityId, String compId) {
         if (compId == null) return;
         var ids = new String[]{compId};
-        addNonEmptyValues(nonPolymerEntityToComps, entityId, ids);
-        addNonEmptyValuesReverse(compsToNonPolymerEntity, entityId, ids);
+        addValuesToMap(nonPolymerEntityToComps, entityId, ids);
+        addValuesToMapReverse(compsToNonPolymerEntity, entityId, ids);
     }
 
     public void addPolymerEntityToUniprot(String entityId, List<String> uniprotIds) {
-        addNonEmptyValues(polymerEntityToUniprot, entityId, uniprotIds.toArray(String[]::new));
-        addNonEmptyValuesReverse(uniprotToPolymerEntity, entityId, uniprotIds.toArray(String[]::new));
+        addValuesToMap(polymerEntityToUniprot, entityId, uniprotIds.toArray(String[]::new));
+        //addNonEmptyValuesReverse(uniprotToPolymerEntity, entityId, uniprotIds.toArray(String[]::new));
     }
 
     public Map<String, String[]> getEntryToAssembly() {

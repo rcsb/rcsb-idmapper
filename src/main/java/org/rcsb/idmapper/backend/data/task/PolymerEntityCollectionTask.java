@@ -40,22 +40,30 @@ public class PolymerEntityCollectionTask extends CollectionTask {
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 
-            List<String> instances = container.getList(CoreConstants.ASYM_IDS, String.class);
-            sr.addPolymerEntityToInstance(entry, entity, instances);
-            ar.addPolymerInstances(entry, instances);
+            if (container.containsKey(CoreConstants.ASYM_IDS)) {
+                List<String> instances = container.getList(CoreConstants.ASYM_IDS, String.class);
+                sr.addPolymerEntityToInstance(entry, entity, instances);
+                ar.addPolymerInstances(entry, instances);
+            }
 
-            List<String> monomers = container.getList(CoreConstants.CHEM_COMP_MONOMERS, String.class);
-            sr.addPolymerEntityToCcd(entity, monomers);
-            sr.addEntryToComps(entry, monomers);
-            ar.addComponents(monomers);
+            if (container.containsKey(CoreConstants.CHEM_COMP_MONOMERS)) {
+                List<String> monomers = container.getList(CoreConstants.CHEM_COMP_MONOMERS, String.class);
+                sr.addPolymerEntityToCcd(entity, monomers);
+                sr.addEntryToComps(entry, monomers);
+                ar.addComponents(monomers);
+            }
 
-            String prd = container.getString(CoreConstants.CHEM_REF_DEF_ID);
-            sr.addPolymerEntityToBird(entity, prd);
-            sr.addEntryToComps(entry, List.of(prd));
-            ar.addComponents(List.of(prd));
+            if (container.containsKey(CoreConstants.CHEM_REF_DEF_ID)) {
+                String prd = container.getString(CoreConstants.CHEM_REF_DEF_ID);
+                sr.addPolymerEntityToBird(entity, prd);
+                sr.addEntryToComps(entry, List.of(prd));
+                ar.addComponents(List.of(prd));
+            }
 
-            List<String> uniprots = container.getList(CoreConstants.UNIPROT_IDS, String.class);
-            sr.addPolymerEntityToUniprot(entity, uniprots);
+            if (container.containsKey(CoreConstants.UNIPROT_IDS)) {
+                List<String> uniprots = container.getList(CoreConstants.UNIPROT_IDS, String.class);
+                sr.addPolymerEntityToUniprot(entity, uniprots);
+            }
         };
     }
 }

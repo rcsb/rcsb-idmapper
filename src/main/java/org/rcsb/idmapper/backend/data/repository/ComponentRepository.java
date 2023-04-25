@@ -17,8 +17,8 @@ public class ComponentRepository extends AnyRepository {
     public void addChemCompsToDrugBank(String compId, String drugBankId) {
         if (drugBankId == null) return;
         String[] ids = new String[]{drugBankId};
-        addNonEmptyValues(compsToDrugBank, compId, ids);
-        addNonEmptyValuesReverse(drugBankToComps, compId, ids);
+        addValuesToMap(compsToDrugBank, compId, ids);
+        //addNonEmptyValuesReverse(drugBankToComps, compId, ids);
     }
 
     public Map<String, String[]> getCompsToDrugBank() {

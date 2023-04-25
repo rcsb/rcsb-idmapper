@@ -8,7 +8,7 @@ import com.google.common.collect.Multimap;
  *
  * @author Yana Rose
  */
-public class TranslateOutput implements Output<Multimap<String, String>> {
+public class TranslateOutput extends Output<Multimap<String, String>> {
 
     public Multimap<String, String> results = ArrayListMultimap.create();
 

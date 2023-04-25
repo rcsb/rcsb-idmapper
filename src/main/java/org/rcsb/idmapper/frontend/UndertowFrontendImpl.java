@@ -17,7 +17,10 @@ import org.rcsb.idmapper.frontend.input.GroupInput;
 import org.rcsb.idmapper.frontend.input.Input;
 import org.rcsb.idmapper.frontend.input.TranslateInput;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
