@@ -12,8 +12,12 @@ import org.rcsb.idmapper.frontend.input.TranslateInput;
 import org.rcsb.idmapper.frontend.output.AllOutput;
 import org.rcsb.idmapper.frontend.output.Output;
 import org.rcsb.idmapper.frontend.output.TranslateOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
+import java.time.Duration;
+import java.time.Instant;
 
 /**
  * This class is responsible for communication with upstream data provider
@@ -23,6 +27,7 @@ import java.io.Closeable;
  * @author ingvord
  */
 public class BackendImpl {
+    private final Logger logger = LoggerFactory.getLogger(BackendImpl.class);
 
     private final DataProvider dataProvider;
     private final Repository repository;
@@ -35,7 +40,13 @@ public class BackendImpl {
     public void initialize() throws Exception {
         //TODO fetch data from DataProvider into Repository
         try (Closeable closeable = dataProvider.connect()) {
-            dataProvider.initialize(repository);
+            var start = Instant.now();
+            dataProvider.initialize(repository)
+                    .join();
+
+            logger.info("Backend is initialized. Time took: [ {} ] minutes",
+                    Duration.between(start, Instant.now()).toMinutes());
+
         }
     }
 

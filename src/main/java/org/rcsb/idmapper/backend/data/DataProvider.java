@@ -5,13 +5,16 @@ import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.rcsb.idmapper.backend.data.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 
 import java.io.Closeable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This class is responsible for communication with upstream data source (MongoDb)
@@ -52,10 +55,10 @@ public class DataProvider {
         return mongoClient;
     }
 
-    public void initialize(Repository r) {
+    public CompletableFuture<Void> initialize(Repository r) {
         logger.info("Initializing data provider");
-        Instant start = Instant.now();
-        Flowable.mergeArray(
+        var future = new CompletableFuture<Void>();
+        var disposable = Flowable.mergeArray(
                 new EntryCollectionTask(r).createFlowable(db),
                 new PolymerEntityCollectionTask(r).createFlowable(db),
                 new BranchedEntityCollectionTask(r).createFlowable(db),
@@ -64,8 +67,12 @@ public class DataProvider {
                 new DepositGroupCollectionTask(r).createFlowable(db),
                 new SequenceGroupCollectionTask(r).createFlowable(db),
                 new UniprotGroupCollectionTask(r).createFlowable(db)
-        ).blockingSubscribe(Runnable::run);
-        logger.info("Data provider is initialized. Time took: [ {} ] minutes",
-                Duration.between(start, Instant.now()).toMinutes());
+        )
+                .doOnNext(runnable -> {
+                    System.out.println("From doOnNext:" + Thread.currentThread().getName());
+                })
+                .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
+
+        return future;
     }
 }
