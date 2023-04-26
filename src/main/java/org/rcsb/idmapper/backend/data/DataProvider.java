@@ -14,7 +14,10 @@ import reactor.core.Disposable;
 import java.io.Closeable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class is responsible for communication with upstream data source (MongoDb)
@@ -57,22 +60,26 @@ public class DataProvider {
 
     public CompletableFuture<Void> initialize(Repository r) {
         logger.info("Initializing data provider");
-        var future = new CompletableFuture<Void>();
-        var disposable = Flowable.mergeArray(
-                new EntryCollectionTask(r).createFlowable(db),
-                new PolymerEntityCollectionTask(r).createFlowable(db),
-                new BranchedEntityCollectionTask(r).createFlowable(db),
-                new NonPolymerEntityCollectionTask(r).createFlowable(db),
-                new ComponentsCollectionTask(r).createFlowable(db),
-                new DepositGroupCollectionTask(r).createFlowable(db),
-                new SequenceGroupCollectionTask(r).createFlowable(db),
-                new UniprotGroupCollectionTask(r).createFlowable(db)
-        )
-                .doOnNext(runnable -> {
-                    System.out.println("From doOnNext:" + Thread.currentThread().getName());
-                })
-                .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
 
-        return future;
+        return CompletableFuture.allOf(
+                Stream.of(
+                        new EntryCollectionTask(r).createFlowable(db),
+                        new PolymerEntityCollectionTask(r).createFlowable(db),
+                        new BranchedEntityCollectionTask(r).createFlowable(db),
+                        new NonPolymerEntityCollectionTask(r).createFlowable(db),
+                        new ComponentsCollectionTask(r).createFlowable(db),
+                        new DepositGroupCollectionTask(r).createFlowable(db),
+                        new SequenceGroupCollectionTask(r).createFlowable(db),
+                        new UniprotGroupCollectionTask(r).createFlowable(db)
+                )
+                .map(runnableFlowable -> {
+                    var future = new CompletableFuture<Void>();
+                    runnableFlowable
+                            .doOnNext(runnable -> {
+                                System.out.println("From doOnNext:" + Thread.currentThread().getName());
+                            })
+                            .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
+                    return future;
+                }).toArray(CompletableFuture[]::new));
     }
 }
