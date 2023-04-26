@@ -3,6 +3,7 @@ package org.rcsb.idmapper.backend.data.repository;
 import org.apache.commons.lang3.ArrayUtils;
 import org.rcsb.common.constants.IdentifierSeparator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -19,15 +20,21 @@ public class AnyRepository {
         toBeExtended.addAll(Arrays.asList(toBeAdded));
     }
 
+    String[] addNewValues(String[] arr1, String[] arr2) {
+        return Stream.concat(Stream.of(arr1), Stream.of(arr2))
+                .distinct()
+                .toArray(String[]::new);
+    }
+
     void addValuesToMap(Map<String, String[]> toBeExtended,
                         String toBeAddedKey, String[] toBeAddedValues) {
-        toBeExtended.merge(toBeAddedKey, toBeAddedValues, ArrayUtils::addAll);
+        toBeExtended.merge(toBeAddedKey, toBeAddedValues, this::addNewValues);
     }
 
     void addValuesToMapReverse(Map<String, String[]> toBeExtended,
                                String toBeAddedKey, String[] toBeAddedValues) {
         Stream.of(toBeAddedValues).forEach(v -> toBeExtended
-                .merge(v, new String[]{toBeAddedKey}, ArrayUtils::addAll));
+                .merge(v, new String[]{toBeAddedKey}, this::addNewValues));
     }
 
     String[] createCombinedIdentifiers(String token1, List<String> token2, String sep) {
