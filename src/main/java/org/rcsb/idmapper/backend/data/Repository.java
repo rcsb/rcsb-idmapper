@@ -31,13 +31,13 @@ public class Repository {
     private final ComponentRepository component = new ComponentRepository();
 
     public AllRepository getAllRepository(ContentType ct) {
-        return ct.equals(ContentType.experimental)
+        return ct == ContentType.experimental
                 ? allExperimental
                 : allComputational;
     }
 
     public StructureRepository getStructureRepository(ContentType ct) {
-        return ct.equals(ContentType.experimental)
+        return ct == ContentType.experimental
                 ? structureExperimental
                 : structureComputational;
     }
