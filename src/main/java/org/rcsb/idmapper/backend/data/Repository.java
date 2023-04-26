@@ -263,16 +263,26 @@ public class Repository {
     }
 
     public String[] all(Input.Type from, ContentType ct) {
-        List<String> ids;
         switch (from) {
-            case entry -> ids = getAllRepository(ct).getEntryIds();
-            case assembly -> ids = getAllRepository(ct).getAssemblyIds();
-            case polymer_entity -> ids = getAllRepository(ct).getPolymerEntityIds();
-            case non_polymer_entity -> ids = getAllRepository(ct).getNonPolymerEntityIds();
-            case polymer_instance -> ids = getAllRepository(ct).getPolymerInstanceIds();
-            case mol_definition -> ids = getAllRepository(ct).getCompIds();
+            case entry -> {
+                return getAllRepository(ct).getEntryIds().toArray(EMPTY_STR_ARRAY);
+            }
+            case assembly -> {
+                return getAllRepository(ct).getAssemblyIds().toArray(EMPTY_STR_ARRAY);
+            }
+            case polymer_entity -> {
+                return getAllRepository(ct).getPolymerEntityIds().toArray(EMPTY_STR_ARRAY);
+            }
+            case non_polymer_entity -> {
+                return getAllRepository(ct).getNonPolymerEntityIds().toArray(EMPTY_STR_ARRAY);
+            }
+            case polymer_instance -> {
+                return getAllRepository(ct).getPolymerInstanceIds().toArray(EMPTY_STR_ARRAY);
+            }
+            case mol_definition -> {
+                return getAllRepository(ct).getCompIds().toArray(EMPTY_STR_ARRAY);
+            }
             default -> throw new IllegalStateException("Unexpected value: " + from);
         }
-        return ids.toArray(String[]::new);
     }
 }
