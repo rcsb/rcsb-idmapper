@@ -7,13 +7,11 @@ import io.rsocket.core.RSocketConnector;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.util.ByteBufPayload;
-import io.rsocket.util.DefaultPayload;
 import org.rcsb.idmapper.IdMapper;
-import org.rcsb.idmapper.frontend.GroupInput;
-import org.rcsb.idmapper.frontend.Input;
-import reactor.core.publisher.Mono;
+import org.rcsb.idmapper.frontend.input.GroupInput;
+import org.rcsb.idmapper.frontend.input.Input;
 
-import java.time.Duration;
+import java.util.List;
 
 import static org.rcsb.idmapper.IdMapper.GROUP;
 
@@ -30,7 +28,7 @@ public class RSocketTestClient {
         GroupInput groupInput = new GroupInput();
 
         for (int i = 0; i < 3; i++) {
-            groupInput.id = "4HHB";
+            groupInput.ids = List.of("4HHB");
             groupInput.aggregation_method = Input.AggregationMethod.values()[i];
             client
                     .requestResponse(ByteBufPayload.create(new Gson().toJson(groupInput),GROUP))

@@ -1,4 +1,4 @@
-package org.rcsb.idmapper.frontend;
+package org.rcsb.idmapper.frontend.input;
 
 /**
  * Represents input provided from downstream client e.g. Arches
@@ -8,21 +8,24 @@ package org.rcsb.idmapper.frontend;
  */
 public abstract class Input {
 
-    public static enum Type{
+    public enum Type {
         entry,
+        assembly,
         polymer_entity,
+        branched_entity,
         non_polymer_entity,
         polymer_instance,
-        assembly,
-        mol_definition
+        branched_instance,
+        non_polymer_instance,
+        mol_definition,
+        drug_bank,
+        pubmed,
+        uniprot,
+        group,
+        group_provenance
     }
 
-    public static enum ContentType{
-        experimental,
-        computational
-    }
-
-    public static enum AggregationMethod {
+    public enum AggregationMethod {
         matching_deposit_group_id,
         sequence_identity,
         matching_uniprot_accession

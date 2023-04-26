@@ -1,9 +1,6 @@
 package org.rcsb.idmapper.frontend;
 
 import com.google.gson.Gson;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.core.RSocketServer;
@@ -13,12 +10,14 @@ import io.rsocket.transport.netty.server.CloseableChannel;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import io.rsocket.util.DefaultPayload;
 import org.rcsb.idmapper.backend.BackendImpl;
+import org.rcsb.idmapper.frontend.input.AllInput;
+import org.rcsb.idmapper.frontend.input.GroupInput;
+import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.frontend.input.TranslateInput;
 import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 import static org.rcsb.idmapper.IdMapper.*;
@@ -30,17 +29,16 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
     private final ServerTransport<CloseableChannel> transport;
 
     private RSocket rSocket = new RSocket() {
-        private final Gson gson = new Gson();
 
         private Input extractInput(Payload payload){
 
             switch (payload.getMetadataUtf8()){
                 case TRANSLATE:
-                    return gson.fromJson(payload.getDataUtf8(), TranslateInput.class);
+                    return mapper.fromJson(payload.getDataUtf8(), TranslateInput.class);
                 case GROUP:
-                    return gson.fromJson(payload.getDataUtf8(), GroupInput.class);
+                    return mapper.fromJson(payload.getDataUtf8(), GroupInput.class);
                 case ALL:
-                    return gson.fromJson(payload.getDataUtf8(), AllInput.class);
+                    return mapper.fromJson(payload.getDataUtf8(), AllInput.class);
             }
             throw new IllegalArgumentException(String.format("Unknown command: %s", payload.getDataUtf8()));
         }
@@ -53,12 +51,14 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
         }
     };
 
+    private final Gson mapper;
     private final BackendImpl backend;
 
-    public RSocketFrontendImpl(BackendImpl backend, int port) {
+    public RSocketFrontendImpl(BackendImpl backend, int port, Gson m) {
         this.port = port;
         this.transport = TcpServerTransport.create("0.0.0.0", port);
         this.backend = backend;
+        this.mapper = m;
     }
 
     @Override
