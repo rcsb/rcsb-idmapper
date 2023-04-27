@@ -55,6 +55,9 @@ public abstract class CollectionTask {
                 .projection(fields(excludeId(), include(getIncludeFields())));
         return Flowable.fromPublisher(publisher)
                 .subscribeOn(Schedulers.io())
+                .doOnSubscribe(subscription -> logger.info("Subscribed to collection [ {} ]", collectionName))
+                //TODO replace with async debug or remove entirely before prod
+                .doOnNext(d -> logger.info("Processing document from [ {} ]", collectionName))
                 .doOnError(t -> logger.error(t.getMessage()))
                 .doOnComplete(() -> logger.info("Processed documents from [ {} ] collection ", collectionName))
                 .map(this::createRunnable);

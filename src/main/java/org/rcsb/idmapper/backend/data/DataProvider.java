@@ -61,8 +61,9 @@ public class DataProvider {
     public CompletableFuture<Void> initialize(Repository r) {
         logger.info("Initializing data provider");
 
-        return CompletableFuture.allOf(
-                Stream.of(
+        var future = new CompletableFuture<Void>();
+
+        Flowable.mergeArray(1000, 256,//maxConcurrency = maxConnectionPool, arbitrary large number - should be 30K?!
                         new EntryCollectionTask(r).createFlowable(db),
                         new PolymerEntityCollectionTask(r).createFlowable(db),
                         new BranchedEntityCollectionTask(r).createFlowable(db),
@@ -71,15 +72,10 @@ public class DataProvider {
                         new DepositGroupCollectionTask(r).createFlowable(db),
                         new SequenceGroupCollectionTask(r).createFlowable(db),
                         new UniprotGroupCollectionTask(r).createFlowable(db)
-                )
-                .map(runnableFlowable -> {
-                    var future = new CompletableFuture<Void>();
-                    runnableFlowable
-                            .doOnNext(runnable -> {
-                                System.out.println("From doOnNext:" + Thread.currentThread().getName());
-                            })
-                            .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
-                    return future;
-                }).toArray(CompletableFuture[]::new));
+        )
+                .observeOn(Schedulers.computation())
+                .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
+
+        return future;
     }
 }
