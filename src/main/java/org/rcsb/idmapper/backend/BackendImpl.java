@@ -38,15 +38,13 @@ public class BackendImpl {
     }
 
     public void initialize() throws Exception {
-        //TODO fetch data from DataProvider into Repository
         try (Closeable closeable = dataProvider.connect()) {
             var start = Instant.now();
+            logger.info("Initializing backend");
             dataProvider.initialize(repository)
                     .join();
-
             logger.info("Backend is initialized. Time took: [ {} ] minutes",
                     Duration.between(start, Instant.now()).toMinutes());
-
         }
     }
 
