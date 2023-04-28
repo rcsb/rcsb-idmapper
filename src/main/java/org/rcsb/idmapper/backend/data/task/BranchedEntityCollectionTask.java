@@ -18,7 +18,13 @@ import static org.rcsb.common.constants.MongoCollections.COLL_BRANCHED_ENTITY;
  */
 public class BranchedEntityCollectionTask extends CollectionTask {
 
-    List<String> fields = List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS);
+    List<List<String>> fields = List.of(
+            List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
+            List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+            List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
+            List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_COMP_MONOMERS),
+            List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
+    );
 
     public BranchedEntityCollectionTask(Repository r) {
         super(COLL_BRANCHED_ENTITY, r);
@@ -28,7 +34,7 @@ public class BranchedEntityCollectionTask extends CollectionTask {
     @Override
     Runnable createRunnable(final Document document) {
         return () -> {
-            Document container = document.get(fields.get(0), Document.class);
+            Document container = document.get(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, Document.class);
 
             String entry = container.getString(CoreConstants.ENTRY_ID);
             String entity = container.getString(CoreConstants.RCSB_ID);

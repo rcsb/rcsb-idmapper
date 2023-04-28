@@ -16,7 +16,10 @@ import static org.rcsb.common.constants.MongoCollections.COLL_CHEM_COMP;
  */
 public class ComponentsCollectionTask extends CollectionTask {
 
-    List<String> fields = List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS);
+    List<List<String>> fields = List.of(
+            List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, CoreConstants.COMP_ID),
+            List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, CoreConstants.DRUGBANK_ID)
+    );
 
     public ComponentsCollectionTask(Repository r) {
         super(COLL_CHEM_COMP, r);
@@ -26,7 +29,7 @@ public class ComponentsCollectionTask extends CollectionTask {
     @Override
     Runnable createRunnable(final Document document) {
         return () -> {
-            Document container = document.get(fields.get(0), Document.class);
+            Document container = document.get(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, Document.class);
             String comp = container.getString(CoreConstants.COMP_ID);
             if (container.containsKey(CoreConstants.DRUGBANK_ID)) {
                 String drug = container.getString(CoreConstants.DRUGBANK_ID);

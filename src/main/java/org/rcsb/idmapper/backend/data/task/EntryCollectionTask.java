@@ -21,7 +21,14 @@ import static org.rcsb.common.constants.MongoCollections.COLL_ENTRY;
  */
 public class EntryCollectionTask extends CollectionTask {
 
-    List<String> fields = List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS);
+    List<List<String>> fields = List.of(
+            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.PUBMED_ID),
+            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ASSEMBLY_IDS),
+            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.POLYMER_ENTITY_IDS),
+            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.BRANCHED_ENTITY_IDS),
+            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.NON_POLYMER_ENTITY_IDS)
+    );
 
     public EntryCollectionTask(Repository r) {
         super(COLL_ENTRY, r);
@@ -32,7 +39,7 @@ public class EntryCollectionTask extends CollectionTask {
     Runnable createRunnable(final Document document) {
         return () -> {
 
-            Document container = document.get(this.fields.get(0), Document.class);
+            Document container = document.get(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, Document.class);
             String entry = container.getString(CoreConstants.ENTRY_ID);
 
             ContentType structureType = getStructureType(entry); // PDB or CSM

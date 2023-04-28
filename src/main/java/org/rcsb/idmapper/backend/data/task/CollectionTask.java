@@ -5,6 +5,7 @@ import com.mongodb.reactivestreams.client.MongoDatabase;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.rcsb.common.constants.ContentType;
 import org.rcsb.common.constants.IdentifierRegex;
 import org.rcsb.idmapper.backend.data.Repository;
@@ -34,14 +35,19 @@ public abstract class CollectionTask {
         this.collectionName = coll;
     }
 
-    void setIncludeFields(final List<String> include) {
-        includeFields = include;
+    void setIncludeFields(final List<List<String>> include) {
+        // MongoDB uses the dot notation to refer to the embedded field
+        includeFields = include.stream()
+                .map(f -> String.join(".", f))
+                .toList();
     }
 
-    private List<String> getIncludeFields() {
-        if (includeFields == null)
-            includeFields = List.of();
-        return includeFields;
+    private FindPublisher<Document> pipeline(FindPublisher<Document> publisher) {
+        if (includeFields == null) return publisher;
+        Bson toBeIncluded = include(includeFields);
+        // limits the amount of data that MongoDB sends to the application
+        publisher.projection(fields(excludeId(), toBeIncluded));
+        return publisher;
     }
 
     ContentType getStructureType(String entryId) {
@@ -50,9 +56,7 @@ public abstract class CollectionTask {
     }
 
     public Flowable<Runnable> createFlowable(final MongoDatabase db) {
-        FindPublisher<Document> publisher = db.getCollection(collectionName)
-                .find()
-                .projection(fields(excludeId(), include(getIncludeFields())));
+        FindPublisher<Document> publisher = pipeline(db.getCollection(collectionName).find());
         return Flowable.fromPublisher(publisher)
                 .subscribeOn(Schedulers.io())
                 .doOnError(t -> logger.error(t.getMessage()))

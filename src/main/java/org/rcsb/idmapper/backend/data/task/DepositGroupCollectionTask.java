@@ -16,7 +16,11 @@ import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_ENTRY_DEPOSI
  */
 public class DepositGroupCollectionTask extends CollectionTask {
 
-    List<String> fields = List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS);
+    List<List<String>> fields = List.of(
+            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
+            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
+            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS)
+    );
 
     public DepositGroupCollectionTask(Repository r) {
         super(COLL_GROUP_ENTRY_DEPOSIT_GROUP, r);
@@ -26,7 +30,7 @@ public class DepositGroupCollectionTask extends CollectionTask {
     @Override
     Runnable createRunnable(Document document) {
         return () -> {
-            Document container = document.get(fields.get(0), Document.class);
+            Document container = document.get(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, Document.class);
             String group = container.getString(CoreConstants.GROUP_ID);
             String provenance = container.getString(CoreConstants.GROUP_PROVENANCE_ID);
             List<String> members = container.getList(CoreConstants.GROUP_MEMBER_IDS, String.class);
