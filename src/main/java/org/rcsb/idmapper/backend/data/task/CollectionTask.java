@@ -2,14 +2,13 @@ package org.rcsb.idmapper.backend.data.task;
 
 import com.mongodb.reactivestreams.client.FindPublisher;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.bson.Document;
 import org.rcsb.common.constants.ContentType;
 import org.rcsb.common.constants.IdentifierRegex;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -49,12 +48,11 @@ public abstract class CollectionTask {
         return isCsm ? ContentType.computational : ContentType.experimental;
     }
 
-    public Flowable<Runnable> createFlowable(final MongoDatabase db) {
+    public Flux<Runnable> createFlux(final MongoDatabase db) {
         FindPublisher<Document> publisher = db.getCollection(collectionName)
                 .find()
                 .projection(fields(excludeId(), include(getIncludeFields())));
-        return Flowable.fromPublisher(publisher)
-                .subscribeOn(Schedulers.io())
+        return Flux.from(publisher)
                 .doOnSubscribe(subscription -> logger.info("Subscribed to collection [ {} ]", collectionName))
                 //TODO replace with async debug or remove entirely before prod
                 .doOnNext(d -> logger.info("Processing document from [ {} ]", collectionName))
