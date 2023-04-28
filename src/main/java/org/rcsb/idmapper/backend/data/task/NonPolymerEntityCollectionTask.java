@@ -34,7 +34,7 @@ public class NonPolymerEntityCollectionTask extends CollectionTask {
     @Override
     Runnable createRunnable(final Document document) {
         return () -> {
-            Document container = document.get(fields.get(0), Document.class);
+            Document container = document.get(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, Document.class);
 
             String entry = container.getString(CoreConstants.ENTRY_ID);
             String entity = container.getString(CoreConstants.RCSB_ID);
