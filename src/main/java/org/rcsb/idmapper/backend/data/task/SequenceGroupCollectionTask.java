@@ -16,16 +16,13 @@ import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_POLYMER_ENTI
  */
 public class SequenceGroupCollectionTask extends CollectionTask {
 
-    List<List<String>> fields = List.of(
-            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
-            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
-            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS),
-            List.of(CoreConstants.RCSB_GROUP_STATISTICS, CoreConstants.SIMILARITY_CUTOFF)
-    );
-
     public SequenceGroupCollectionTask(Repository r) {
-        super(COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, r);
-        setIncludeFields(fields);
+        super(COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, r, List.of(
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS),
+                List.of(CoreConstants.RCSB_GROUP_STATISTICS, CoreConstants.SIMILARITY_CUTOFF)
+        ));
     }
 
     @Override

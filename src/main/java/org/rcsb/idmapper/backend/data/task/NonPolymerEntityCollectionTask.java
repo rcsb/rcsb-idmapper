@@ -19,16 +19,13 @@ import static org.rcsb.common.constants.MongoCollections.COLL_NONPOLYMER_ENTITY;
  */
 public class NonPolymerEntityCollectionTask extends CollectionTask {
 
-    List<List<String>> fields = List.of(
-            List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
-            List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
-            List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
-            List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
-    );
-
     public NonPolymerEntityCollectionTask(Repository r) {
-        super(COLL_NONPOLYMER_ENTITY, r);
-        setIncludeFields(fields);
+        super(COLL_NONPOLYMER_ENTITY, r, List.of(
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
+        ));
     }
 
     @Override

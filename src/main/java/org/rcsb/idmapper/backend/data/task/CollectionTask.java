@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import static com.mongodb.client.model.Projections.*;
@@ -26,26 +27,14 @@ public abstract class CollectionTask {
 
     public final Repository repository;
     public final String collectionName;
-    public List<String> includeFields;
+    public final List<String> includeFields;
 
-    public CollectionTask(final String coll, final Repository r) {
+    public CollectionTask(final String coll, final Repository r, @Nonnull List<List<String>> fieldsToInclude) {
         this.repository = r;
         this.collectionName = coll;
-    }
-
-    void setIncludeFields(final List<List<String>> include) {
-        // MongoDB uses the dot notation to refer to the embedded field
-        includeFields = include.stream()
+        this.includeFields = fieldsToInclude.stream()
                 .map(f -> String.join(".", f))
                 .toList();
-    }
-
-    private FindPublisher<Document> pipeline(FindPublisher<Document> publisher) {
-        if (includeFields == null) return publisher;
-        var toBeIncluded = include(includeFields);
-        // limits the amount of data that MongoDB sends to the application
-        publisher.projection(fields(excludeId(), toBeIncluded));
-        return publisher;
     }
 
     ContentType getStructureType(String entryId) {
@@ -54,7 +43,9 @@ public abstract class CollectionTask {
     }
 
     public Flux<Runnable> createFlux(final MongoDatabase db) {
-        FindPublisher<Document> publisher = pipeline(db.getCollection(collectionName).find());
+        FindPublisher<Document> publisher = db.getCollection(collectionName)
+                .find()
+                .projection(fields(excludeId(), include(includeFields)));
         return Flux.from(publisher)
                 .doOnSubscribe(subscription -> logger.info("Subscribed to collection [ {} ]", collectionName))
                 //TODO replace with async debug or remove entirely before prod

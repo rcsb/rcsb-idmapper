@@ -21,18 +21,15 @@ import static org.rcsb.common.constants.MongoCollections.COLL_ENTRY;
  */
 public class EntryCollectionTask extends CollectionTask {
 
-    List<List<String>> fields = List.of(
-            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
-            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.PUBMED_ID),
-            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ASSEMBLY_IDS),
-            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.POLYMER_ENTITY_IDS),
-            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.BRANCHED_ENTITY_IDS),
-            List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.NON_POLYMER_ENTITY_IDS)
-    );
-
     public EntryCollectionTask(Repository r) {
-        super(COLL_ENTRY, r);
-        setIncludeFields(fields);
+        super(COLL_ENTRY, r, List.of(
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.PUBMED_ID),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ASSEMBLY_IDS),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.POLYMER_ENTITY_IDS),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.BRANCHED_ENTITY_IDS),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.NON_POLYMER_ENTITY_IDS)
+        ));
     }
 
     @Override

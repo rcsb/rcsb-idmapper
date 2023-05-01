@@ -16,14 +16,11 @@ import static org.rcsb.common.constants.MongoCollections.COLL_CHEM_COMP;
  */
 public class ComponentsCollectionTask extends CollectionTask {
 
-    List<List<String>> fields = List.of(
-            List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, CoreConstants.COMP_ID),
-            List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, CoreConstants.DRUGBANK_ID)
-    );
-
     public ComponentsCollectionTask(Repository r) {
-        super(COLL_CHEM_COMP, r);
-        setIncludeFields(fields);
+        super(COLL_CHEM_COMP, r, List.of(
+                List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, CoreConstants.COMP_ID),
+                List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, CoreConstants.DRUGBANK_ID)
+        ));
     }
 
     @Override

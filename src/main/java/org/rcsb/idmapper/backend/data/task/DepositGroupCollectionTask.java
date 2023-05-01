@@ -16,15 +16,12 @@ import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_ENTRY_DEPOSI
  */
 public class DepositGroupCollectionTask extends CollectionTask {
 
-    List<List<String>> fields = List.of(
-            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
-            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
-            List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS)
-    );
-
     public DepositGroupCollectionTask(Repository r) {
-        super(COLL_GROUP_ENTRY_DEPOSIT_GROUP, r);
-        setIncludeFields(fields);
+        super(COLL_GROUP_ENTRY_DEPOSIT_GROUP, r, List.of(
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS)
+        ));
     }
 
     @Override
