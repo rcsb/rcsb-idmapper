@@ -2,14 +2,13 @@ package org.rcsb.idmapper.backend.data.task;
 
 import com.mongodb.reactivestreams.client.FindPublisher;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.bson.Document;
 import org.rcsb.common.constants.ContentType;
 import org.rcsb.common.constants.IdentifierRegex;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
