@@ -16,22 +16,24 @@ import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_POLYMER_ENTI
  */
 public class SequenceGroupCollectionTask extends CollectionTask {
 
-    List<String> fields = List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_GROUP_STATISTICS);
-
     public SequenceGroupCollectionTask(Repository r) {
-        super(COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, r);
-        setIncludeFields(fields);
+        super(COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, r, List.of(
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
+                List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS),
+                List.of(CoreConstants.RCSB_GROUP_STATISTICS, CoreConstants.SIMILARITY_CUTOFF)
+        ));
     }
 
     @Override
     Runnable createRunnable(Document document) {
         return () -> {
-            Document container = document.get(fields.get(0), Document.class);
+            Document container = document.get(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, Document.class);
             String group = container.getString(CoreConstants.GROUP_ID);
             String provenance = container.getString(CoreConstants.GROUP_PROVENANCE_ID);
             List<String> members = container.getList(CoreConstants.GROUP_MEMBER_IDS, String.class);
 
-            Document stats = document.get(fields.get(1), Document.class);
+            Document stats = document.get(CoreConstants.RCSB_GROUP_STATISTICS, Document.class);
             Integer cutoff = stats.getDouble(CoreConstants.SIMILARITY_CUTOFF).intValue();
 
             repository.getGroupRepository().addGroupProvenance(group, provenance);

@@ -19,17 +19,19 @@ import static org.rcsb.common.constants.MongoCollections.COLL_NONPOLYMER_ENTITY;
  */
 public class NonPolymerEntityCollectionTask extends CollectionTask {
 
-    List<String> fields = List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS);
-
     public NonPolymerEntityCollectionTask(Repository r) {
-        super(COLL_NONPOLYMER_ENTITY, r);
-        setIncludeFields(fields);
+        super(COLL_NONPOLYMER_ENTITY, r, List.of(
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
+        ));
     }
 
     @Override
     Runnable createRunnable(final Document document) {
         return () -> {
-            Document container = document.get(fields.get(0), Document.class);
+            Document container = document.get(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, Document.class);
 
             String entry = container.getString(CoreConstants.ENTRY_ID);
             String entity = container.getString(CoreConstants.RCSB_ID);

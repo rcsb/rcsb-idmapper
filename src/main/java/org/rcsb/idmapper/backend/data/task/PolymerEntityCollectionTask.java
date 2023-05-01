@@ -21,17 +21,30 @@ import static org.rcsb.common.constants.MongoCollections.COLL_POLYMER_ENTITY;
  */
 public class PolymerEntityCollectionTask extends CollectionTask {
 
-    List<String> fields = List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS);
+    List<List<String>> fields = List.of(
+            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
+            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
+            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_COMP_MONOMERS),
+            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID),
+            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.UNIPROT_IDS)
+    );
 
     public PolymerEntityCollectionTask(Repository r) {
-        super(COLL_POLYMER_ENTITY, r);
-        setIncludeFields(fields);
+        super(COLL_POLYMER_ENTITY, r, List.of(
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_COMP_MONOMERS),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.UNIPROT_IDS)
+        ));
     }
 
     @Override
     Runnable createRunnable(Document document) {
         return () -> {
-            Document container = document.get(fields.get(0), Document.class);
+            Document container = document.get(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, Document.class);
 
             String entry = container.getString(CoreConstants.ENTRY_ID);
             String entity = container.getString(CoreConstants.RCSB_ID);

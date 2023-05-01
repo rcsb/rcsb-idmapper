@@ -65,7 +65,7 @@ public class DataProvider {
                         new DepositGroupCollectionTask(r).createFlux(db),
                         new SequenceGroupCollectionTask(r).createFlux(db),
                         new UniprotGroupCollectionTask(r).createFlux(db)
-        )
+                )
                 .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
 
         return future;
