@@ -5,7 +5,6 @@ import com.mongodb.reactivestreams.client.MongoDatabase;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.rcsb.common.constants.ContentType;
 import org.rcsb.common.constants.IdentifierRegex;
 import org.rcsb.idmapper.backend.data.Repository;
@@ -44,7 +43,7 @@ public abstract class CollectionTask {
 
     private FindPublisher<Document> pipeline(FindPublisher<Document> publisher) {
         if (includeFields == null) return publisher;
-        Bson toBeIncluded = include(includeFields);
+        var toBeIncluded = include(includeFields);
         // limits the amount of data that MongoDB sends to the application
         publisher.projection(fields(excludeId(), toBeIncluded));
         return publisher;
@@ -55,10 +54,9 @@ public abstract class CollectionTask {
         return isCsm ? ContentType.computational : ContentType.experimental;
     }
 
-    public Flowable<Runnable> createFlowable(final MongoDatabase db) {
+    public Flux<Runnable> createFlux(final MongoDatabase db) {
         FindPublisher<Document> publisher = pipeline(db.getCollection(collectionName).find());
-        return Flowable.fromPublisher(publisher)
-                .subscribeOn(Schedulers.io())
+        return Flux.from(publisher)
                 .doOnSubscribe(subscription -> logger.info("Subscribed to collection [ {} ]", collectionName))
                 //TODO replace with async debug or remove entirely before prod
                 .doOnNext(d -> logger.info("Processing document from [ {} ]", collectionName))

@@ -9,9 +9,15 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.rcsb.idmapper.backend.data.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 
 import java.io.Closeable;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class is responsible for communication with upstream data source (MongoDb)
@@ -53,20 +59,20 @@ public class DataProvider {
     }
 
     public CompletableFuture<Void> initialize(Repository r) {
-        
+        logger.info("Initializing data provider");
+
         var future = new CompletableFuture<Void>();
 
-        Flowable.mergeArray(1000, 256,//maxConcurrency = maxConnectionPool, arbitrary large number - should be 30K?!
-                        new EntryCollectionTask(r).createFlowable(db),
-                        new PolymerEntityCollectionTask(r).createFlowable(db),
-                        new BranchedEntityCollectionTask(r).createFlowable(db),
-                        new NonPolymerEntityCollectionTask(r).createFlowable(db),
-                        new ComponentsCollectionTask(r).createFlowable(db),
-                        new DepositGroupCollectionTask(r).createFlowable(db),
-                        new SequenceGroupCollectionTask(r).createFlowable(db),
-                        new UniprotGroupCollectionTask(r).createFlowable(db)
+        Flux.merge(128,//prefetch
+                        new EntryCollectionTask(r).createFlux(db),
+                        new PolymerEntityCollectionTask(r).createFlux(db),
+                        new BranchedEntityCollectionTask(r).createFlux(db),
+                        new NonPolymerEntityCollectionTask(r).createFlux(db),
+                        new ComponentsCollectionTask(r).createFlux(db),
+                        new DepositGroupCollectionTask(r).createFlux(db),
+                        new SequenceGroupCollectionTask(r).createFlux(db),
+                        new UniprotGroupCollectionTask(r).createFlux(db)
                 )
-                .observeOn(Schedulers.computation())
                 .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
 
         return future;
