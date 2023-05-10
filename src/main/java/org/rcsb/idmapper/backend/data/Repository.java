@@ -9,6 +9,7 @@ import org.rcsb.idmapper.frontend.input.Input;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Gateway to concrete implementations of repositories
@@ -18,8 +19,6 @@ import java.util.List;
  * @author Yana Rose
  */
 public class Repository {
-
-    private static final String[] EMPTY_STR_ARRAY = {};
 
     // content type specific repositories
     private final AllRepository allExperimental = new AllRepository();
@@ -50,9 +49,10 @@ public class Repository {
         return component;
     }
 
-    private List<String> transit(Collection<String> ids, Input.Type from, Input.Type to, ContentType ct) {
+    private Collection<String> transit(Collection<String> ids, Input.Type from, Input.Type to, ContentType ct) {
          return ids.stream()
                  .flatMap(id -> lookup(id, from, to, ct).stream())
+                 .distinct()
                  .toList();
     }
 
@@ -260,7 +260,7 @@ public class Repository {
         return group.getMemberToGroup(method, cutoff, id);
     }
 
-    public List<String> all(Input.Type from, ContentType ct) {
+    public Collection<String> all(Input.Type from, ContentType ct) {
         switch (from) {
             case entry -> {
                 return getAllRepository(ct).getEntryIds();
