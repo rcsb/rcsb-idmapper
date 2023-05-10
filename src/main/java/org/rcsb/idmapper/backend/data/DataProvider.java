@@ -4,12 +4,15 @@ import com.mongodb.ConnectionString;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import io.netty.channel.unix.Errors;
 import org.rcsb.idmapper.backend.data.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -51,11 +54,14 @@ public class DataProvider {
         return mongoClient;
     }
 
+    public RepositoryState getRepositoryState() {
+        RepositoryState state = new RepositoryState();
+        return state;
+    }
+
     public CompletableFuture<Void> initialize(Repository r) {
         logger.info("Initializing data provider");
-
         var future = new CompletableFuture<Void>();
-
         Flux.merge(128,//prefetch
                         new EntryCollectionTask(r).createFlux(db),
                         new PolymerEntityCollectionTask(r).createFlux(db),
@@ -67,7 +73,15 @@ public class DataProvider {
                         new UniprotGroupCollectionTask(r).createFlux(db)
                 )
                 .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
-
         return future;
+    }
+
+    public static class RepositoryState {
+
+        private final List<String> dataErrors = new ArrayList<>();
+
+        public boolean isDataComplete() {
+            return dataErrors.isEmpty();
+        }
     }
 }

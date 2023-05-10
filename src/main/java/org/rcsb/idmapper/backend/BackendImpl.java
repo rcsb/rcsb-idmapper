@@ -43,6 +43,10 @@ public class BackendImpl {
             logger.info("Initializing backend");
             dataProvider.initialize(repository)
                     .join();
+            DataProvider.RepositoryState state = dataProvider.getRepositoryState();
+            if (!state.isDataComplete())
+                throw new Exception("");
+
             logger.info("Backend is initialized. Time took: [ {} ] minutes",
                     Duration.between(start, Instant.now()).toMinutes());
         }
