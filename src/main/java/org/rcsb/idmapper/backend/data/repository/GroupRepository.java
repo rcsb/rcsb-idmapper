@@ -2,14 +2,12 @@ package org.rcsb.idmapper.backend.data.repository;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import org.rcsb.idmapper.frontend.input.Input;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created on 4/19/23.
@@ -18,14 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GroupRepository extends AnyRepository {
 
-    private final Multimap<String, String> groupToProvenance = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> groupToProvenance = HashMultimap.create();
 
     private final Map<Input.AggregationMethod,
-            Multimap<String, String>> identity = new ConcurrentHashMap<>(); // members ID -> group IDs
+            Multimap<String, String>> identity = new HashMap<>(); // members ID -> group IDs
 
     private final Map<Input.AggregationMethod,
             Map<Integer, // similarity cutoff
-            Multimap<String, String>>> similarity = new ConcurrentHashMap<>(); // members ID -> group IDs
+            Multimap<String, String>>> similarity = new HashMap<>(); // members ID -> group IDs
 
     public void addGroupProvenance(String groupId, String provenanceId) {
         groupToProvenance.put(groupId, provenanceId);

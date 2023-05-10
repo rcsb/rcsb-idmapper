@@ -1,6 +1,9 @@
 package org.rcsb.idmapper.backend.data.repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created on 4/20/23.
@@ -9,12 +12,12 @@ import java.util.*;
  */
 public class AllRepository extends AnyRepository {
 
-    private final List<String> entryIds = Collections.synchronizedList(new ArrayList<>());
-    private final List<String> assemblyIds = Collections.synchronizedList(new ArrayList<>());
-    private final List<String> polymerEntityIds = Collections.synchronizedList(new ArrayList<>());
-    private final List<String> nonPolymerEntityIds = Collections.synchronizedList(new ArrayList<>());
-    private final List<String> polymerInstanceIds = Collections.synchronizedList(new ArrayList<>());
-    private final Set<String> compIds = Collections.synchronizedSet(new HashSet<>());
+    private final List<String> entryIds = new ArrayList<>();
+    private final List<String> assemblyIds = new ArrayList<>();
+    private final List<String> polymerEntityIds = new ArrayList<>();
+    private final List<String> nonPolymerEntityIds = new ArrayList<>();
+    private final List<String> polymerInstanceIds = new ArrayList<>();
+    private final Set<String> compIds = new HashSet<>();
 
     public void addEntry(String entryId) {
         entryIds.add(entryId);

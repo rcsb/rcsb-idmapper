@@ -2,7 +2,6 @@ package org.rcsb.idmapper.backend.data.repository;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,33 +15,33 @@ import java.util.List;
  */
 public class StructureRepository extends AnyRepository {
     // direct mappings
-    private final Multimap<String, String> entryToAssembly = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> entryToPubmed = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> entryToPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> entryToBranchedEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> entryToNonPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> entryToComps = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> polymerEntityToInstance = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> polymerEntityToComps = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> polymerEntityToUniprot = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> branchedEntityToInstance = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> branchedEntityToComps = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> nonPolymerEntityToInstance = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private final Multimap<String, String> nonPolymerEntityToComps = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> entryToAssembly = HashMultimap.create();
+    private final Multimap<String, String> entryToPubmed = HashMultimap.create();
+    private final Multimap<String, String> entryToPolymerEntity = HashMultimap.create();
+    private final Multimap<String, String> entryToBranchedEntity = HashMultimap.create();
+    private final Multimap<String, String> entryToNonPolymerEntity = HashMultimap.create();
+    private final Multimap<String, String> entryToComps = HashMultimap.create();
+    private final Multimap<String, String> polymerEntityToInstance = HashMultimap.create();
+    private final Multimap<String, String> polymerEntityToComps = HashMultimap.create();
+    private final Multimap<String, String> polymerEntityToUniprot = HashMultimap.create();
+    private final Multimap<String, String> branchedEntityToInstance = HashMultimap.create();
+    private final Multimap<String, String> branchedEntityToComps = HashMultimap.create();
+    private final Multimap<String, String> nonPolymerEntityToInstance = HashMultimap.create();
+    private final Multimap<String, String> nonPolymerEntityToComps = HashMultimap.create();
     // reverse mappings
-    Multimap<String, String> assemblyToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> pubmedToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> polymerEntityToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> branchedEntityToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> nonPolymerEntityToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> polymerInstanceToEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> compsToPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> uniprotToPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> branchedInstanceToEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> compsToBranchedEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> nonPolymerInstanceToEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> compsToNonPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
-    Multimap<String, String> compsToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> assemblyToEntry = HashMultimap.create();
+    Multimap<String, String> pubmedToEntry = HashMultimap.create();
+    Multimap<String, String> polymerEntityToEntry = HashMultimap.create();
+    Multimap<String, String> branchedEntityToEntry = HashMultimap.create();
+    Multimap<String, String> nonPolymerEntityToEntry = HashMultimap.create();
+    Multimap<String, String> polymerInstanceToEntity = HashMultimap.create();
+    Multimap<String, String> compsToPolymerEntity = HashMultimap.create();
+    Multimap<String, String> uniprotToPolymerEntity = HashMultimap.create();
+    Multimap<String, String> branchedInstanceToEntity = HashMultimap.create();
+    Multimap<String, String> compsToBranchedEntity = HashMultimap.create();
+    Multimap<String, String> nonPolymerInstanceToEntity = HashMultimap.create();
+    Multimap<String, String> compsToNonPolymerEntity = HashMultimap.create();
+    Multimap<String, String> compsToEntry = HashMultimap.create();
 
     public void addEntryToAssembly(String entryId, List<String> assemblyIds) {
         var ids = createAssemblyIdentifiers(entryId, assemblyIds);
