@@ -1,9 +1,11 @@
 package org.rcsb.idmapper.backend.data.repository;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Local data repository. Initially just a bunch of in-memory Maps
@@ -14,228 +16,227 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class StructureRepository extends AnyRepository {
     // direct mappings
-    private final Map<String, String[]> entryToAssembly = new ConcurrentHashMap<>();
-    private final Map<String, String[]> entryToPubmed = new ConcurrentHashMap<>();
-    private final Map<String, String[]> entryToPolymerEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> entryToBranchedEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> entryToNonPolymerEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> entryToComps = new ConcurrentHashMap<>();
-    private final Map<String, String[]> polymerEntityToInstance = new ConcurrentHashMap<>();
-    private final Map<String, String[]> polymerEntityToComps = new ConcurrentHashMap<>();
-    private final Map<String, String[]> polymerEntityToUniprot = new ConcurrentHashMap<>();
-    private final Map<String, String[]> branchedEntityToInstance = new ConcurrentHashMap<>();
-    private final Map<String, String[]> branchedEntityToComps = new ConcurrentHashMap<>();
-    private final Map<String, String[]> nonPolymerEntityToInstance = new ConcurrentHashMap<>();
-    private final Map<String, String[]> nonPolymerEntityToComps = new ConcurrentHashMap<>();
+    private final Multimap<String, String> entryToAssembly = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> entryToPubmed = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> entryToPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> entryToBranchedEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> entryToNonPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> entryToComps = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> polymerEntityToInstance = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> polymerEntityToComps = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> polymerEntityToUniprot = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> branchedEntityToInstance = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> branchedEntityToComps = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> nonPolymerEntityToInstance = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private final Multimap<String, String> nonPolymerEntityToComps = Multimaps.synchronizedMultimap(HashMultimap.create());
     // reverse mappings
-    private final Map<String, String[]> assemblyToEntry = new ConcurrentHashMap<>();
-    private final Map<String, String[]> pubmedToEntry = new ConcurrentHashMap<>();
-    private final Map<String, String[]> polymerEntityToEntry = new ConcurrentHashMap<>();
-    private final Map<String, String[]> branchedEntityToEntry = new ConcurrentHashMap<>();
-    private final Map<String, String[]> nonPolymerEntityToEntry = new ConcurrentHashMap<>();
-    private final Map<String, String[]> polymerInstanceToEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> compsToPolymerEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> uniprotToPolymerEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> branchedInstanceToEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> compsToBranchedEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> nonPolymerInstanceToEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> compsToNonPolymerEntity = new ConcurrentHashMap<>();
-    private final Map<String, String[]> compsToEntry = new ConcurrentHashMap<>();
+    Multimap<String, String> assemblyToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> pubmedToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> polymerEntityToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> branchedEntityToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> nonPolymerEntityToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> polymerInstanceToEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> compsToPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> uniprotToPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> branchedInstanceToEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> compsToBranchedEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> nonPolymerInstanceToEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> compsToNonPolymerEntity = Multimaps.synchronizedMultimap(HashMultimap.create());
+    Multimap<String, String> compsToEntry = Multimaps.synchronizedMultimap(HashMultimap.create());
 
     public void addEntryToAssembly(String entryId, List<String> assemblyIds) {
         var ids = createAssemblyIdentifiers(entryId, assemblyIds);
-        addValuesToMap(entryToAssembly, entryId, ids);
-        addValuesToMapReverse(assemblyToEntry, entryId, ids);
+        addValuesToDirectMap(entryToAssembly, entryId, ids);
+        addValuesToReverseMap(assemblyToEntry, entryId, ids);
     }
 
     public void addEntryToPubmed(String entryId, Integer pubmedId) {
         if (pubmedId ==  null) return;
-        var ids = new String[]{String.valueOf(pubmedId)};
-        addValuesToMap(entryToPubmed, entryId, ids);
-        //addNonEmptyValuesReverse(pubmedToEntry, entryId, ids);
+        var ids = List.of(String.valueOf(pubmedId));
+        addValuesToDirectMap(entryToPubmed, entryId, ids);
+        addValuesToReverseMap(pubmedToEntry, entryId, ids);
     }
 
     public void addEntryToPolymerEntity(String entryId, List<String> entityIds) {
         var ids = createEntityIdentifiers(entryId, entityIds);
-        addValuesToMap(entryToPolymerEntity, entryId, ids);
-        addValuesToMapReverse(polymerEntityToEntry, entryId, ids);
+        addValuesToDirectMap(entryToPolymerEntity, entryId, ids);
+        addValuesToReverseMap(polymerEntityToEntry, entryId, ids);
     }
 
     public void addEntryToBranchedEntity(String entryId, List<String> entityIds) {
         var ids = createEntityIdentifiers(entryId, entityIds);
-        addValuesToMap(entryToBranchedEntity, entryId, ids);
-        addValuesToMapReverse(branchedEntityToEntry, entryId, ids);
+        addValuesToDirectMap(entryToBranchedEntity, entryId, ids);
+        addValuesToReverseMap(branchedEntityToEntry, entryId, ids);
     }
 
     public void addEntryToNonPolymerEntity(String entryId, List<String> entityIds) {
         var ids = createEntityIdentifiers(entryId, entityIds);
-        addValuesToMap(entryToNonPolymerEntity, entryId, ids);
-        addValuesToMapReverse(nonPolymerEntityToEntry, entryId, ids);
+        addValuesToDirectMap(entryToNonPolymerEntity, entryId, ids);
+        addValuesToReverseMap(nonPolymerEntityToEntry, entryId, ids);
     }
 
-    public void addEntryToComps(String entryId, List<String> compIds) {
-        var ids = createCompIdentifiers(compIds);
-        addValuesToMap(entryToComps, entryId, ids);
-        addValuesToMapReverse(compsToEntry, entryId, ids);
+    public void addEntryToComps(String entryId, List<String> ids) {
+        addValuesToDirectMap(entryToComps, entryId, ids);
+        addValuesToReverseMap(compsToEntry, entryId, ids);
     }
 
     public void addPolymerEntityToInstance(String entryId, String entityId, List<String> instanceIds) {
         var ids = createInstanceIdentifiers(entryId, instanceIds);
-        addValuesToMap(polymerEntityToInstance, entityId, ids);
-        addValuesToMapReverse(polymerInstanceToEntity, entityId, ids);
+        addValuesToDirectMap(polymerEntityToInstance, entityId, ids);
+        addValuesToReverseMap(polymerInstanceToEntity, entityId, ids);
     }
 
-    public void addPolymerEntityToCcd(String entityId, List<String> compIds) {
-        var ids = createCompIdentifiers(compIds);
-        addValuesToMap(polymerEntityToComps, entityId, ids);
-        addValuesToMapReverse(compsToPolymerEntity, entityId, ids);
+    public void addPolymerEntityToCcd(String entityId, List<String> ids) {
+        addValuesToDirectMap(polymerEntityToComps, entityId, ids);
+        addValuesToReverseMap(compsToPolymerEntity, entityId, ids);
     }
 
-    public void addPolymerEntityToBird(String entityId, String compId) {
-        if (compId == null) return;
-        var ids = new String[]{compId};
-        addValuesToMap(polymerEntityToComps, entityId, ids);
-        addValuesToMapReverse(compsToPolymerEntity, entityId, ids);
+    public void addPolymerEntityToBird(String entityId, String prdId) {
+        if (prdId == null) return;
+        var ids = List.of(prdId);
+        addValuesToDirectMap(polymerEntityToComps, entityId, ids);
+        addValuesToReverseMap(compsToPolymerEntity, entityId, ids);
     }
 
     public void addBranchedEntityToInstance(String entry, String entityId, List<String> instanceIds) {
         var ids = createInstanceIdentifiers(entry, instanceIds);
-        addValuesToMap(branchedEntityToInstance, entityId, ids);
-        addValuesToMapReverse(branchedInstanceToEntity, entityId, ids);
+        addValuesToDirectMap(branchedEntityToInstance, entityId, ids);
+        addValuesToReverseMap(branchedInstanceToEntity, entityId, ids);
     }
 
-    public void addBranchedEntityToCcd(String entityId, List<String> compIds) {
-        var ids = createCompIdentifiers(compIds);
-        addValuesToMap(branchedEntityToComps, entityId, ids);
-        addValuesToMapReverse(compsToBranchedEntity, entityId, ids);
+    public void addBranchedEntityToCcd(String entityId, List<String> ids) {
+        addValuesToDirectMap(branchedEntityToComps, entityId, ids);
+        addValuesToReverseMap(compsToBranchedEntity, entityId, ids);
     }
 
-    public void addBranchedEntityToBird(String entityId, String compId) {
-        if (compId == null) return;
-        var ids = new String[]{compId};
-        addValuesToMap(branchedEntityToComps, entityId, ids);
-        addValuesToMapReverse(compsToBranchedEntity, entityId, ids);
+    public void addBranchedEntityToBird(String entityId, String prdId) {
+        if (prdId == null) return;
+        var ids = List.of(prdId);
+        addValuesToDirectMap(branchedEntityToComps, entityId, ids);
+        addValuesToReverseMap(compsToBranchedEntity, entityId, ids);
     }
 
     public void addNonPolymerEntityToInstance(String entry, String entityId, List<String> instanceIds) {
         var ids = createInstanceIdentifiers(entry, instanceIds);
-        addValuesToMap(nonPolymerEntityToInstance, entityId, ids);
-        addValuesToMapReverse(nonPolymerInstanceToEntity, entityId, ids);
+        addValuesToDirectMap(nonPolymerEntityToInstance, entityId, ids);
+        addValuesToReverseMap(nonPolymerInstanceToEntity, entityId, ids);
     }
 
     public void addNonPolymerEntityToComps(String entityId, String compId) {
         if (compId == null) return;
-        var ids = new String[]{compId};
-        addValuesToMap(nonPolymerEntityToComps, entityId, ids);
-        addValuesToMapReverse(compsToNonPolymerEntity, entityId, ids);
+        var ids = List.of(compId);
+        addValuesToDirectMap(nonPolymerEntityToComps, entityId, ids);
+        addValuesToReverseMap(compsToNonPolymerEntity, entityId, ids);
     }
 
-    public void addPolymerEntityToUniprot(String entityId, List<String> uniprotIds) {
-        addValuesToMap(polymerEntityToUniprot, entityId, uniprotIds.toArray(String[]::new));
-        //addNonEmptyValuesReverse(uniprotToPolymerEntity, entityId, uniprotIds.toArray(String[]::new));
+    public void addPolymerEntityToUniprot(String entityId, List<String> ids) {
+        addValuesToDirectMap(polymerEntityToUniprot, entityId, ids);
+        addValuesToReverseMap(uniprotToPolymerEntity, entityId, ids);
     }
 
-    public Map<String, String[]> getEntryToAssembly() {
-        return entryToAssembly;
+    public Collection<String> getEntryToAssembly(String entryId) {
+        return entryToAssembly.get(entryId);
+
     }
 
-    public Map<String, String[]> getEntryToPubmed() {
-        return entryToPubmed;
+    public Collection<String> getEntryToPubmed(String pubmedId) {
+        return entryToPubmed.get(pubmedId);
+
     }
 
-    public Map<String, String[]> getEntryToPolymerEntity() {
-        return entryToPolymerEntity;
+    public Collection<String> getEntryToPolymerEntity(String entryId) {
+        return entryToPolymerEntity.get(entryId);
     }
 
-    public Map<String, String[]> getEntryToBranchedEntity() {
-        return entryToBranchedEntity;
+    public Collection<String> getEntryToBranchedEntity(String entryId) {
+        return entryToBranchedEntity.get(entryId);
     }
 
-    public Map<String, String[]> getEntryToNonPolymerEntity() {
-        return entryToNonPolymerEntity;
+    public Collection<String> getEntryToNonPolymerEntity(String entryId) {
+        return entryToNonPolymerEntity.get(entryId);
     }
 
-    public Map<String, String[]> getPolymerEntityToInstance() {
-        return polymerEntityToInstance;
+    public Collection<String> getPolymerEntityToInstance(String entityId) {
+        return polymerEntityToInstance.get(entityId);
     }
 
-    public Map<String, String[]> getPolymerEntityToComps() {
-        return polymerEntityToComps;
+    public Collection<String> getPolymerEntityToComps(String entityId) {
+        return polymerEntityToComps.get(entityId);
     }
 
-    public Map<String, String[]> getPolymerEntityToUniprot() {
-        return polymerEntityToUniprot;
+    public Collection<String> getPolymerEntityToUniprot(String entityId) {
+        return polymerEntityToUniprot.get(entityId);
     }
 
-    public Map<String, String[]> getBranchedEntityToInstance() {
-        return branchedEntityToInstance;
+    public Collection<String> getBranchedEntityToInstance(String entityId) {
+        return branchedEntityToInstance.get(entityId);
     }
 
-    public Map<String, String[]> getBranchedEntityToComps() {
-        return branchedEntityToComps;
+    public Collection<String> getBranchedEntityToComps(String entityId) {
+        return branchedEntityToComps.get(entityId);
     }
 
-    public Map<String, String[]> getNonPolymerEntityToInstance() {
-        return nonPolymerEntityToInstance;
+    public Collection<String> getNonPolymerEntityToInstance(String entityId) {
+        return nonPolymerEntityToInstance.get(entityId);
     }
 
-    public Map<String, String[]> getNonPolymerEntityToComps() {
-        return nonPolymerEntityToComps;
+    public Collection<String> getNonPolymerEntityToComps(String entityId) {
+        return nonPolymerEntityToComps.get(entityId);
     }
 
-    public Map<String, String[]> getAssemblyToEntry() {
-        return assemblyToEntry;
+    public Collection<String> getAssemblyToEntry(String assemblyId) {
+        return assemblyToEntry.get(assemblyId);
     }
 
-    public Map<String, String[]> getPubmedToEntry() {
-        return pubmedToEntry;
+    public Collection<String> getPubmedToEntry(String pubmedId) {
+        return pubmedToEntry.get(pubmedId);
     }
 
-    public Map<String, String[]> getPolymerEntityToEntry() {
-        return polymerEntityToEntry;
+    public Collection<String> getPolymerEntityToEntry(String entityId) {
+        return polymerEntityToEntry.get(entityId);
     }
 
-    public Map<String, String[]> getBranchedEntityToEntry() {
-        return branchedEntityToEntry;
+    public Collection<String> getBranchedEntityToEntry(String entityId) {
+        return branchedEntityToEntry.get(entityId);
     }
 
-    public Map<String, String[]> getNonPolymerEntityToEntry() {
-        return nonPolymerEntityToEntry;
+    public Collection<String> getNonPolymerEntityToEntry(String entityId) {
+        return nonPolymerEntityToEntry.get(entityId);
     }
 
-    public Map<String, String[]> getPolymerInstanceToEntity() {
-        return polymerInstanceToEntity;
+    public Collection<String> getPolymerInstanceToEntity(String instanceId) {
+        return polymerInstanceToEntity.get(instanceId);
     }
 
-    public Map<String, String[]> getCompsToPolymerEntity() {
-        return compsToPolymerEntity;
+    public Collection<String> getCompsToPolymerEntity(String compId) {
+        return compsToPolymerEntity.get(compId);
     }
 
-    public Map<String, String[]> getUniprotToPolymerEntity() {
-        return uniprotToPolymerEntity;
+    public Collection<String> getUniprotToPolymerEntity(String uniprotId) {
+        return uniprotToPolymerEntity.get(uniprotId);
     }
 
-    public Map<String, String[]> getBranchedInstanceToEntity() {
-        return branchedInstanceToEntity;
+    public Collection<String> getBranchedInstanceToEntity(String instanceId) {
+        return branchedInstanceToEntity.get(instanceId);
     }
 
-    public Map<String, String[]> getCompsToBranchedEntity() {
-        return compsToBranchedEntity;
+    public Collection<String> getCompsToBranchedEntity(String compId) {
+        return compsToBranchedEntity.get(compId);
     }
 
-    public Map<String, String[]> getNonPolymerInstanceToEntity() {
-        return nonPolymerInstanceToEntity;
+    public Collection<String> getNonPolymerInstanceToEntity(String instanceId) {
+        return nonPolymerInstanceToEntity.get(instanceId);
     }
 
-    public Map<String, String[]> getCompsToNonPolymerEntity() {
-        return compsToNonPolymerEntity;
+    public Collection<String> getCompsToNonPolymerEntity(String compId) {
+        return compsToNonPolymerEntity.get(compId);
     }
 
-    public Map<String, String[]> getEntryToComps() {
-        return entryToComps;
+    public Collection<String> getEntryToComps(String entryId) {
+        return entryToComps.get(entryId);
     }
 
-    public Map<String, String[]> getCompsToEntry() {
-        return compsToEntry;
+    public Collection<String> getCompsToEntry(String compId) {
+        return compsToEntry.get(compId);
     }
 }

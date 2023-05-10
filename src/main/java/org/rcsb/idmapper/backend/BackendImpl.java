@@ -62,7 +62,7 @@ public class BackendImpl {
                 .subscribeOn(Schedulers.computation())
                 .flatMap(id -> Observable.fromIterable(input.content_type)
                         .map(ct -> Pair.of(id, ct)))
-                .flatMap(p -> Observable.fromArray(repository.lookup(p.getKey(), input.from, input.to, p.getValue()))
+                .flatMap(p -> Observable.fromIterable(repository.lookup(p.getKey(), input.from, input.to, p.getValue()))
                                 .map(toId -> Pair.of(p.getKey(), toId)))
                 .reduce(new TranslateOutput(), (container, p1) -> {
                     container.results.put(p1.getValue(), p1.getKey());
@@ -74,7 +74,7 @@ public class BackendImpl {
     private Output dispatchGroupInput(GroupInput input) {
         return Observable.fromIterable(input.ids)
                 .subscribeOn(Schedulers.computation())
-                .flatMap(id -> Observable.fromArray(repository.lookup(id, input.aggregation_method, input.similarity_cutoff))
+                .flatMap(id -> Observable.fromIterable(repository.lookup(id, input.aggregation_method, input.similarity_cutoff))
                         .map(gId -> Pair.of(id, gId)))
                 .reduce(new TranslateOutput(), (container, p1) -> {
                     container.results.put(p1.getValue(), p1.getKey());
@@ -86,7 +86,7 @@ public class BackendImpl {
     private Output dispatchAllInput(AllInput input) {
         return Observable.fromIterable(input.content_type)
                 .subscribeOn(Schedulers.computation())
-                .flatMap(ct -> Observable.fromArray(repository.all(input.from, ct)))
+                .flatMap(ct -> Observable.fromIterable(repository.all(input.from, ct)))
                 .distinct()
                 .reduce(new AllOutput(), (container, v) -> {
                     container.results.add(v);
