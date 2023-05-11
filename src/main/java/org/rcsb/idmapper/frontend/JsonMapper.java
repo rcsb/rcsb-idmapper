@@ -15,7 +15,7 @@ public class JsonMapper {
 
     public Gson create() {
         return new GsonBuilder()
-                .serializeNulls()
+                //.serializeNulls()
                 .setPrettyPrinting()
                 .enableComplexMapKeySerialization()
                 .registerTypeAdapter(Multimap.class, new MultiMapAdapter())
