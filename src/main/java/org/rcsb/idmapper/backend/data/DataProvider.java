@@ -4,7 +4,6 @@ import com.mongodb.ConnectionString;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
-import io.netty.channel.unix.Errors;
 import org.rcsb.idmapper.backend.data.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +53,7 @@ public class DataProvider {
         return mongoClient;
     }
 
-    public RepositoryState getRepositoryState() {
-        RepositoryState state = new RepositoryState();
-        return state;
-    }
+
 
     public CompletableFuture<Void> initialize(Repository r) {
         logger.info("Initializing data provider");
@@ -74,6 +70,11 @@ public class DataProvider {
                 )
                 .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
         return future;
+    }
+
+    public RepositoryState getRepositoryState() {
+        RepositoryState state = new RepositoryState();
+        return state;
     }
 
     public static class RepositoryState {
