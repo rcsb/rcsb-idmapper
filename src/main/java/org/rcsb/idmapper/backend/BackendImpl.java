@@ -43,7 +43,7 @@ public class BackendImpl {
             logger.info("Initializing backend");
             dataProvider.initialize(repository)
                     .join();
-            DataProvider.RepositoryState state = dataProvider.getRepositoryState();
+            Repository.State state = repository.getState();
             if (!state.isDataComplete())
                 throw new Exception("");
 

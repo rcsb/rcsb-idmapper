@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -53,8 +51,6 @@ public class DataProvider {
         return mongoClient;
     }
 
-
-
     public CompletableFuture<Void> initialize(Repository r) {
         logger.info("Initializing data provider");
         var future = new CompletableFuture<Void>();
@@ -70,19 +66,5 @@ public class DataProvider {
                 )
                 .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
         return future;
-    }
-
-    public RepositoryState getRepositoryState() {
-        RepositoryState state = new RepositoryState();
-        return state;
-    }
-
-    public static class RepositoryState {
-
-        private final List<String> dataErrors = new ArrayList<>();
-
-        public boolean isDataComplete() {
-            return dataErrors.isEmpty();
-        }
     }
 }

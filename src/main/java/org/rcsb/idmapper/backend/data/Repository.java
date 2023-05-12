@@ -7,7 +7,7 @@ import org.rcsb.idmapper.backend.data.repository.GroupRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
 import org.rcsb.idmapper.frontend.input.Input;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Gateway to concrete implementations of repositories
@@ -17,6 +17,8 @@ import java.util.Collection;
  * @author Yana Rose
  */
 public class Repository {
+
+    private Map<String, Long> counts = new HashMap<>();
 
     // content type specific repositories
     private final AllRepository allExperimental = new AllRepository();
@@ -45,6 +47,10 @@ public class Repository {
 
     public ComponentRepository getComponentRepository() {
         return component;
+    }
+
+    public void addCount(String collectionName, Long count) {
+        counts.put(collectionName, count);
     }
 
     private Collection<String> transit(Collection<String> ids, Input.Type from, Input.Type to, ContentType ct) {
@@ -279,6 +285,27 @@ public class Repository {
                 return getAllRepository(ct).getCompIds();
             }
             default -> throw new IllegalStateException("Unexpected value: " + from);
+        }
+    }
+
+    public State getState() {
+        State state = new State();
+        state.checkForDataIntegrity();
+        return state;
+    }
+
+    public static class State {
+        private final List<String> errors = new ArrayList<>();
+        public void addError(String err) {
+            errors.add(err);
+        }
+
+        private void checkForDataIntegrity() {
+
+        }
+
+        public boolean isDataComplete() {
+            return errors.isEmpty();
         }
     }
 }

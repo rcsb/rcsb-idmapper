@@ -33,7 +33,7 @@ public class PolymerEntityCollectionTask extends CollectionTask {
     }
 
     @Override
-    Runnable createRunnable(Document document) {
+    Runnable createDocumentRunnable(Document document) {
         return () -> {
             Document container = document.get(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, Document.class);
 
