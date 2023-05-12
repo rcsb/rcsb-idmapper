@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class Repository {
 
-    private Map<String, Long> counts = new HashMap<>();
+    private Map<String, Long> documentCounts = new HashMap<>();
 
     // content type specific repositories
     private final AllRepository allExperimental = new AllRepository();
@@ -50,7 +50,7 @@ public class Repository {
     }
 
     public void addCount(String collectionName, Long count) {
-        counts.put(collectionName, count);
+        documentCounts.put(collectionName, count);
     }
 
     private Collection<String> transit(Collection<String> ids, Input.Type from, Input.Type to, ContentType ct) {
@@ -290,22 +290,26 @@ public class Repository {
 
     public State getState() {
         State state = new State();
-        state.checkForDataIntegrity();
+        state.checkForDataCompleteness();
         return state;
     }
 
     public static class State {
-        private final List<String> errors = new ArrayList<>();
+        private final List<String> dataErrors = new ArrayList<>();
         public void addError(String err) {
-            errors.add(err);
+            dataErrors.add(err);
         }
 
-        private void checkForDataIntegrity() {
+        public List<String> getDataErrors() {
+            return dataErrors;
+        }
 
+        private void checkForDataCompleteness() {
+            // TODO implement health check logic
         }
 
         public boolean isDataComplete() {
-            return errors.isEmpty();
+            return dataErrors.isEmpty();
         }
     }
 }

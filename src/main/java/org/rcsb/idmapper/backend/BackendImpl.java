@@ -45,7 +45,7 @@ public class BackendImpl {
                     .join();
             Repository.State state = repository.getState();
             if (!state.isDataComplete())
-                throw new Exception("");
+                throw new Exception("Data completeness issue: "+state.getDataErrors());
 
             logger.info("Backend is initialized. Time took: [ {} ] minutes",
                     Duration.between(start, Instant.now()).toMinutes());

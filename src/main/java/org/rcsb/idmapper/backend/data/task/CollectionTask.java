@@ -43,8 +43,8 @@ public abstract class CollectionTask {
         return isCsm ? ContentType.computational : ContentType.experimental;
     }
 
-    public Flux<Runnable> createFlux(final MongoDatabase db) {
-        return Flux.concat(createDocumentTask(db), createCountTask(db));
+    public Flux<Runnable>  createFlux(final MongoDatabase db) {
+        return Flux.merge(createDocumentTask(db), createCountTask(db));
     }
 
     public Flux<Runnable> createDocumentTask(final MongoDatabase db) {
@@ -52,7 +52,7 @@ public abstract class CollectionTask {
                 .find()
                 .projection(fields(excludeId(), include(includeFields)));
         return Flux.from(publisher)
-                .doOnSubscribe(s -> logger.info("Document task subscribed to collection [ {} ]", collectionName))
+                .doOnSubscribe(s -> logger.info("Subscribed document task to collection [ {} ]", collectionName))
                 //TODO replace with async debug or remove entirely before prod
                 //.doOnNext(d -> logger.info("Processing document from [ {} ]", collectionName))
                 .doOnError(t -> logger.error(t.getMessage()))
@@ -62,7 +62,7 @@ public abstract class CollectionTask {
 
     public Mono<Runnable> createCountTask(final MongoDatabase db) {
         return Mono.from(db.getCollection(collectionName).countDocuments())
-                .doOnSubscribe(s -> logger.info("Count task subscribed to collection [ {} ]", collectionName))
+                .doOnSubscribe(s -> logger.info("Subscribed count task to collection [ {} ]", collectionName))
                 .doOnSuccess(count -> logger.info("Collection [ {} ] has [ {} ] documents", collectionName, count))
                 .doOnError(t -> logger.error(t.getMessage()))
                 .map(this::createCountRunnable);
