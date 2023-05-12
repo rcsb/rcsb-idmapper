@@ -43,11 +43,7 @@ public abstract class CollectionTask {
         return isCsm ? ContentType.computational : ContentType.experimental;
     }
 
-    public Flux<Runnable>  createFlux(final MongoDatabase db) {
-        return Flux.merge(createDocumentTask(db), createCountTask(db));
-    }
-
-    public Flux<Runnable> createDocumentTask(final MongoDatabase db) {
+    public Flux<Runnable> findDocuments(final MongoDatabase db) {
         Publisher<Document> publisher = db.getCollection(collectionName)
                 .find()
                 .projection(fields(excludeId(), include(includeFields)));
@@ -60,7 +56,7 @@ public abstract class CollectionTask {
                 .map(this::createDocumentRunnable);
     }
 
-    public Mono<Runnable> createCountTask(final MongoDatabase db) {
+    public Mono<Runnable> countDocuments(final MongoDatabase db) {
         return Mono.from(db.getCollection(collectionName).countDocuments())
                 .doOnSubscribe(s -> logger.info("Subscribed count task to collection [ {} ]", collectionName))
                 .doOnSuccess(count -> logger.info("Collection [ {} ] has [ {} ] documents", collectionName, count))

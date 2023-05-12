@@ -43,9 +43,8 @@ public class BackendImpl {
             logger.info("Initializing backend");
             dataProvider.initialize(repository)
                     .join();
-            Repository.State state = repository.getState();
-            if (!state.isDataComplete())
-                throw new Exception("Data completeness issue: "+state.getDataErrors());
+
+            dataProvider.postInitializationCheck(repository);
 
             logger.info("Backend is initialized. Time took: [ {} ] minutes",
                     Duration.between(start, Instant.now()).toMinutes());
