@@ -11,6 +11,9 @@ import java.util.List;
  * @author Yana Rose
  */
 public class AnyRepository {
+    public static final int EXPECTED_KEYS = 1_500_000;
+    public static final int EXPECTED_VALUES_PER_KEY = 12;
+
 
     void addValuesToDirectMap(Multimap<String, String> toBeExtended,
                               String toBeAddedKey, List<String> toBeAddedValues) {

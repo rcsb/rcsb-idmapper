@@ -15,33 +15,33 @@ import java.util.List;
  */
 public class StructureRepository extends AnyRepository {
     // direct mappings
-    private final Multimap<String, String> entryToAssembly = HashMultimap.create();
-    private final Multimap<String, String> entryToPubmed = HashMultimap.create();
-    private final Multimap<String, String> entryToPolymerEntity = HashMultimap.create();
-    private final Multimap<String, String> entryToBranchedEntity = HashMultimap.create();
-    private final Multimap<String, String> entryToNonPolymerEntity = HashMultimap.create();
-    private final Multimap<String, String> entryToComps = HashMultimap.create();
-    private final Multimap<String, String> polymerEntityToInstance = HashMultimap.create();
-    private final Multimap<String, String> polymerEntityToComps = HashMultimap.create();
-    private final Multimap<String, String> polymerEntityToUniprot = HashMultimap.create();
-    private final Multimap<String, String> branchedEntityToInstance = HashMultimap.create();
-    private final Multimap<String, String> branchedEntityToComps = HashMultimap.create();
-    private final Multimap<String, String> nonPolymerEntityToInstance = HashMultimap.create();
-    private final Multimap<String, String> nonPolymerEntityToComps = HashMultimap.create();
+    private final Multimap<String, String> entryToAssembly = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> entryToPubmed = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> entryToPolymerEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> entryToBranchedEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> entryToNonPolymerEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> entryToComps = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> polymerEntityToInstance = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> polymerEntityToComps = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> polymerEntityToUniprot = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> branchedEntityToInstance = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> branchedEntityToComps = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> nonPolymerEntityToInstance = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    private final Multimap<String, String> nonPolymerEntityToComps = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
     // reverse mappings
-    Multimap<String, String> assemblyToEntry = HashMultimap.create();
-    Multimap<String, String> pubmedToEntry = HashMultimap.create();
-    Multimap<String, String> polymerEntityToEntry = HashMultimap.create();
-    Multimap<String, String> branchedEntityToEntry = HashMultimap.create();
-    Multimap<String, String> nonPolymerEntityToEntry = HashMultimap.create();
-    Multimap<String, String> polymerInstanceToEntity = HashMultimap.create();
-    Multimap<String, String> compsToPolymerEntity = HashMultimap.create();
-    Multimap<String, String> uniprotToPolymerEntity = HashMultimap.create();
-    Multimap<String, String> branchedInstanceToEntity = HashMultimap.create();
-    Multimap<String, String> compsToBranchedEntity = HashMultimap.create();
-    Multimap<String, String> nonPolymerInstanceToEntity = HashMultimap.create();
-    Multimap<String, String> compsToNonPolymerEntity = HashMultimap.create();
-    Multimap<String, String> compsToEntry = HashMultimap.create();
+    Multimap<String, String> assemblyToEntry = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> pubmedToEntry = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> polymerEntityToEntry = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> branchedEntityToEntry = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> nonPolymerEntityToEntry = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> polymerInstanceToEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> compsToPolymerEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> uniprotToPolymerEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> branchedInstanceToEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> compsToBranchedEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> nonPolymerInstanceToEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> compsToNonPolymerEntity = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
+    Multimap<String, String> compsToEntry = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
 
     public void addEntryToAssembly(String entryId, List<String> assemblyIds) {
         var ids = createAssemblyIdentifiers(entryId, assemblyIds);
