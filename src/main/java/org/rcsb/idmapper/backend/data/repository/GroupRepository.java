@@ -1,10 +1,13 @@
 package org.rcsb.idmapper.backend.data.repository;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.rcsb.idmapper.frontend.input.Input;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created on 4/19/23.
@@ -13,34 +16,38 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GroupRepository extends AnyRepository {
 
-    private final Map<String, String[]> groupToProvenance = new ConcurrentHashMap<>();
+    private final Multimap<String, String> groupToProvenance = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
 
     private final Map<Input.AggregationMethod,
-            Map<String, String[]>> identity = new ConcurrentHashMap<>(); // members ID -> group IDs
+            Multimap<String, String>> identity = new HashMap<>(); // members ID -> group IDs
 
     private final Map<Input.AggregationMethod,
             Map<Integer, // similarity cutoff
-                Map<String, String[]>>> similarity = new ConcurrentHashMap<>(); // members ID -> group IDs
+            Multimap<String, String>>> similarity = new HashMap<>(); // members ID -> group IDs
 
     public void addGroupProvenance(String groupId, String provenanceId) {
-        groupToProvenance.put(groupId, new String[]{provenanceId});
+        groupToProvenance.put(groupId, provenanceId);
     }
 
     public void addGroupMembers(Input.AggregationMethod method, Integer cutoff, String gId, List<String> mIds) {
-        var gIds = new String[]{gId};
-        mIds.forEach(mId -> addValuesToMap(getMemberToGroup(method, cutoff), mId, gIds));
-    }
-    public Map <String, String[]> getGroupToProvenance() {
-        return groupToProvenance;
+        Multimap<String, String> map;
+        if (cutoff != null) {
+            map = similarity.computeIfAbsent(method, k -> new HashMap<>())
+                    .computeIfAbsent(cutoff, k -> HashMultimap.create());
+        } else {
+            map = identity.computeIfAbsent(method, k -> HashMultimap.create());
+        }
+        mIds.forEach(id -> map.put(id, gId));
     }
 
-    public Map<String, String[]> getMemberToGroup(Input.AggregationMethod method, Integer cutoff) {
+    public Collection<String> getGroupToProvenance(String groupId) {
+        return groupToProvenance.get(groupId);
+    }
+
+    public Collection<String> getMemberToGroup(Input.AggregationMethod method, Integer cutoff, String mId) {
         if (cutoff != null)
-            return similarity
-                    .computeIfAbsent(method, k -> new ConcurrentHashMap<>())
-                    .computeIfAbsent(cutoff, k -> new ConcurrentHashMap<>());
+            return similarity.get(method).get(cutoff).get(mId);
         else
-            return identity
-                    .computeIfAbsent(method, k -> new ConcurrentHashMap<>());
+            return identity.get(method).get(mId);
     }
 }

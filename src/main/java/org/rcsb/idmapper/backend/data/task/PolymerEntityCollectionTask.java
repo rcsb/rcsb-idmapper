@@ -21,15 +21,6 @@ import static org.rcsb.common.constants.MongoCollections.COLL_POLYMER_ENTITY;
  */
 public class PolymerEntityCollectionTask extends CollectionTask {
 
-    List<List<String>> fields = List.of(
-            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
-            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
-            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
-            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_COMP_MONOMERS),
-            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID),
-            List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.UNIPROT_IDS)
-    );
-
     public PolymerEntityCollectionTask(Repository r) {
         super(COLL_POLYMER_ENTITY, r, List.of(
                 List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
