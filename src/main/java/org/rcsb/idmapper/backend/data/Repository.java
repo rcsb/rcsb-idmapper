@@ -1,6 +1,7 @@
 package org.rcsb.idmapper.backend.data;
 
 import org.rcsb.common.constants.ContentType;
+import org.rcsb.common.constants.MongoCollections;
 import org.rcsb.idmapper.backend.data.repository.AllRepository;
 import org.rcsb.idmapper.backend.data.repository.ComponentRepository;
 import org.rcsb.idmapper.backend.data.repository.GroupRepository;
@@ -11,14 +12,14 @@ import java.util.*;
 
 /**
  * Gateway to concrete implementations of repositories
- *
+ * <p>
  * Created on 4/19/23.
  *
  * @author Yana Rose
  */
 public class Repository {
 
-    private Map<String, Long> documentCounts = new HashMap<>();
+    private final Map<String, Long> documentCounts = new HashMap<>();
 
     // content type specific repositories
     private final AllRepository allExperimental = new AllRepository();
@@ -289,23 +290,69 @@ public class Repository {
     }
 
     public State getState() {
+        String error;
         State state = new State();
-        state.checkForDataCompleteness();
+        if ((error = checkCount(MongoCollections.COLL_ENTRY, getActualCountEntry())) != null)
+            state.addError(error);
+        if ((error = checkCount(MongoCollections.COLL_POLYMER_ENTITY, getActualCountPolymerEntity())) != null)
+            state.addError(error);
+        if ((error = checkCount(MongoCollections.COLL_NONPOLYMER_ENTITY, getActualCountNonPolymerEntity())) != null)
+            state.addError(error);
+        if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, getActualCountSequenceGroups())) != null)
+            state.addError(error);
+        if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_UNIPROT_ACCESSION, getActualCountUniprotGroups())) != null)
+            state.addError(error);
+        if ((error = checkCount(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, getActualCountDepositGroups())) != null)
+            state.addError(error);
         return state;
+    }
+
+    private String checkCount(String collName, Long actualCount) {
+        if (!documentCounts.containsKey(collName))
+            return String.format("Count for %s collection was not collected", collName);
+        long expectedCount = documentCounts.get(collName);
+        if (expectedCount != actualCount)
+            return String.format("Collected %d documents from %s collection. Expected total count: %d",
+                    actualCount, collName, expectedCount);
+        return null;
+    }
+
+    private Long getActualCountEntry() {
+        return Integer.valueOf(getAllRepository(ContentType.experimental).getEntryIds().size()
+                + getAllRepository(ContentType.computational).getEntryIds().size()).longValue();
+    }
+
+    private Long getActualCountPolymerEntity() {
+        return Integer.valueOf(getAllRepository(ContentType.experimental).getPolymerEntityIds().size()
+                + getAllRepository(ContentType.computational).getPolymerEntityIds().size()).longValue();
+    }
+
+    private Long getActualCountNonPolymerEntity() {
+        return Integer.valueOf(getAllRepository(ContentType.experimental).getNonPolymerEntityIds().size()
+                + getAllRepository(ContentType.computational).getNonPolymerEntityIds().size()).longValue();
+    }
+
+    private Long getActualCountSequenceGroups() {
+        return group.countGroups(Input.AggregationMethod.sequence_identity);
+    }
+
+    private Long getActualCountUniprotGroups() {
+        return group.countGroups(Input.AggregationMethod.matching_uniprot_accession);
+    }
+
+    private Long getActualCountDepositGroups() {
+        return group.countGroups(Input.AggregationMethod.matching_deposit_group_id);
     }
 
     public static class State {
         private final List<String> dataErrors = new ArrayList<>();
+
         public void addError(String err) {
             dataErrors.add(err);
         }
 
         public List<String> getDataErrors() {
             return dataErrors;
-        }
-
-        private void checkForDataCompleteness() {
-            // TODO implement health check logic
         }
 
         public boolean isDataComplete() {
