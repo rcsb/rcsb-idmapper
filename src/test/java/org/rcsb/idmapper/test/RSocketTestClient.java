@@ -8,8 +8,8 @@ import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.util.ByteBufPayload;
 import org.rcsb.idmapper.IdMapper;
-import org.rcsb.idmapper.frontend.input.GroupInput;
-import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.input.GroupInput;
+import org.rcsb.idmapper.input.Input;
 
 import java.util.List;
 
