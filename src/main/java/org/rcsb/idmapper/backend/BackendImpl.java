@@ -1,7 +1,5 @@
 package org.rcsb.idmapper.backend;
 
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.apache.commons.lang3.tuple.Pair;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.Repository;
@@ -14,6 +12,8 @@ import org.rcsb.idmapper.output.Output;
 import org.rcsb.idmapper.output.TranslateOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.io.Closeable;
 import java.time.Duration;
@@ -57,45 +57,40 @@ public class BackendImpl {
         //TODO close connection etc
     }
 
-    private Output dispatchTranslateInput(TranslateInput input) {
-        return Observable.fromIterable(input.ids)
-                .subscribeOn(Schedulers.computation())
-                .flatMap(id -> Observable.fromIterable(input.content_type)
+    private Mono<TranslateOutput> dispatchTranslateInput(TranslateInput input) {
+        return Flux.fromIterable(input.ids)
+                .flatMap(id -> Flux.fromIterable(input.content_type)
                         .map(ct -> Pair.of(id, ct)))
-                .flatMap(p -> Observable.fromIterable(repository.lookup(p.getKey(), input.from, input.to, p.getValue()))
+                .flatMap(p -> Flux.fromIterable(repository.lookup(p.getKey(), input.from, input.to, p.getValue()))
                                 .map(toId -> Pair.of(p.getKey(), toId)))
                 .reduce(new TranslateOutput(), (container, p1) -> {
                     container.results.put(p1.getValue(), p1.getKey());
                     return container;
-                })
-                .blockingGet();
+                });
+
     }
 
-    private Output dispatchGroupInput(GroupInput input) {
-        return Observable.fromIterable(input.ids)
-                .subscribeOn(Schedulers.computation())
-                .flatMap(id -> Observable.fromIterable(repository.lookup(id, input.aggregation_method, input.similarity_cutoff))
+    private Mono<TranslateOutput> dispatchGroupInput(GroupInput input) {
+        return Flux.fromIterable(input.ids)
+                .flatMap(id -> Flux.fromIterable(repository.lookup(id, input.aggregation_method, input.similarity_cutoff))
                         .map(gId -> Pair.of(id, gId)))
                 .reduce(new TranslateOutput(), (container, p1) -> {
                     container.results.put(p1.getValue(), p1.getKey());
                     return container;
-                })
-                .blockingGet();
+                });
     }
 
-    private Output dispatchAllInput(AllInput input) {
-        return Observable.fromIterable(input.content_type)
-                .subscribeOn(Schedulers.computation())
-                .flatMap(ct -> Observable.fromIterable(repository.all(input.from, ct)))
+    private Mono<AllOutput> dispatchAllInput(AllInput input) {
+        return Flux.fromIterable(input.content_type)
+                .flatMap(ct -> Flux.fromIterable(repository.all(input.from, ct)))
                 .distinct()
                 .reduce(new AllOutput(), (container, v) -> {
                     container.results.add(v);
                     return container;
-                })
-                .blockingGet();
+                });
     }
 
-    public Output dispatch(Input input) {
+    public Mono<? extends Output<?>> dispatch(Input input) {
         if (input instanceof TranslateInput t) {
             return dispatchTranslateInput(t);
         } else if (input instanceof GroupInput g) {
