@@ -2,7 +2,7 @@ package org.rcsb.idmapper.backend.data.repository;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.input.Input;
 
 import java.util.Collection;
 import java.util.HashMap;
