@@ -10,10 +10,10 @@ import io.rsocket.transport.netty.server.CloseableChannel;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import io.rsocket.util.DefaultPayload;
 import org.rcsb.idmapper.backend.BackendImpl;
-import org.rcsb.idmapper.frontend.input.AllInput;
-import org.rcsb.idmapper.frontend.input.GroupInput;
-import org.rcsb.idmapper.frontend.input.Input;
-import org.rcsb.idmapper.frontend.input.TranslateInput;
+import org.rcsb.idmapper.input.AllInput;
+import org.rcsb.idmapper.input.GroupInput;
+import org.rcsb.idmapper.input.Input;
+import org.rcsb.idmapper.input.TranslateInput;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 

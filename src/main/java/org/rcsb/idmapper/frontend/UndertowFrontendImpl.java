@@ -10,10 +10,10 @@ import io.undertow.util.AttachmentKey;
 import io.undertow.util.Headers;
 import org.rcsb.idmapper.IdMapper;
 import org.rcsb.idmapper.backend.BackendImpl;
-import org.rcsb.idmapper.frontend.input.AllInput;
-import org.rcsb.idmapper.frontend.input.GroupInput;
-import org.rcsb.idmapper.frontend.input.Input;
-import org.rcsb.idmapper.frontend.input.TranslateInput;
+import org.rcsb.idmapper.input.AllInput;
+import org.rcsb.idmapper.input.GroupInput;
+import org.rcsb.idmapper.input.Input;
+import org.rcsb.idmapper.input.TranslateInput;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
