@@ -2,6 +2,7 @@ package org.rcsb.idmapper.frontend;
 
 import com.google.gson.Gson;
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.RoutingHandler;
@@ -52,6 +53,7 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
 
     public void initialize() {
         this.server = Undertow.builder()
+                .setServerOption(UndertowOptions.ENABLE_HTTP2, true)
                 .addHttpListener(port, "0.0.0.0", rootHandler)
                 .build();
     }
