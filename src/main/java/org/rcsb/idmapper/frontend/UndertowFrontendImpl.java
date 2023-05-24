@@ -116,7 +116,7 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
         @Override
         public void handleRequest(HttpServerExchange exchange) throws Exception {
             var context = exchange.getAttachment(contextAttachmentKey);
-            var output = backend.dispatch(context.input);
+            var output = backend.dispatch(context.input).block();
 
             exchange.putAttachment(contextAttachmentKey, (T)context.setOutput(output));
             next.handleRequest(exchange);

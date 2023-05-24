@@ -46,8 +46,8 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
         public Mono<Payload> requestResponse(final Payload incoming) {
             return Mono.just(incoming)
                     .map(this::extractInput)
-                    .map(backend::dispatch)
-                    .map(output -> DefaultPayload.create(new Gson().toJson(output)));//TODO maps chain may affect performance
+                    .flatMap(backend::dispatch)
+                    .map(output -> DefaultPayload.create(mapper.toJson(output)));//TODO maps chain may affect performance
         }
     };
 
