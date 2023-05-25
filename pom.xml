@@ -148,7 +148,7 @@
                         </ports>
                     </container>
                     <to>
-                        <image>nexus3.rcsb.org/${jib.target.namespace}/rcsb-idmapper</image>
+                        <image>harbor.devops.k8s.rcsb.org/${jib.target.namespace}/rcsb-idmapper</image>
                     </to>
                 </configuration>
             </plugin>
