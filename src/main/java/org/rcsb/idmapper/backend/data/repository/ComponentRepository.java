@@ -12,10 +12,11 @@ import java.util.List;
  * @author Yana Rose
  */
 public class ComponentRepository extends AnyRepository {
+
     // direct mappings
-    private final Multimap<String, String> compsToDrugBank = HashMultimap.create();
+    private final Multimap<String, String> compsToDrugBank = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
     // reverse mappings
-    private final Multimap<String, String> drugBankToComps = HashMultimap.create();
+    private final Multimap<String, String> drugBankToComps = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
 
     public void addChemCompsToDrugBank(String compId, String drugBankId) {
         if (drugBankId == null) return;

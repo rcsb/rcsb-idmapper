@@ -2,7 +2,7 @@ package org.rcsb.idmapper.backend.data.repository;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.input.Input;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class GroupRepository extends AnyRepository {
 
-    private final Multimap<String, String> groupToProvenance = HashMultimap.create();
+    private final Multimap<String, String> groupToProvenance = HashMultimap.create(EXPECTED_KEYS, EXPECTED_VALUES_PER_KEY);
 
     private final Map<Input.AggregationMethod,
             Multimap<String, String>> identity = new HashMap<>(); // members ID -> group IDs

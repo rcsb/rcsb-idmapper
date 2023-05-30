@@ -2,7 +2,7 @@ package org.rcsb.idmapper.backend.data.task;
 
 import org.bson.Document;
 import org.rcsb.idmapper.backend.data.Repository;
-import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.input.Input;
 import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;

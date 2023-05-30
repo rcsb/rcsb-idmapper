@@ -6,7 +6,7 @@ import org.rcsb.idmapper.backend.data.repository.AllRepository;
 import org.rcsb.idmapper.backend.data.repository.ComponentRepository;
 import org.rcsb.idmapper.backend.data.repository.GroupRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
-import org.rcsb.idmapper.frontend.input.Input;
+import org.rcsb.idmapper.input.Input;
 
 import java.util.*;
 
