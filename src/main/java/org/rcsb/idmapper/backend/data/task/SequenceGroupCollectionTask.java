@@ -26,7 +26,7 @@ public class SequenceGroupCollectionTask extends CollectionTask {
     }
 
     @Override
-    Runnable createRunnable(Document document) {
+    Runnable createDocumentRunnable(Document document) {
         return () -> {
             Document container = document.get(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, Document.class);
             String group = container.getString(CoreConstants.GROUP_ID);

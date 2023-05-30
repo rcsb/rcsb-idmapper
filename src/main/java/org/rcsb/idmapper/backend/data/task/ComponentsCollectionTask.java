@@ -24,7 +24,7 @@ public class ComponentsCollectionTask extends CollectionTask {
     }
 
     @Override
-    Runnable createRunnable(final Document document) {
+    Runnable createDocumentRunnable(final Document document) {
         return () -> {
             Document container = document.get(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, Document.class);
             String comp = container.getString(CoreConstants.COMP_ID);

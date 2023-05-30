@@ -1,14 +1,15 @@
 package org.rcsb.idmapper.backend.data.task;
 
-import com.mongodb.reactivestreams.client.FindPublisher;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.bson.Document;
 import org.rcsb.common.constants.ContentType;
 import org.rcsb.common.constants.IdentifierRegex;
 import org.rcsb.idmapper.backend.data.Repository;
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -42,18 +43,30 @@ public abstract class CollectionTask {
         return isCsm ? ContentType.computational : ContentType.experimental;
     }
 
-    public Flux<Runnable> createFlux(final MongoDatabase db) {
-        FindPublisher<Document> publisher = db.getCollection(collectionName)
+    public Flux<Runnable> findDocuments(final MongoDatabase db) {
+        Publisher<Document> publisher = db.getCollection(collectionName)
                 .find()
                 .projection(fields(excludeId(), include(includeFields)));
         return Flux.from(publisher)
-                .doOnSubscribe(subscription -> logger.info("Subscribed to collection [ {} ]", collectionName))
+                .doOnSubscribe(s -> logger.info("Subscribed document task to collection [ {} ]", collectionName))
                 //TODO replace with async debug or remove entirely before prod
                 //.doOnNext(d -> logger.info("Processing document from [ {} ]", collectionName))
                 .doOnError(t -> logger.error(t.getMessage()))
                 .doOnComplete(() -> logger.info("Processed documents from [ {} ] collection ", collectionName))
-                .map(this::createRunnable);
+                .map(this::createDocumentRunnable);
     }
 
-    abstract Runnable createRunnable(Document d);
+    public Mono<Runnable> countDocuments(final MongoDatabase db) {
+        return Mono.from(db.getCollection(collectionName).countDocuments())
+                .doOnSubscribe(s -> logger.info("Subscribed count task to collection [ {} ]", collectionName))
+                .doOnSuccess(count -> logger.info("Collection [ {} ] has [ {} ] documents", collectionName, count))
+                .doOnError(t -> logger.error(t.getMessage()))
+                .map(this::createCountRunnable);
+    }
+
+    abstract Runnable createDocumentRunnable(Document d);
+
+    public Runnable createCountRunnable(Long count) {
+        return () -> repository.addCount(collectionName, count);
+    }
 }

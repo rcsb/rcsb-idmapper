@@ -33,7 +33,7 @@ public class EntryCollectionTask extends CollectionTask {
     }
 
     @Override
-    Runnable createRunnable(final Document document) {
+    Runnable createDocumentRunnable(final Document document) {
         return () -> {
 
             Document container = document.get(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, Document.class);

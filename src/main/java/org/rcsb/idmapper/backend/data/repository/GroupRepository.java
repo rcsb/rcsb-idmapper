@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created on 4/19/23.
@@ -49,5 +50,17 @@ public class GroupRepository extends AnyRepository {
             return similarity.get(method).get(cutoff).get(mId);
         else
             return identity.get(method).get(mId);
+    }
+
+    public Long countGroups(Input.AggregationMethod method) {
+        if (method == Input.AggregationMethod.sequence_identity) {
+            AtomicReference<Long> count = new AtomicReference<>(0L);
+            similarity.get(method).keySet()
+                    .forEach(cutoff -> count.updateAndGet(v -> v + similarity.get(method).get(cutoff)
+                            .values().stream().distinct().count()));
+            return count.get();
+        } else {
+            return identity.get(method).values().stream().distinct().count();
+        }
     }
 }

@@ -53,21 +53,40 @@ public class DataProvider {
 
     public CompletableFuture<Void> initialize(Repository r) {
         logger.info("Initializing data provider");
-
-        var future = new CompletableFuture<Void>();
-
+        var findFuture = new CompletableFuture<Void>();
         Flux.merge(128,//prefetch
-                        new EntryCollectionTask(r).createFlux(db),
-                        new PolymerEntityCollectionTask(r).createFlux(db),
-                        new BranchedEntityCollectionTask(r).createFlux(db),
-                        new NonPolymerEntityCollectionTask(r).createFlux(db),
-                        new ComponentsCollectionTask(r).createFlux(db),
-                        new DepositGroupCollectionTask(r).createFlux(db),
-                        new SequenceGroupCollectionTask(r).createFlux(db),
-                        new UniprotGroupCollectionTask(r).createFlux(db)
+                        new EntryCollectionTask(r).findDocuments(db),
+                        new PolymerEntityCollectionTask(r).findDocuments(db),
+                        new BranchedEntityCollectionTask(r).findDocuments(db),
+                        new NonPolymerEntityCollectionTask(r).findDocuments(db),
+                        new ComponentsCollectionTask(r).findDocuments(db),
+                        new DepositGroupCollectionTask(r).findDocuments(db),
+                        new SequenceGroupCollectionTask(r).findDocuments(db),
+                        new UniprotGroupCollectionTask(r).findDocuments(db)
                 )
-                .subscribe(Runnable::run, future::completeExceptionally, () -> future.complete(null));
+                .subscribe(Runnable::run, findFuture::completeExceptionally, () -> findFuture.complete(null));
+        var countFuture = new CompletableFuture<Void>();
+        Flux.merge(128,//prefetch
+                        new EntryCollectionTask(r).countDocuments(db),
+                        new PolymerEntityCollectionTask(r).countDocuments(db),
+                        new BranchedEntityCollectionTask(r).countDocuments(db),
+                        new NonPolymerEntityCollectionTask(r).countDocuments(db),
+                        new ComponentsCollectionTask(r).countDocuments(db),
+                        new DepositGroupCollectionTask(r).countDocuments(db),
+                        new SequenceGroupCollectionTask(r).countDocuments(db),
+                        new UniprotGroupCollectionTask(r).countDocuments(db)
+                )
+                .subscribe(Runnable::run, countFuture::completeExceptionally, () -> countFuture.complete(null));
 
-        return future;
+        return CompletableFuture.allOf(
+                findFuture,
+                countFuture
+        );
+    }
+
+    public void postInitializationCheck(Repository repository) throws Exception { //TODO special exception class
+        Repository.State state = repository.getState();
+        if (!state.isDataComplete())
+            throw new Exception("Data completeness issue: "+state.getDataErrors());
     }
 }
