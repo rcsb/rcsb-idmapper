@@ -19,6 +19,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{.Values.image.registry}}/{{.Values.image.repository}}:{{.Values.image.tag}}"
           imagePullPolicy: Always
+          env:
+            - name: MONGODB_URI
+              value: "{{ .Values.mongodb_uri }}"
           ports:
             - containerPort: 8080
             - containerPort: 7000

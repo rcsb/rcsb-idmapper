@@ -2,3 +2,5 @@ image:
   registry: harbor.devops.k8s.rcsb.org
   repository: rcsb/rcsb-idmapper
   tag: latest
+
+mongodb_uri: "mongodb://updater:w31teQuerie5@10.20.3.153:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000"
