@@ -147,6 +147,10 @@ public class Repository {
                     case polymer_instance -> {
                         return getStructureRepository(ct).getPolymerEntityToInstance(id);
                     }
+                    case assembly -> {
+                        var entryIds = getStructureRepository(ct).getPolymerEntityToEntry(id);
+                        return transit(entryIds, Input.Type.entry, Input.Type.assembly, ct);
+                    }
                     case mol_definition -> {
                         return getStructureRepository(ct).getPolymerEntityToComps(id);
                     }
@@ -161,7 +165,7 @@ public class Repository {
                     case entry -> {
                         return getStructureRepository(ct).getBranchedEntityToEntry(id);
                     }
-                    case non_polymer_instance -> {
+                    case branched_instance -> {
                         return getStructureRepository(ct).getBranchedEntityToInstance(id);
                     }
                     case mol_definition -> {
@@ -197,6 +201,11 @@ public class Repository {
                     }
                     case polymer_entity -> {
                         return getStructureRepository(ct).getPolymerInstanceToEntity(id);
+                    }
+                    case non_polymer_entity -> {
+                        var entityIds = getStructureRepository(ct).getPolymerInstanceToEntity(id);
+                        var entryIds = transit(entityIds, Input.Type.polymer_entity, Input.Type.entry, ct);
+                        return transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
                     }
                     case mol_definition -> {
                         var entityIds = getStructureRepository(ct).getPolymerInstanceToEntity(id);
@@ -244,7 +253,7 @@ public class Repository {
                         return transit(entityIds, Input.Type.polymer_entity, Input.Type.polymer_instance, ct);
                     }
                     case drug_bank -> {
-                        return component.getCompsToDrugBank(id);
+                        return getComponentRepository().getCompsToDrugBank(id);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + to);
                 }
@@ -252,7 +261,7 @@ public class Repository {
             case group -> {
                 switch (to) {
                     case group_provenance -> {
-                        return group.getGroupToProvenance(id);
+                        return getGroupRepository().getGroupToProvenance(id);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + to);
                 }

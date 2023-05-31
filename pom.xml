@@ -28,14 +28,6 @@
     </properties>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>5.3.1</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Model module contains JSON schemas + Java classes generated from schemas:
             POJOs, Enums, field name constants for core and meta schemas -->
         <dependency>
@@ -43,7 +35,6 @@
             <artifactId>rcsb-mojave-model</artifactId>
             <version>${rcsb.mojave.model.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.rcsb</groupId>
@@ -123,6 +114,27 @@
             <artifactId>rsocket-transport-netty</artifactId>
             <version>${rsocket.version}</version>
         </dependency>
+
+        <!-- Testing dependencies -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.3.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.3.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -150,6 +162,15 @@
                     <to>
                         <image>harbor.devops.k8s.rcsb.org/${jib.target.namespace}/rcsb-idmapper</image>
                     </to>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <parallel>methods</parallel>
+                    <threadCount>4</threadCount>
                 </configuration>
             </plugin>
         </plugins>
