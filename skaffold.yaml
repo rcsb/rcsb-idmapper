@@ -1,0 +1,18 @@
+apiVersion: skaffold/v3
+kind: Config
+build:
+  local:
+    push: true
+  artifacts:
+    - image: harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper
+      jib:
+        project: org.rcsb:IdMapper
+deploy:
+  helm:
+    releases:
+      - name: idmapper
+        chartPath: k8s/helm
+        setValueTemplates:
+          image.registry: "{{.IMAGE_DOMAIN_harbor_devops_k8s_rcsb_org_rcsb_rcsb_idmapper}}"
+          image.repository: "{{.IMAGE_REPO_NO_DOMAIN_harbor_devops_k8s_rcsb_org_rcsb_rcsb_idmapper}}"
+          image.tag: "{{.IMAGE_TAG_harbor_devops_k8s_rcsb_org_rcsb_rcsb_idmapper}}@{{.IMAGE_DIGEST_harbor_devops_k8s_rcsb_org_rcsb_rcsb_idmapper}}"

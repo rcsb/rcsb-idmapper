@@ -1,0 +1,4 @@
+image:
+  registry: harbor.devops.k8s.rcsb.org
+  repository: rcsb/rcsb-idmapper
+  tag: latest
