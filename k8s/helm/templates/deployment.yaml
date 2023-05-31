@@ -13,6 +13,8 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      imagePullSecrets:
+        - name: harbor-docker-registry-conf
       containers:
         - name: {{ .Chart.Name }}
           image: "{{.Values.image.registry}}/{{.Values.image.repository}}:{{.Values.image.tag}}"
