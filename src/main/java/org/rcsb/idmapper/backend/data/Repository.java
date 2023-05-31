@@ -161,7 +161,7 @@ public class Repository {
                     case entry -> {
                         return getStructureRepository(ct).getBranchedEntityToEntry(id);
                     }
-                    case non_polymer_instance -> {
+                    case branched_instance -> {
                         return getStructureRepository(ct).getBranchedEntityToInstance(id);
                     }
                     case mol_definition -> {

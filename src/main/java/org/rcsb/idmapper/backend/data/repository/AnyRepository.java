@@ -25,19 +25,27 @@ public class AnyRepository {
         toBeAddedValues.forEach(v -> toBeExtended.put(v, toBeAddedKey));
     }
 
-    List<String> createCombinedIdentifiers(String token1, List<String> token2, String sep) {
-        return token2.stream().map(id -> String.join(sep, token1, id)).toList();
+    String createAssemblyIdentifier(String entryId, String assemblyId) {
+        return String.join(IdentifierSeparator.ASSEMBLY_SEPARATOR, entryId, assemblyId);
     }
 
     List<String> createAssemblyIdentifiers(String entryId, List<String> assemblyIds) {
-        return createCombinedIdentifiers(entryId, assemblyIds, IdentifierSeparator.ASSEMBLY_SEPARATOR);
+        return assemblyIds.stream().map(id -> createAssemblyIdentifier(entryId, id)).toList();
+    }
+
+    String createEntityIdentifier(String entryId, String entityId) {
+        return String.join(IdentifierSeparator.ENTITY_SEPARATOR, entryId, entityId);
     }
 
     List<String> createEntityIdentifiers(String entryId, List<String> entityIds) {
-        return createCombinedIdentifiers(entryId, entityIds, IdentifierSeparator.ENTITY_SEPARATOR);
+        return entityIds.stream().map(id -> createEntityIdentifier(entryId, id)).toList();
+    }
+
+    String createInstanceIdentifier(String entryId, String instanceId) {
+        return String.join(IdentifierSeparator.ENTITY_INSTANCE_SEPARATOR, entryId, instanceId);
     }
 
     List<String> createInstanceIdentifiers(String entryId, List<String> instanceIds) {
-        return createCombinedIdentifiers(entryId, instanceIds, IdentifierSeparator.ENTITY_INSTANCE_SEPARATOR);
+        return instanceIds.stream().map(id -> createInstanceIdentifier(entryId, id)).toList();
     }
 }
