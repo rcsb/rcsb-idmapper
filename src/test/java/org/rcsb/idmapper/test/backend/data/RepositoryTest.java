@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.backend.data.repository.ComponentRepository;
+import org.rcsb.idmapper.backend.data.repository.GroupRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
 import org.rcsb.idmapper.input.Input;
 
@@ -33,6 +34,7 @@ public class RepositoryTest {
 
     private static final StructureRepository structureMock = new StructureRepository();
     private static final ComponentRepository componentMock = new ComponentRepository();
+    private static final GroupRepository groupMock = new GroupRepository();
 
     private static final List<String> polyComps_e1 = List.of("AAA", "BBB", "CCC");
     private static final List<String> polyComps_e2 = List.of("AAA", "CCC", "DDD", "EEE");
@@ -88,10 +90,16 @@ public class RepositoryTest {
         componentMock.addChemCompsToDrugBank("YYY", "DB00002");
     }
 
+    private static void populateGroupMock() {
+        groupMock.addGroupMembers(Input.AggregationMethod.sequence_identity, 100, "1_100", List.of("1ABC_1", "1ABC_2"));
+        groupMock.addGroupProvenance("1_100", "match_sequence_identity");
+    }
+
     @BeforeAll
     public static void setup() {
         populateStructureMock();
         populateComponentMock();
+        populateGroupMock();
     }
 
     // ENTRY
@@ -556,6 +564,17 @@ public class RepositoryTest {
 
         assertEquals(1, ids.size());
         assertTrue(ids.contains("DB00001"));
+    }
+
+    @Test
+    public void polymerEntityToGroup_MustPass() {
+        when(repo.getGroupRepository()).thenReturn(groupMock);
+        when(repo.lookup("1ABC_1", Input.AggregationMethod.sequence_identity, 100)).thenCallRealMethod();
+
+        Collection<String> ids = repo.lookup("1ABC_1", Input.AggregationMethod.sequence_identity, 100);
+
+        assertEquals(1, ids.size());
+        assertTrue(ids.contains("1_100"));
     }
 
     @Test

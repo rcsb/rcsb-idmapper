@@ -271,7 +271,7 @@ public class Repository {
     }
 
     public Collection<String> lookup(String id, Input.AggregationMethod method, Integer cutoff) {
-        return group.getMemberToGroup(method, cutoff, id);
+        return getGroupRepository().getMemberToGroup(method, cutoff, id);
     }
 
     public Collection<String> all(Input.Type from, ContentType ct) {
