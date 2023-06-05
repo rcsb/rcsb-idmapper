@@ -86,16 +86,18 @@ public class StructureRepository extends AnyRepository {
         addValuesToReverseMap(polymerInstanceToEntity, id, ids);
     }
 
-    public void addPolymerEntityToCcd(String entityId, List<String> ids) {
-        addValuesToDirectMap(polymerEntityToComps, entityId, ids);
-        addValuesToReverseMap(compsToPolymerEntity, entityId, ids);
+    public void addPolymerEntityToCcd(String entryId, String entityId, List<String> ids) {
+        var id = createEntityIdentifier(entryId, entityId);
+        addValuesToDirectMap(polymerEntityToComps, id, ids);
+        addValuesToReverseMap(compsToPolymerEntity, id, ids);
     }
 
-    public void addPolymerEntityToBird(String entityId, String prdId) {
+    public void addPolymerEntityToBird(String entryId, String entityId, String prdId) {
         if (prdId == null) return;
+        var id = createEntityIdentifier(entryId, entityId);
         var ids = List.of(prdId);
-        addValuesToDirectMap(polymerEntityToComps, entityId, ids);
-        addValuesToReverseMap(compsToPolymerEntity, entityId, ids);
+        addValuesToDirectMap(polymerEntityToComps, id, ids);
+        addValuesToReverseMap(compsToPolymerEntity, id, ids);
     }
 
     public void addBranchedEntityToInstance(String entryId, String entityId, List<String> instanceIds) {
@@ -105,16 +107,18 @@ public class StructureRepository extends AnyRepository {
         addValuesToReverseMap(branchedInstanceToEntity, id, ids);
     }
 
-    public void addBranchedEntityToCcd(String entityId, List<String> ids) {
-        addValuesToDirectMap(branchedEntityToComps, entityId, ids);
-        addValuesToReverseMap(compsToBranchedEntity, entityId, ids);
+    public void addBranchedEntityToCcd(String entryId, String entityId, List<String> ids) {
+        var id = createEntityIdentifier(entryId, entityId);
+        addValuesToDirectMap(branchedEntityToComps, id, ids);
+        addValuesToReverseMap(compsToBranchedEntity, id, ids);
     }
 
-    public void addBranchedEntityToBird(String entityId, String prdId) {
+    public void addBranchedEntityToBird(String entryId, String entityId, String prdId) {
         if (prdId == null) return;
+        var id = createEntityIdentifier(entryId, entityId);
         var ids = List.of(prdId);
-        addValuesToDirectMap(branchedEntityToComps, entityId, ids);
-        addValuesToReverseMap(compsToBranchedEntity, entityId, ids);
+        addValuesToDirectMap(branchedEntityToComps, id, ids);
+        addValuesToReverseMap(compsToBranchedEntity, id, ids);
     }
 
     public void addNonPolymerEntityToInstance(String entryId, String entityId, List<String> instanceIds) {
@@ -124,16 +128,18 @@ public class StructureRepository extends AnyRepository {
         addValuesToReverseMap(nonPolymerInstanceToEntity, id, ids);
     }
 
-    public void addNonPolymerEntityToComps(String entityId, String compId) {
+    public void addNonPolymerEntityToComps(String entryId, String entityId, String compId) {
         if (compId == null) return;
+        var id = createEntityIdentifier(entryId, entityId);
         var ids = List.of(compId);
-        addValuesToDirectMap(nonPolymerEntityToComps, entityId, ids);
-        addValuesToReverseMap(compsToNonPolymerEntity, entityId, ids);
+        addValuesToDirectMap(nonPolymerEntityToComps, id, ids);
+        addValuesToReverseMap(compsToNonPolymerEntity, id, ids);
     }
 
-    public void addPolymerEntityToUniprot(String entityId, List<String> ids) {
-        addValuesToDirectMap(polymerEntityToUniprot, entityId, ids);
-        addValuesToReverseMap(uniprotToPolymerEntity, entityId, ids);
+    public void addPolymerEntityToUniprot(String entryId, String entityId, List<String> ids) {
+        var id = createEntityIdentifier(entryId, entityId);
+        addValuesToDirectMap(polymerEntityToUniprot, id, ids);
+        addValuesToReverseMap(uniprotToPolymerEntity, id, ids);
     }
 
     public Collection<String> getEntryToAssembly(String entryId) {

@@ -20,8 +20,8 @@ public class BranchedEntityCollectionTask extends CollectionTask {
 
     public BranchedEntityCollectionTask(Repository r) {
         super(COLL_BRANCHED_ENTITY, r, List.of(
-                List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+                List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_COMP_MONOMERS),
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
@@ -34,7 +34,7 @@ public class BranchedEntityCollectionTask extends CollectionTask {
             Document container = document.get(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, Document.class);
 
             String entry = container.getString(CoreConstants.ENTRY_ID);
-            String entity = container.getString(CoreConstants.RCSB_ID);
+            String entity = container.getString(CoreConstants.ENTITY_ID);
 
             ContentType structureType = getStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
@@ -47,14 +47,14 @@ public class BranchedEntityCollectionTask extends CollectionTask {
 
             if (container.containsKey(CoreConstants.CHEM_COMP_MONOMERS)) {
                 List<String> monomers = container.getList(CoreConstants.CHEM_COMP_MONOMERS, String.class);
-                sr.addBranchedEntityToCcd(entity, monomers);
+                sr.addBranchedEntityToCcd(entry, entity, monomers);
                 sr.addEntryToComps(entry, monomers);
                 ar.addComponents(monomers);
             }
 
             if (container.containsKey(CoreConstants.CHEM_REF_DEF_ID)) {
                 String prd = container.getString(CoreConstants.CHEM_REF_DEF_ID);
-                sr.addBranchedEntityToBird(entity, prd);
+                sr.addBranchedEntityToBird(entry, entity, prd);
                 sr.addEntryToComps(entry, List.of(prd));
                 ar.addComponents(List.of(prd));
             }

@@ -147,6 +147,16 @@ public class Repository {
                     case polymer_instance -> {
                         return getStructureRepository(ct).getPolymerEntityToInstance(id);
                     }
+                    case branched_instance -> {
+                        var entryIds = getStructureRepository(ct).getPolymerEntityToEntry(id);
+                        var entityIds = transit(entryIds, Input.Type.entry, Input.Type.branched_entity, ct);
+                        return transit(entityIds, Input.Type.branched_entity, Input.Type.branched_instance, ct);
+                    }
+                    case non_polymer_instance -> {
+                        var entryIds = getStructureRepository(ct).getPolymerEntityToEntry(id);
+                        var entityIds = transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
+                        return transit(entityIds, Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ct);
+                    }
                     case assembly -> {
                         var entryIds = getStructureRepository(ct).getPolymerEntityToEntry(id);
                         return transit(entryIds, Input.Type.entry, Input.Type.assembly, ct);
@@ -165,8 +175,34 @@ public class Repository {
                     case entry -> {
                         return getStructureRepository(ct).getBranchedEntityToEntry(id);
                     }
+                    case assembly -> {
+                        var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
+                        return transit(entryIds, Input.Type.entry, Input.Type.assembly, ct);
+                    }
+                    case polymer_entity -> {
+                        var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
+                        return transit(entryIds, Input.Type.entry, Input.Type.polymer_entity, ct);
+                    }
+                    case branched_entity -> {
+                        var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
+                        return transit(entryIds, Input.Type.entry, Input.Type.branched_entity, ct);
+                    }
+                    case non_polymer_entity -> {
+                        var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
+                        return transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
+                    }
+                    case polymer_instance -> {
+                        var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
+                        var entityIds = transit(entryIds, Input.Type.entry, Input.Type.polymer_entity, ct);
+                        return transit(entityIds, Input.Type.polymer_entity, Input.Type.polymer_instance, ct);
+                    }
                     case branched_instance -> {
                         return getStructureRepository(ct).getBranchedEntityToInstance(id);
+                    }
+                    case non_polymer_instance -> {
+                        var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
+                        var entityIds = transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
+                        return transit(entityIds, Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ct);
                     }
                     case mol_definition -> {
                         return getStructureRepository(ct).getBranchedEntityToComps(id);
@@ -216,6 +252,10 @@ public class Repository {
             }
             case branched_instance -> {
                 switch (to) {
+                    case entry -> {
+                        var entityIds = getStructureRepository(ct).getBranchedInstanceToEntity(id);
+                        return transit(entityIds, Input.Type.branched_entity, Input.Type.entry, ct);
+                    }
                     case branched_entity -> {
                         return getStructureRepository(ct).getBranchedInstanceToEntity(id);
                     }

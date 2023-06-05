@@ -21,8 +21,8 @@ public class NonPolymerEntityCollectionTask extends CollectionTask {
 
     public NonPolymerEntityCollectionTask(Repository r) {
         super(COLL_NONPOLYMER_ENTITY, r, List.of(
-                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.RCSB_ID),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
         ));
@@ -34,7 +34,7 @@ public class NonPolymerEntityCollectionTask extends CollectionTask {
             Document container = document.get(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, Document.class);
 
             String entry = container.getString(CoreConstants.ENTRY_ID);
-            String entity = container.getString(CoreConstants.RCSB_ID);
+            String entity = container.getString(CoreConstants.ENTITY_ID);
 
             ContentType structureType = getStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
@@ -47,7 +47,7 @@ public class NonPolymerEntityCollectionTask extends CollectionTask {
 
             if (container.containsKey(CoreConstants.CHEM_REF_DEF_ID)) {
                 String compId = container.getString(CoreConstants.CHEM_REF_DEF_ID);
-                sr.addNonPolymerEntityToComps(entity, compId);
+                sr.addNonPolymerEntityToComps(entry, entity, compId);
                 sr.addEntryToComps(entry, List.of(compId));
                 ar.addComponents(List.of(compId));
             }

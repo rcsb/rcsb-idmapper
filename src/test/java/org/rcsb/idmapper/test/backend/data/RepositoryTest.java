@@ -62,27 +62,27 @@ public class RepositoryTest {
         structureMock.addPolymerEntityToInstance("1ABC", "1", List.of("A"));
         structureMock.addPolymerEntityToInstance("1ABC", "1", List.of("B"));
         structureMock.addPolymerEntityToInstance("1ABC", "2", List.of("C"));
-        structureMock.addPolymerEntityToCcd("1ABC_1", polyComps_e1);
-        structureMock.addPolymerEntityToCcd("1ABC_2", polyComps_e2);
-        structureMock.addPolymerEntityToUniprot("1ABC_1", List.of("P00001"));
-        structureMock.addPolymerEntityToUniprot("1ABC_2", List.of("P00002", "P00003"));
+        structureMock.addPolymerEntityToCcd("1ABC", "1", polyComps_e1);
+        structureMock.addPolymerEntityToCcd("1ABC", "2", polyComps_e2);
+        structureMock.addPolymerEntityToUniprot("1ABC", "1", List.of("P00001"));
+        structureMock.addPolymerEntityToUniprot("1ABC", "2", List.of("P00002", "P00003"));
 
         // BRANCHED
         structureMock.addEntryToBranchedEntity("1ABC", List.of("3", "4"));
         structureMock.addBranchedEntityToInstance("1ABC", "3", List.of("D"));
         structureMock.addBranchedEntityToInstance("1ABC", "4", List.of("E"));
-        structureMock.addBranchedEntityToCcd("1ABC_3", branchedComps_e3);
-        structureMock.addBranchedEntityToBird("1ABC_3", branchedPrd_e3.get(0));
-        structureMock.addBranchedEntityToCcd("1ABC_4", branchedComps_e4);
+        structureMock.addBranchedEntityToCcd("1ABC", "3", branchedComps_e3);
+        structureMock.addBranchedEntityToBird("1ABC", "3", branchedPrd_e3.get(0));
+        structureMock.addBranchedEntityToCcd("1ABC", "4", branchedComps_e4);
 
         // NON-POLYMER
         structureMock.addEntryToNonPolymerEntity("1ABC", List.of("5", "6", "7"));
         structureMock.addNonPolymerEntityToInstance("1ABC", "5", List.of("F"));
         structureMock.addNonPolymerEntityToInstance("1ABC", "6", List.of("G"));
         structureMock.addNonPolymerEntityToInstance("1ABC", "7", List.of("I"));
-        structureMock.addNonPolymerEntityToComps("1ABC_5", "XXX");
-        structureMock.addNonPolymerEntityToComps("1ABC_6", "YYY");
-        structureMock.addNonPolymerEntityToComps("1ABC_7", "ZZZ");
+        structureMock.addNonPolymerEntityToComps("1ABC", "5", "XXX");
+        structureMock.addNonPolymerEntityToComps("1ABC", "6", "YYY");
+        structureMock.addNonPolymerEntityToComps("1ABC", "7", "ZZZ");
     }
 
     private static void populateComponentMock() {
