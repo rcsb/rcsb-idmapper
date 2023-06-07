@@ -183,10 +183,6 @@ public class Repository {
                         var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
                         return transit(entryIds, Input.Type.entry, Input.Type.polymer_entity, ct);
                     }
-                    case branched_entity -> {
-                        var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
-                        return transit(entryIds, Input.Type.entry, Input.Type.branched_entity, ct);
-                    }
                     case non_polymer_entity -> {
                         var entryIds = getStructureRepository(ct).getBranchedEntityToEntry(id);
                         return transit(entryIds, Input.Type.entry, Input.Type.non_polymer_entity, ct);
