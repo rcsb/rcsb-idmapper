@@ -103,7 +103,7 @@ public class Repository {
                         var entityIds = getStructureRepository(ct).getEntryToPolymerEntity(id);
                         return transit(entityIds, Input.Type.polymer_entity, Input.Type.uniprot, ct);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case assembly -> {
@@ -128,7 +128,7 @@ public class Repository {
                         var entryIds = getStructureRepository(ct).getAssemblyToEntry(id);
                         return transit(entryIds, Input.Type.entry, Input.Type.mol_definition, ct);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case polymer_entity -> {
@@ -167,7 +167,7 @@ public class Repository {
                     case uniprot -> {
                         return getStructureRepository(ct).getPolymerEntityToUniprot(id);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case branched_entity -> {
@@ -203,7 +203,7 @@ public class Repository {
                     case mol_definition -> {
                         return getStructureRepository(ct).getBranchedEntityToComps(id);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case non_polymer_entity -> {
@@ -217,7 +217,7 @@ public class Repository {
                     case mol_definition -> {
                         return getStructureRepository(ct).getNonPolymerEntityToComps(id);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case polymer_instance -> {
@@ -243,7 +243,7 @@ public class Repository {
                         var entityIds = getStructureRepository(ct).getPolymerInstanceToEntity(id);
                         return transit(entityIds, Input.Type.polymer_entity, Input.Type.mol_definition, ct);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case branched_instance -> {
@@ -255,7 +255,7 @@ public class Repository {
                     case branched_entity -> {
                         return getStructureRepository(ct).getBranchedInstanceToEntity(id);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case non_polymer_instance -> {
@@ -263,7 +263,7 @@ public class Repository {
                     case non_polymer_entity -> {
                         return getStructureRepository(ct).getNonPolymerInstanceToEntity(id);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case mol_definition -> {
@@ -291,7 +291,7 @@ public class Repository {
                     case drug_bank -> {
                         return getComponentRepository().getCompsToDrugBank(id);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
             case group -> {
@@ -299,10 +299,10 @@ public class Repository {
                     case group_provenance -> {
                         return getGroupRepository().getGroupToProvenance(id);
                     }
-                    default -> throw new IllegalStateException("Unexpected value: " + to);
+                    default -> { return Collections.emptyList();}
                 }
             }
-            default -> throw new IllegalStateException("Unexpected value: " + from);
+            default -> { return Collections.emptyList();}
         }
     }
 
