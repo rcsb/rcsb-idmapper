@@ -1,6 +1,5 @@
 package org.rcsb.idmapper.test.backend.data;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +16,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
@@ -578,10 +577,10 @@ public class RepositoryTest {
     }
 
     @Test
-    public void notImplemented_MustThrowException()  {
+    public void notImplemented_MustReturnEmptyCollection()  {
         when(repo.lookup("P00002", Input.Type.uniprot, Input.Type.polymer_entity, ContentType.experimental)).thenCallRealMethod();
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            repo.lookup("P00002", Input.Type.uniprot, Input.Type.polymer_entity, ContentType.experimental);
-        });
+        Collection<String> ids = repo.lookup("P00002", Input.Type.uniprot, Input.Type.polymer_entity, ContentType.experimental);
+        assertNotNull(ids);
+        assertTrue(ids.isEmpty());
     }
 }
