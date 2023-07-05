@@ -9,6 +9,8 @@ import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
 import org.rcsb.idmapper.input.Input;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,6 +25,13 @@ public class IdMapper {
 
         var mockDataProvider = mock(DataProvider.class);
         var mockRepository = mock(Repository.class);
+
+        when(mockDataProvider.connect()).thenReturn(new Closeable() {
+            @Override
+            public void close() throws IOException {
+
+            }
+        });
 
         when(mockDataProvider.initialize(any())).thenAnswer(invocationOnMock ->{
             return CompletableFuture.completedFuture(null);

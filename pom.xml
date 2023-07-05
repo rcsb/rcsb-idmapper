@@ -156,7 +156,7 @@
                     <container>
                         <ports>
                             <port>8080</port>
-                            <port>7000</port>
+                            <port>9000</port>
                         </ports>
                     </container>
                     <to>
@@ -187,10 +187,10 @@
                         <version>${jib.version}</version>
                         <configuration>
                             <container>
-                                <mainClass>org.rcsb.idmapper.test.IdMapper</mainClass>
+                                <mainClass>org.rcsb.idmapper.TestIdMapper</mainClass>
                                 <ports>
                                     <port>8080</port>
-                                    <port>7000</port>
+                                    <port>9000</port>
                                 </ports>
                             </container>
                             <to>

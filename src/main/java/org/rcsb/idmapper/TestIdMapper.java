@@ -1,25 +1,27 @@
 package org.rcsb.idmapper;
 
+import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
+import org.rcsb.idmapper.input.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class IdMapper {
+public class TestIdMapper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IdMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestIdMapper.class);
 
     public static final int DEFAULT_HTTP_PORT = 8080;
-    public static final int DEFAULT_RSOCKET_PORT = 9000;
+    public static final int DEFAULT_RSOCKET_PORT = 7000;
     public static final String TRANSLATE = "/translate";
     public static final String GROUP = "/group";
     public static final String ALL = "/all";
@@ -36,7 +38,7 @@ public class IdMapper {
                         return new Closeable() {
                             @Override
                             public void close() throws IOException {
-
+//noop
                             }
                         };
                     }
@@ -45,8 +47,18 @@ public class IdMapper {
                     public CompletableFuture<Void> initialize(Repository r) {
                         return CompletableFuture.completedFuture(null);
                     }
+
+                    @Override
+                    public void postInitializationCheck(Repository repository) throws Exception {
+                        //noop;
+                    }
                 },
-                new Repository()
+                new Repository(){
+                    @Override
+                    public Collection<String> lookup(String id, Input.Type from, Input.Type to, ContentType ct) {
+                        return List.of("BHH4_1", "BHH4_2");
+                    }
+                }
         );
 
         //TODO there may be multiple frontends e.g. one for RSocket, another for Undertow. Hence a factory will be needed
