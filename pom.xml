@@ -175,4 +175,34 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>test-container</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <version>${jib.version}</version>
+                        <configuration>
+                            <container>
+                                <mainClass>org.rcsb.idmapper.test.IdMapper</mainClass>
+                                <ports>
+                                    <port>8080</port>
+                                    <port>7000</port>
+                                </ports>
+                            </container>
+                            <to>
+                                <image>harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper</image>
+                                <tags>
+                                    <tag>test-container</tag>
+                                </tags>
+                            </to>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
