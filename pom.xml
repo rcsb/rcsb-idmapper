@@ -5,7 +5,7 @@
 
     <groupId>org.rcsb</groupId>
     <artifactId>IdMapper</artifactId>
-    <version>0.0.28-SNAPSHOT</version>
+    <version>0.0.28</version>
     <packaging>jar</packaging>
 
     <properties>
