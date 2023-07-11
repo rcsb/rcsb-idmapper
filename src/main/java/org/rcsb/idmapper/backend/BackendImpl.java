@@ -59,7 +59,13 @@ public class BackendImpl {
     }
 
     private Mono<TranslateOutput> dispatchTranslateInput(TranslateInput input) {
-        return Flux.fromIterable(input.ids)
+        var ids = input.ids != null ? input.ids :
+                input.content_type
+                        .stream()
+                        .flatMap(ct -> repository.all(input.from, ct).stream())
+                        .distinct()
+                        .toList();
+        return Flux.fromIterable(ids)
                 .flatMap(id -> Flux.fromIterable(input.content_type)
                         .map(ct -> Pair.of(id, ct)))
                 .flatMap(p -> Flux.fromIterable(repository.lookup(p.getKey(), input.from, input.to, p.getValue()))
