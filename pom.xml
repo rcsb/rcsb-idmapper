@@ -154,6 +154,7 @@
                 <version>${jib.version}</version>
                 <configuration>
                     <container>
+                        <mainClass>org.rcsb.idmapper.IdMapper</mainClass>
                         <ports>
                             <port>8080</port>
                             <port>9000</port>

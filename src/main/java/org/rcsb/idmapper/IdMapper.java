@@ -9,8 +9,6 @@ import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,22 +28,7 @@ public class IdMapper {
         var connectionString = Objects.requireNonNull(System.getenv(MONGODB_URI),
                 String.format("The environment variable [ %s ] with Mongo database connection string (URI) must be set", MONGODB_URI));
         var backend = new BackendImpl(
-                new DataProvider(connectionString){
-                    @Override
-                    public Closeable connect() {
-                        return new Closeable() {
-                            @Override
-                            public void close() throws IOException {
-
-                            }
-                        };
-                    }
-
-                    @Override
-                    public CompletableFuture<Void> initialize(Repository r) {
-                        return CompletableFuture.completedFuture(null);
-                    }
-                },
+                new DataProvider(connectionString),
                 new Repository()
         );
 
