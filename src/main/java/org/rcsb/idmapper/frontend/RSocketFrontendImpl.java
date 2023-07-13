@@ -75,6 +75,7 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
     public CompletableFuture<Void> start() {
         var future = new CompletableFuture<Void>();
         this.disposable = this.server
+                .fragment(16777215) //TODO should match what we can send
                 .bindNow(transport)
                 .onClose()
                 .subscribe(null, future::completeExceptionally, () -> future.complete(null));
