@@ -4,7 +4,7 @@ metadata:
   name: {{ .Chart.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.number_of_replicas }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
@@ -23,5 +23,5 @@ spec:
             - name: MONGODB_URI
               value: "{{ .Values.mongodb_uri }}"
           ports:
-            - containerPort: 8080
-            - containerPort: 9000
+            - containerPort: {{ .Values.http_port }}
+            - containerPort: {{ .Values.rsocket_port }}

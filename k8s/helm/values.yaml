@@ -3,4 +3,7 @@ image:
   repository: rcsb/rcsb-idmapper
   tag: latest
 
-mongodb_uri: "mongodb://updater:w31teQuerie5@10.20.3.153:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000"
+number_of_replicas: 1
+http_port: 8080
+rsocket_port: 9000
+mongodb_uri: "mongodb://updater:w31teQuerie5@132.249.213.115:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000"
