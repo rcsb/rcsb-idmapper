@@ -24,4 +24,4 @@ spec:
               value: "{{ .Values.mongodb_uri }}"
           ports:
             - containerPort: 8080
-            - containerPort: 7000
+            - containerPort: 9000
