@@ -6,4 +6,4 @@ image:
 number_of_replicas: 1
 http_port: 8080
 rsocket_port: 9000
-mongodb_uri: "mongodb://updater:w31teQuerie5@132.249.213.115:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000"
+mongodb_uri: "mongodb://updater:w31teQuerie5@132.249.210.169:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000"
