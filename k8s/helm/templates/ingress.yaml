@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     ingress.class: "haproxy"
+    haproxy.org/path-rewrite: "/"
 #    nginx.ingress.kubernetes.io/rewrite-target: /
 #    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS" #important
 #    nginx.ingress.kubernetes.io/enable-access-log: "true"
