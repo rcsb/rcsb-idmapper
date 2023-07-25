@@ -5,7 +5,7 @@ metadata:
   namespace: default
   annotations:
     ingress.class: "haproxy"
-    haproxy.org/path-rewrite: "/"
+#    haproxy.org/path-rewrite: "/"
 #    nginx.ingress.kubernetes.io/rewrite-target: /
 #    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS" #important
 #    nginx.ingress.kubernetes.io/enable-access-log: "true"
@@ -14,11 +14,11 @@ metadata:
 #      access_log /var/log/nginx/west-haproxy.log;
 spec:
   rules:
-    - #host: {{ .Chart.Name }}.k8s.rcsb.org
+    - host: {{ .Chart.Name }}.k8s.rcsb.org
       http:
         paths:
-          - path: /{{ .Chart.Name }}
-            pathType: Prefix
+          - path: /
+            pathType: Exact
             backend:
               service:
                 name: {{ .Chart.Name }}
