@@ -14,13 +14,13 @@ metadata:
 #      access_log /var/log/nginx/west-haproxy.log;
 spec:
   rules:
-    - host: {{ .Chart.Name }}.k8s.rcsb.org
+    - host: {{ .Chart.Name }}.{{ .Release.Namespace }}.k8s.rcsb.org
       http:
         paths:
           - path: /
-            pathType: Exact
+            pathType: Prefix
             backend:
               service:
-                name: {{ .Chart.Name }}
+                name: {{ .Chart.Name }}-service
                 port:
-                  number: 9000
+                  number: 8080
