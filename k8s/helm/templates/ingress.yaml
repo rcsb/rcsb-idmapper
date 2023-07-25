@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Chart.Name }}-ingress
-  namespace: default
+  namespace: {{ .Release.Namespace }}
   annotations:
     ingress.class: "haproxy"
 #    haproxy.org/path-rewrite: "/"
