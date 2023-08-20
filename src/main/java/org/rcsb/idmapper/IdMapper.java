@@ -16,8 +16,7 @@ public class IdMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IdMapper.class);
 
-    public static final int DEFAULT_HTTP_PORT = 8080;
-    public static final int DEFAULT_RSOCKET_PORT = 9000;
+
     public static final String TRANSLATE = "/translate";
     public static final String GROUP = "/group";
     public static final String ALL = "/all";
@@ -34,8 +33,8 @@ public class IdMapper {
 
         //TODO there may be multiple frontends e.g. one for RSocket, another for Undertow. Hence a factory will be needed
         var mapper = new JsonMapper().create();
-        var undertow = new UndertowFrontendImpl<>(backend, DEFAULT_HTTP_PORT, mapper);
-        var rsocket = new RSocketFrontendImpl<>(backend, DEFAULT_RSOCKET_PORT, mapper);
+        var undertow = new UndertowFrontendImpl<>(backend, AppConfigs.DEFAULT_HTTP_PORT, mapper);
+        var rsocket = new RSocketFrontendImpl<>(backend, AppConfigs.DEFAULT_RSOCKET_PORT, mapper);
 
         try {
             backend.initialize();
