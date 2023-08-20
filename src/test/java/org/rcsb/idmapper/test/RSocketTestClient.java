@@ -18,12 +18,12 @@ import static org.rcsb.idmapper.IdMapper.GROUP;
 //TODO use test containers library to spin up this container (possibly with some limited data provider) and run the tests
 public class RSocketTestClient {
     public static void main(String[] args) {
+        RSocketConnector.create()
+                .payloadDecoder(PayloadDecoder.ZERO_COPY);
         RSocket client =
-                RSocketConnector.create()
-                        .payloadDecoder(PayloadDecoder.ZERO_COPY)
-                        .connectWith(TcpClientTransport.create(IdMapper.DEFAULT_RSOCKET_PORT)).block();
-
-
+                RSocketConnector
+                        .connectWith(TcpClientTransport.create(IdMapper.DEFAULT_RSOCKET_PORT))
+                        .block();
 
         GroupInput groupInput = new GroupInput();
 

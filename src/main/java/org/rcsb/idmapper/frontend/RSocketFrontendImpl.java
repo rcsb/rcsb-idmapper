@@ -23,22 +23,23 @@ import java.util.concurrent.CompletableFuture;
 import static org.rcsb.idmapper.IdMapper.*;
 
 public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements Frontend {
-    private final int port;
     private RSocketServer server;
     private Disposable disposable;
     private final ServerTransport<CloseableChannel> transport;
 
-    private RSocket rSocket = new RSocket() {
+    private final RSocket rSocket = new RSocket() {
+        private Input extractInput(Payload payload) {
 
-        private Input extractInput(Payload payload){
-
-            switch (payload.getMetadataUtf8()){
-                case TRANSLATE:
+            switch (payload.getMetadataUtf8()) {
+                case TRANSLATE -> {
                     return mapper.fromJson(payload.getDataUtf8(), TranslateInput.class);
-                case GROUP:
+                }
+                case GROUP -> {
                     return mapper.fromJson(payload.getDataUtf8(), GroupInput.class);
-                case ALL:
+                }
+                case ALL -> {
                     return mapper.fromJson(payload.getDataUtf8(), AllInput.class);
+                }
             }
             throw new IllegalArgumentException(String.format("Unknown command: %s", payload.getDataUtf8()));
         }
@@ -55,7 +56,6 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
     private final BackendImpl backend;
 
     public RSocketFrontendImpl(BackendImpl backend, int port, Gson m) {
-        this.port = port;
         this.transport = TcpServerTransport.create("0.0.0.0", port);
         this.backend = backend;
         this.mapper = m;

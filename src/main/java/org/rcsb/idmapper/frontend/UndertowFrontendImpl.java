@@ -71,7 +71,7 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
         server.stop();
     }
 
-    private class IamOkHandler implements HttpHandler {
+    private static class IamOkHandler implements HttpHandler {
         @Override
         public void handleRequest(HttpServerExchange exchange) throws Exception {
             exchange.getResponseHeaders()
