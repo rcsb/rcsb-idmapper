@@ -7,7 +7,7 @@ import io.rsocket.core.RSocketConnector;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.util.ByteBufPayload;
-import org.rcsb.idmapper.IdMapper;
+import org.rcsb.idmapper.AppConfigs;
 import org.rcsb.idmapper.input.GroupInput;
 import org.rcsb.idmapper.input.Input;
 
@@ -22,7 +22,7 @@ public class RSocketTestClient {
                 .payloadDecoder(PayloadDecoder.ZERO_COPY);
         RSocket client =
                 RSocketConnector
-                        .connectWith(TcpClientTransport.create(IdMapper.DEFAULT_RSOCKET_PORT))
+                        .connectWith(TcpClientTransport.create(AppConfigs.DEFAULT_RSOCKET_PORT))
                         .block();
 
         GroupInput groupInput = new GroupInput();

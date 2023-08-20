@@ -1,6 +1,7 @@
 package org.rcsb.idmapper.test;
 
 import org.rcsb.common.constants.ContentType;
+import org.rcsb.idmapper.AppConfigs;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.Repository;
@@ -17,8 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.rcsb.idmapper.IdMapper.DEFAULT_HTTP_PORT;
-import static org.rcsb.idmapper.IdMapper.DEFAULT_RSOCKET_PORT;
 
 public class IdMapper {
     public static void main(String[] args) {
@@ -51,8 +50,8 @@ public class IdMapper {
 
         //TODO there may be multiple frontends e.g. one for RSocket, another for Undertow. Hence a factory will be needed
         var mapper = new JsonMapper().create();
-        var undertow = new UndertowFrontendImpl<>(backend, DEFAULT_HTTP_PORT, mapper);
-        var rsocket = new RSocketFrontendImpl<>(backend, DEFAULT_RSOCKET_PORT, mapper);
+        var undertow = new UndertowFrontendImpl<>(backend, AppConfigs.DEFAULT_HTTP_PORT, mapper);
+        var rsocket = new RSocketFrontendImpl<>(backend, AppConfigs.DEFAULT_RSOCKET_PORT, mapper);
 
         try {
             backend.initialize();
