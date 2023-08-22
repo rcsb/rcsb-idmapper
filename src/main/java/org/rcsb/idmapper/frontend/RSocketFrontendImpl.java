@@ -29,23 +29,28 @@ public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements 
 
     private final RSocket rSocket = new RSocket() {
         private Input extractInput(Payload payload) {
-
-            switch (payload.getMetadataUtf8()) {
-                case TRANSLATE -> {
-                    return mapper.fromJson(payload.getDataUtf8(), TranslateInput.class);
+            try {
+                switch (payload.getMetadataUtf8()) {
+                    case TRANSLATE -> {
+                        return mapper.fromJson(payload.getDataUtf8(), TranslateInput.class);
+                    }
+                    case GROUP -> {
+                        return mapper.fromJson(payload.getDataUtf8(), GroupInput.class);
+                    }
+                    case ALL -> {
+                        return mapper.fromJson(payload.getDataUtf8(), AllInput.class);
+                    }
                 }
-                case GROUP -> {
-                    return mapper.fromJson(payload.getDataUtf8(), GroupInput.class);
-                }
-                case ALL -> {
-                    return mapper.fromJson(payload.getDataUtf8(), AllInput.class);
-                }
+                throw new IllegalArgumentException(String.format("Unknown request type: %s", payload.getDataUtf8()));
+            } finally {
+                // IMPORTANT: Received payloads must be explicitly released as soon as no longer needed by downstream
+                // to prevent resource leak
+                payload.release();
             }
-            throw new IllegalArgumentException(String.format("Unknown command: %s", payload.getDataUtf8()));
         }
         @Override
-        public Mono<Payload> requestResponse(final Payload incoming) {
-            return Mono.just(incoming)
+        public Mono<Payload> requestResponse(final Payload incomingPayload) {
+            return Mono.just(incomingPayload)
                     .map(this::extractInput)
                     .flatMap(backend::dispatch)
                     .map(output -> DefaultPayload.create(mapper.toJson(output)));//TODO maps chain may affect performance
