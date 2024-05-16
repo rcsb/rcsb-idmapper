@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-public class IdMapper {
+public class IdMapperServer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IdMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IdMapperServer.class);
 
 
     public static final String TRANSLATE = "/translate";

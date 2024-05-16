@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-import static org.rcsb.idmapper.IdMapper.*;
+import static org.rcsb.idmapper.IdMapperServer.*;
 
 public class RSocketFrontendImpl<T extends FrontendContext<Payload>> implements Frontend {
     private RSocketServer server;

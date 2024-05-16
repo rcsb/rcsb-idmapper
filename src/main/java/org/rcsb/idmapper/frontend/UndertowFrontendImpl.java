@@ -9,7 +9,7 @@ import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.util.AttachmentKey;
 import io.undertow.util.Headers;
-import org.rcsb.idmapper.IdMapper;
+import org.rcsb.idmapper.IdMapperServer;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.input.AllInput;
 import org.rcsb.idmapper.input.GroupInput;
@@ -34,13 +34,13 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
 
     private final HttpHandler rootHandler = new RoutingHandler()
             .get("/", new IamOkHandler())
-            .post(IdMapper.TRANSLATE, new BlockingHandler(//effectively offloads to XNIO thread, hence thread per request model :(
+            .post(IdMapperServer.TRANSLATE, new BlockingHandler(//effectively offloads to XNIO thread, hence thread per request model :(
                     new ExtractJson<>(TranslateInput.class,
                             new TaskDispatcherHandler(new SendResponseHandler()))))
-            .post(IdMapper.GROUP, new BlockingHandler(
+            .post(IdMapperServer.GROUP, new BlockingHandler(
                     new ExtractJson<>(GroupInput.class,
                             new TaskDispatcherHandler(new SendResponseHandler()))))
-            .post(IdMapper.ALL, new BlockingHandler(
+            .post(IdMapperServer.ALL, new BlockingHandler(
                     new ExtractJson<>(AllInput.class,
                             new TaskDispatcherHandler(new SendResponseHandler()))));
 

@@ -13,7 +13,7 @@ import org.rcsb.idmapper.input.Input;
 
 import java.util.List;
 
-import static org.rcsb.idmapper.IdMapper.GROUP;
+import static org.rcsb.idmapper.IdMapperServer.GROUP;
 
 //TODO use test containers library to spin up this container (possibly with some limited data provider) and run the tests
 public class RSocketTestClient {
