@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.rcsb</groupId>
-    <artifactId>rcsb-id-mapper</artifactId>
+    <artifactId>rcsb-idmapper</artifactId>
     <version>0.0.44-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -198,6 +198,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>rcsb-id-mapper</finalName>
+        <finalName>rcsb-idmapper</finalName>
     </build>
 </project>

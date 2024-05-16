@@ -27,4 +27,4 @@ jobs:
       patch: ${{ inputs.patch }}
       skip-tests: ${{ inputs.skip-tests }}
       distribution: "production_idmapper"
-      type: "skip"
+      type: "jar"
