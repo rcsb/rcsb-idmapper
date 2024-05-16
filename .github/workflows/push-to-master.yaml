@@ -10,4 +10,4 @@ jobs:
     uses: rcsb/devops-cicd-github-actions/.github/workflows/push-to-master.yaml@master
     with:
       distribution: "production_idmapper"
-      type: "jar"
+      type: "skip"
