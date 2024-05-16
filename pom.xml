@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.rcsb</groupId>
-    <artifactId>IdMapper</artifactId>
+    <artifactId>rcsb-id-mapper</artifactId>
     <version>0.0.44-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -16,11 +16,11 @@
         <slf4j-api.version>2.0.6</slf4j-api.version>
         <log4j.version>2.20.0</log4j.version>
         <mongodb-driver.version>4.9.0</mongodb-driver.version>
-        <guava.version>31.1-jre</guava.version>
-        <rcsb.common.version>2.7.0</rcsb.common.version>
-        <rcsb.idmapper.client.version>0.0.1</rcsb.idmapper.client.version>
-        <rcsb.mojave.model.version>1.42.8</rcsb.mojave.model.version>
-        <undertow.version>2.3.8.Final</undertow.version>
+        <guava.version>32.0.0-android</guava.version>
+        <rcsb.common.version>2.7.4</rcsb.common.version>
+        <rcsb.idmapper.client.version>0.0.10</rcsb.idmapper.client.version>
+        <rcsb.mojave.model.version>1.47.1</rcsb.mojave.model.version>
+        <undertow.version>2.3.13.Final</undertow.version>
         <rsocket.version>1.1.4</rsocket.version>
         <gson.version>2.10.1</gson.version>
         <jib.version>3.3.1</jib.version>
@@ -148,13 +148,34 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+            <!-- Needed to build a runnable jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>shade-jar-with-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.rcsb.idmapper.IdMapperServer</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>${jib.version}</version>
                 <configuration>
                     <container>
-                        <mainClass>org.rcsb.idmapper.IdMapper</mainClass>
+                        <mainClass>org.rcsb.idmapper.IdMapperServer</mainClass>
                         <ports>
                             <port>8080</port>
                             <port>9000</port>
@@ -175,35 +196,6 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>rcsb-id-mapper</finalName>
     </build>
-
-    <profiles>
-        <profile>
-            <id>test-container</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.google.cloud.tools</groupId>
-                        <artifactId>jib-maven-plugin</artifactId>
-                        <version>${jib.version}</version>
-                        <configuration>
-                            <container>
-                                <mainClass>org.rcsb.idmapper.TestIdMapper</mainClass>
-                                <ports>
-                                    <port>8080</port>
-                                    <port>9000</port>
-                                </ports>
-                            </container>
-                            <to>
-                                <image>harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper</image>
-                                <tags>
-                                    <tag>test-container</tag>
-                                </tags>
-                            </to>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
