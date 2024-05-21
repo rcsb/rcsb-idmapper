@@ -1,10 +1,3 @@
-
-
-number_of_replicas: 1
-http_port: 8080
-rsocket_port: 9000
-mongodb_uri: "mongodb://updater:w31teQuerie5@132.249.213.115:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000"
-
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -29,23 +22,20 @@ image:
 
 # externalSecret defines values for the ExternalSecret resource if your application needs to pull values
 # from an external Vault service.
-# TODO: Review externalSecret values as required.
 externalSecret:
   enabled: true
   secretStoreRefName: "rcsb-vault"
-  targets:
-    - secretName: rcsb-idmapper-a-env-vars
-      data:
-        - secretKey: mongodb_uri
-          remoteRef:
-            key: parks/production
-            property: idmapper.a.env
-    - secretName: rcsb-idmapper-b-env-vars
-      data:
-        - secretKey: mongodb_uri
-          remoteRef:
-            key: parks/production
-            property: idmapper.b.env
+  target:
+    secretName: rcsb-idmapper-env-vars
+  data:
+    - secretKey: mongodb_uri_a
+      remoteRef:
+        key: parks/production
+        property: idmapper.a.env
+    - secretKey: mongodb_uri_b
+      remoteRef:
+        key: parks/production
+        property: idmapper.b.env
 
 # imagePullSecrets is the Secret resource which contains the credentials to connect to Docker
 # to pull images from private Harbor projects. If the image for your Helm chart is not from a
@@ -94,7 +84,8 @@ readinessProbe:
 # service declares the type of Service resource to be created, as well as the target port of the Pod to send requests.
 service:
   type: ClusterIP
-  port: 8080
+  port: 80
+  targetPort: 8080
 
 # ingress declares the Ingress resource to be created and allow access to the service from the external internet.
 # Set ingress.enabled to true to create this Ingress resource. Double-check the host values for your application.

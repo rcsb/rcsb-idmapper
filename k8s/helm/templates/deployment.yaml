@@ -40,7 +40,7 @@ spec:
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ $.Values.service.port }}
+              containerPort: {{ $.Values.service.targetPort }}
               protocol: TCP
           {{- if $.Values.livenessProbe.enable }}
           livenessProbe:
@@ -62,6 +62,12 @@ spec:
           {{- end }}
           resources:
             {{- toYaml $.Values.resources | nindent 12 }}
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.externalSecret.target.secretName }}
+                  key: mongodb_uri_{{ . }}
           {{- if or $.Values.usePersistentVolume $.Values.useSecretsVolume $.Values.useAppConfigs }}
           volumeMounts:
             {{- if $.Values.usePersistentVolume }}
