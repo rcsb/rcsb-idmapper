@@ -17,7 +17,6 @@ metadata:
 spec:
   ingressClassName: {{ $.Values.ingress.className }}
   tls:
-    - secretName: {{ $.Values.ingress.tls.secretName }}-{{ $path }}
     - hosts:
       {{- if eq $path "a" }}
       {{- range $.Values.ingress.tls.hostsA }}
@@ -28,6 +27,7 @@ spec:
       - {{ . }}
       {{- end }}
       {{- end }}
+      secretName: {{ $.Values.ingress.tls.secretName }}-{{ $path }}
   rules:
     {{- if eq $path "a" }}
     {{- range $.Values.ingress.hostsA }}
