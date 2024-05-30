@@ -18,21 +18,3 @@ spec:
     {{- include "helm_chart.selectorLabels" $ | nindent 4 }}
     rcsb.org/path: {{ . | quote }}
 {{- end }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "helm_chart.fullname" . }}
-  annotations:
-    rcsb.org/path-operator-managed: "true"
-  labels:
-    {{- include "helm_chart.labels" . | nindent 4 }}
-spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
-      protocol: TCP
-      name: http
-  selector:
-    {{- include "helm_chart.selectorLabels" . | nindent 4 }}

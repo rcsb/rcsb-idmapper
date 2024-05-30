@@ -1,30 +1,36 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "helm_chart.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
+{{- $labels := include "helm_chart.labels" . | nindent 4 }}
+{{- range $path := tuple "a" "b" }}
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "helm_chart.fullname" . }}
+  name: {{ $fullName }}-{{ $path }}
   labels:
-    {{- include "helm_chart.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+    {{- $labels }}
+  {{- with $.Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.className }}
-  {{- if .Values.ingress.tls }}
+  ingressClassName: {{ $.Values.ingress.className }}
   tls:
-    {{- range .Values.ingress.tls }}
+    - secretName: {{ $.Values.ingress.tls.secretName }}-{{ $path }}
     - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
-  {{- end }}
+      {{- if eq $path "a" }}
+      {{- range $.Values.ingress.tls.hostsA }}
+      - {{ . }}
+      {{- end }}
+      {{ else }}
+      {{- range $.Values.ingress.tls.hostsB }}
+      - {{ . }}
+      {{- end }}
+      {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
+    {{- if eq $path "a" }}
+    {{- range $.Values.ingress.hostsA }}
     - host: {{ .host | quote }}
       http:
         paths:
@@ -33,9 +39,26 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $fullName }}
+                name: {{ $fullName }}-{{ $path }}
                 port:
                   number: {{ $svcPort }}
           {{- end }}
     {{- end }}
+    {{ else }}
+    {{- range $.Values.ingress.hostsB }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ $fullName }}-{{ $path }}
+                port:
+                  number: {{ $svcPort }}
+          {{- end }}
+    {{- end }}
+    {{- end }}
+{{- end }}
 {{- end }}
