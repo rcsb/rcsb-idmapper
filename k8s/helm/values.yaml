@@ -94,6 +94,7 @@ ingress:
   className: "haproxy"
   annotations:
     cert-manager.io/cluster-issuer: rutgers-acme
+    haproxy.org/allow-list: "128.6.158.0/23, 132.249.210.0/24, 132.249.213.0/24"
   kubernetes.io/tls-acme: "true"
   hostsA:
     - host: idmapper-a.east.k8s.rcsb.org
