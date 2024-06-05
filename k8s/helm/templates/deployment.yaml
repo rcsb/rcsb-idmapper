@@ -60,6 +60,14 @@ spec:
               path: {{ $.Values.readinessProbe.http.path }}
               port: http
           {{- end }}
+          {{- if $.Values.startupProbe.enable }}
+          startupProbe:
+            periodSeconds: {{ $.Values.startupProbe.periodSeconds }}
+            failureThreshold: {{ $.Values.startupProbe.failureThreshold }}
+            httpGet:
+              path: {{ $.Values.startupProbe.http.path }}
+              port: http
+          {{- end }}
           resources:
             {{- toYaml $.Values.resources | nindent 12 }}
           env:

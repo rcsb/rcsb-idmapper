@@ -68,16 +68,22 @@ securityContext:
 # TODO: Enable/disable probes as required, and set appropriate values.
 livenessProbe:
   enable: true
-  initialDelaySeconds: 300
-  periodSeconds: 30
+  initialDelaySeconds: 30
+  periodSeconds: 10
   failureThreshold: 6
   http:
     path: /
 readinessProbe:
   enable: true
-  initialDelaySeconds: 300
-  periodSeconds: 30
+  initialDelaySeconds: 30
+  periodSeconds: 10
   failureThreshold: 6
+  http:
+    path: /
+startupProbe:
+  enable: true
+  periodSeconds: 120
+  failureThreshold: 15
   http:
     path: /
 
