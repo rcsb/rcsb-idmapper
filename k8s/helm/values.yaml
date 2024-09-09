@@ -3,7 +3,7 @@
 
 # Number of running Pods managed by this Helm chart's Deployment resource.
 # If using autoscaling, comment or remove this value.
-replicaCount: 1
+replicaCount: 2
 
 # Configure a HorizontalPodAutoscaler resource for this Helm chart's Deployment resource.
 # Set autoscaling.enabled to true to enable this functionality. If using this resource,
