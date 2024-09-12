@@ -4,6 +4,8 @@
 # Number of running Pods managed by this Helm chart's Deployment resource.
 # If using autoscaling, comment or remove this value.
 replicaCount: 2
+# Enable anti affinity to prevent pods from running on the same node
+enablePodAntiAffinity: true
 
 # Configure a HorizontalPodAutoscaler resource for this Helm chart's Deployment resource.
 # Set autoscaling.enabled to true to enable this functionality. If using this resource,

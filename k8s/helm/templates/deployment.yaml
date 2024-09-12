@@ -32,6 +32,17 @@ spec:
       imagePullSecrets:
         - name: {{ . }}
       {{- end }}
+      {{- if $.Values.enablePodAntiAffinity }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    {{- include "helm_chart.selectorLabels" $ | nindent 6 }}
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      {{- end }}
       containers:
         - name: {{ $.Chart.Name }}
           securityContext:
