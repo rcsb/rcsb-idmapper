@@ -15,7 +15,7 @@
         <slf4j.version>2.0.5</slf4j.version>
         <slf4j-api.version>2.0.6</slf4j-api.version>
         <log4j.version>2.20.0</log4j.version>
-        <mongodb-driver.version>5.1.0</mongodb-driver.version>
+        <mongodb-driver.version>5.2.0</mongodb-driver.version>
         <guava.version>32.0.0-android</guava.version>
         <rcsb.common.version>2.7.4</rcsb.common.version>
         <rcsb.idmapper.client.version>0.0.10</rcsb.idmapper.client.version>
