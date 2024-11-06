@@ -4,10 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.rcsb.idmapper.input.Input;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -49,7 +46,7 @@ public class GroupRepository extends AnyRepository {
         if (cutoff != null)
             return similarity.get(method).get(cutoff).get(mId);
         else
-            return identity.get(method).get(mId);
+            return identity.get(method).asMap().getOrDefault(mId, new ArrayList<>());
     }
 
     public Long countGroups(Input.AggregationMethod method) {

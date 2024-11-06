@@ -50,7 +50,7 @@ public abstract class CollectionTask {
         return Flux.from(publisher)
                 .doOnSubscribe(s -> logger.info("Subscribed document task to collection [ {} ]", collectionName))
                 //TODO replace with async debug or remove entirely before prod
-                //.doOnNext(d -> logger.info("Processing document from [ {} ]", collectionName))
+//                .doOnNext(d -> logger.info("Processing document from [ {} ]", collectionName))
                 .doOnError(t -> logger.error(t.getMessage()))
                 .doOnComplete(() -> logger.info("Processed documents from [ {} ] collection ", collectionName))
                 .map(this::createDocumentRunnable);
