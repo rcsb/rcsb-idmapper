@@ -10,12 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
 public class IdMapperServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IdMapperServer.class);
-
 
     public static final String TRANSLATE = "/translate";
     public static final String GROUP = "/group";
@@ -37,6 +37,11 @@ public class IdMapperServer {
         var rsocket = new RSocketFrontendImpl<>(backend, AppConfigs.DEFAULT_RSOCKET_PORT, mapper);
 
         try {
+
+            final Properties properties = new Properties();
+            properties.load(IdMapperServer.class.getClassLoader().getResourceAsStream("project.properties"));
+            LOGGER.info("==> Application version is {}", properties.get("version"));
+
             backend.initialize();
             undertow.initialize();
             rsocket.initialize();

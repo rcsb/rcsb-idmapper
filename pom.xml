@@ -19,8 +19,8 @@
         <guava.version>32.0.0-android</guava.version>
         <rcsb.common.version>2.7.4</rcsb.common.version>
         <rcsb.idmapper.client.version>0.0.10</rcsb.idmapper.client.version>
-        <rcsb.mojave.model.version>1.47.1</rcsb.mojave.model.version>
-        <undertow.version>2.3.13.Final</undertow.version>
+        <rcsb.mojave.model.version>1.48.0</rcsb.mojave.model.version>
+        <undertow.version>2.3.18.Final</undertow.version>
         <rsocket.version>1.1.4</rsocket.version>
         <gson.version>2.10.1</gson.version>
         <jib.version>3.3.1</jib.version>
@@ -138,6 +138,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
