@@ -18,7 +18,7 @@ autoscaling:
 # TODO: Ensure the repository/image name is correct.
 image:
   repository: "harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper"
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "production"
 
