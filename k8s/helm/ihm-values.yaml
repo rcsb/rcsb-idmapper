@@ -103,7 +103,7 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: rutgers-acme
     haproxy.org/allow-list: >-
-      "128.6.158.0/23, 132.249.210.0/24, 132.249.213.0/24"
+      "128.6.158.0/23, 132.249.210.0/24, 132.249.213.0/24, 137.110.134.0/24"
   kubernetes.io/tls-acme: "true"
   hostsA:
     - host: idmapper-a.ihm.east.k8s.rcsb.org
