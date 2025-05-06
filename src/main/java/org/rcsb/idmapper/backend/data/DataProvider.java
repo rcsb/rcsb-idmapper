@@ -62,7 +62,8 @@ public class DataProvider {
                         new ComponentsCollectionTask(r).findDocuments(db),
                         new DepositGroupCollectionTask(r).findDocuments(db),
                         new SequenceGroupCollectionTask(r).findDocuments(db),
-                        new UniprotGroupCollectionTask(r).findDocuments(db)
+                        new UniprotGroupCollectionTask(r).findDocuments(db),
+                        new ChemCompGroupCollectionTask(r).findDocuments(db)
                 )
                 .subscribe(Runnable::run, findFuture::completeExceptionally, () -> findFuture.complete(null));
         var countFuture = new CompletableFuture<Void>();
@@ -74,7 +75,8 @@ public class DataProvider {
                         new ComponentsCollectionTask(r).countDocuments(db),
                         new DepositGroupCollectionTask(r).countDocuments(db),
                         new SequenceGroupCollectionTask(r).countDocuments(db),
-                        new UniprotGroupCollectionTask(r).countDocuments(db)
+                        new UniprotGroupCollectionTask(r).countDocuments(db),
+                        new ChemCompGroupCollectionTask(r).countDocuments(db)
                 )
                 .subscribe(Runnable::run, countFuture::completeExceptionally, () -> countFuture.complete(null));
 
