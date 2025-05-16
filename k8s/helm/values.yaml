@@ -141,9 +141,6 @@ resources: {}
   #   cpu: 100m
 #   memory: 128Mi
 
-# usePersistentVolume if your application requires a persistent volume resource for data storage.
-usePersistentVolume: false
-
 idMapperAppProperties:
   # mongoDbUriA the MongoDB URI pointing to DataWarehouse for channel A. Must have 2 %s placeholders for user/pwd
   mongoDbUriA:
