@@ -84,10 +84,7 @@ spec:
             {{- toYaml $.Values.resources | nindent 12 }}
           env:
             - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $.Values.externalSecret.target.secretName }}
-                  key: mongodb_uri_{{ . }}
+              value: {{ index $.Values.idMapperAppProperties.mongoDbUri . }}
           {{- if or $.Values.usePersistentVolume $.Values.useSecretsVolume $.Values.useAppConfigs }}
           volumeMounts:
             {{- if $.Values.usePersistentVolume }}

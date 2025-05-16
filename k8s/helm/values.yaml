@@ -142,7 +142,7 @@ resources: {}
 #   memory: 128Mi
 
 idMapperAppProperties:
-  # mongoDbUriA the MongoDB URI pointing to DataWarehouse for channel A. Must have 2 %s placeholders for user/pwd
-  mongoDbUriA:
-  # mongoDbUriB the MongoDB URI pointing to DataWarehouse for channel B. Must have 2 %s placeholders for user/pwd
-  mongoDbUriB:
+  # mongoDbUri the MongoDB URI pointing to DataWarehouse. Must have 2 %s placeholders for user/pwd
+  mongoDbUri:
+    a:
+    b:

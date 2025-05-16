@@ -111,3 +111,8 @@ resources: {}
   # requests:
 #   cpu: 100m
 #   memory: 128Mi
+
+idMapperAppProperties:
+  mongoDbUri:
+    a: mongodb://%s:%s@datawarehousea:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000
+    b: mongodb://%s:%s@datawarehouseb:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000
