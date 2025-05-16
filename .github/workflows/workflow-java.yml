@@ -1,0 +1,19 @@
+name: Run CI/CD Workflow
+
+on:
+  push:
+    paths-ignore:
+      - 'k8s/**'
+  workflow_dispatch:
+  # Wait on Release workflow so that there's no race condition in pushing to harbor
+  workflow_run:
+    workflows:
+      - "Push2Master"
+      - "Release"
+
+jobs:
+  run-workflow:
+    name: "Run automated workflow"
+    uses: rcsb/devops-cicd-github-actions/.github/workflows/workflow-java.yaml@master
+    with:
+      mainline_branch: master
