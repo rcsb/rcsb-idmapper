@@ -1,18 +1,8 @@
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# Number of running Pods managed by this Helm chart's Deployment resource.
-# If using autoscaling, comment or remove this value.
 replicaCount: 2
 revisionHistoryLimit: 3
 
-# Enable anti affinity to prevent pods from running on the same node
 enablePodAntiAffinity: true
 
-# Configure a HorizontalPodAutoscaler resource for this Helm chart's Deployment resource.
-# Set autoscaling.enabled to true to enable this functionality. If using this resource,
-# either choose to scale by targetCPUUtilizationPercentage or targetMemoryUtilizationPercentage
-# based on how you want the Deployment to scale, and comment or remove the other value option.
 autoscaling:
   enabled: false
 
@@ -22,7 +12,7 @@ image:
   repository: "harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "production"
 
 # externalSecret defines values for the ExternalSecret resource if your application needs to pull values
 # from an external Vault service.
@@ -41,23 +31,13 @@ externalSecret:
         key: parks/production
         property: idmapper.b.env
 
-# imagePullSecrets is the Secret resource which contains the credentials to connect to Docker
-# to pull images from private Harbor projects. If the image for your Helm chart is not from a
-# private Harbor project, you can exclude this value. Otherwise, leave this value as is.
 imagePullSecrets: "harbor-docker-registry-conf"
 
 deploymentStrategy:
-  #https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
-  #Type is either RollingUpdate or Recreate
   type: "RollingUpdate"
-  #For rolling update, what percentage of total pods can be created above desired amount
   maxSurge: 25%
-  #For rolling update, what percentage of total pods can be brought down to update
   maxUnavailable: 25%
 
-# securityContext sets the container security values of the Pod. These default values are the recommended
-# values for all applications. Adjust as needed for your application purposes, but be aware of the security
-# implications from these changes.
 securityContext:
   capabilities:
     drop:
@@ -66,9 +46,6 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
-# Define container liveness and readiness checks
-# A Pod is considered "live" when it is able to respond to client requests.
-# A Pod is considered "ready" when it has completed initialization and should be one of the backends for a K8s Service resource.
 # TODO: Enable/disable probes as required, and set appropriate values.
 livenessProbe:
   enable: true
@@ -91,14 +68,11 @@ startupProbe:
   http:
     path: /
 
-# service declares the type of Service resource to be created, as well as the target port of the Pod to send requests.
 service:
   type: ClusterIP
   port: 80
   targetPort: 8080
 
-# ingress declares the Ingress resource to be created and allow access to the service from the external internet.
-# Set ingress.enabled to true to create this Ingress resource. Double-check the host values for your application.
 ingress:
   enabled: true
   className: "haproxy"
@@ -146,17 +120,13 @@ ingress:
       - idmapper-b.west.k8s.rcsb.org
       - idmapper-b.rcsb.org
 
-# Define resource limits for your application. Especially important if you enable autoscaling for this Helm chart.
-# Deploy without limits first to test the application performance, then tune afterwards to ensure that autoscaling
-# will work as expected.
 # TODO: Review resource limit values.
 resources: {}
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
   # requests:
-  #   cpu: 100m
+#   cpu: 100m
 #   memory: 128Mi
 
-# usePersistentVolume if your application requires a persistent volume resource for data storage.
 usePersistentVolume: false
