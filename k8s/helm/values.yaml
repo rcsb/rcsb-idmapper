@@ -24,23 +24,6 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-# externalSecret defines values for the ExternalSecret resource if your application needs to pull values
-# from an external Vault service.
-externalSecret:
-  enabled: true
-  secretStoreRefName: "rcsb-vault"
-  target:
-    secretName: rcsb-idmapper-env-vars
-  data:
-    - secretKey: mongodb_uri_a
-      remoteRef:
-        key: parks/production
-        property: idmapper.a.env
-    - secretKey: mongodb_uri_b
-      remoteRef:
-        key: parks/production
-        property: idmapper.b.env
-
 # imagePullSecrets is the Secret resource which contains the credentials to connect to Docker
 # to pull images from private Harbor projects. If the image for your Helm chart is not from a
 # private Harbor project, you can exclude this value. Otherwise, leave this value as is.
@@ -160,3 +143,9 @@ resources: {}
 
 # usePersistentVolume if your application requires a persistent volume resource for data storage.
 usePersistentVolume: false
+
+idMapperAppProperties:
+  # mongoDbUriA the MongoDB URI pointing to DataWarehouse for channel A. Must have 2 %s placeholders for user/pwd
+  mongoDbUriA:
+  # mongoDbUriB the MongoDB URI pointing to DataWarehouse for channel B. Must have 2 %s placeholders for user/pwd
+  mongoDbUriB:

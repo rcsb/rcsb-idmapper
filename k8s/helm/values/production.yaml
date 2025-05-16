@@ -14,23 +14,6 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "production"
 
-# externalSecret defines values for the ExternalSecret resource if your application needs to pull values
-# from an external Vault service.
-externalSecret:
-  enabled: true
-  secretStoreRefName: "rcsb-vault"
-  target:
-    secretName: rcsb-idmapper-env-vars
-  data:
-    - secretKey: mongodb_uri_a
-      remoteRef:
-        key: parks/production
-        property: idmapper.a.env
-    - secretKey: mongodb_uri_b
-      remoteRef:
-        key: parks/production
-        property: idmapper.b.env
-
 imagePullSecrets: "harbor-docker-registry-conf"
 
 deploymentStrategy:
