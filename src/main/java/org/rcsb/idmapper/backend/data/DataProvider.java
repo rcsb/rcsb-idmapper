@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 
 import java.io.Closeable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -40,11 +42,12 @@ public class DataProvider {
         if (databaseName == null)
             throw new IllegalArgumentException("Database name must be provided in the connection string URI");
         MongoClient mongoClient;
+        String mongoUriRedacted = getMongoUriRedacted(connectionString);
         try {
             mongoClient = MongoClients.create(connectionString);
-            logger.info("Connected to Mongo database using: {}", connectionString);
+            logger.info("Connected to Mongo database using: {}", mongoUriRedacted);
         } catch (Exception e) {
-            logger.error("Unable to connect to Mongo database using: {}", connectionString);
+            logger.error("Unable to connect to Mongo database using: {}", mongoUriRedacted);
             throw e;
         }
         db = mongoClient.getDatabase(databaseName);
@@ -91,4 +94,26 @@ public class DataProvider {
         if (!state.isDataComplete())
             throw new Exception("Data completeness issue: "+state.getDataErrors());
     }
+
+    /**
+     * Redacts the username and password from a MongoDB URI, replacing them with asterisks.
+     *
+     * @param mongoUri the MongoDB connection URI containing the username and/or password
+     * @return a redacted version of the MongoDB URI with the username and password masked
+     */
+    private String getMongoUriRedacted(String mongoUri) {
+        ConnectionString uriObj = new ConnectionString(mongoUri);
+        String uriRedacted = mongoUri;
+        if (uriObj.getPassword() != null) {
+            // getPassword returns the URL-decoded (actual password). To do string replacement we have to do it with the encoded version of it which is what's inside the URI string
+            String pwd = String.valueOf(uriObj.getPassword());
+            String pwdEncoded = URLEncoder.encode(pwd, StandardCharsets.UTF_8);
+            uriRedacted = mongoUri.replace(pwdEncoded, "********");
+        }
+        if (uriObj.getUsername() != null) {
+            uriRedacted = uriRedacted.replace(uriObj.getUsername(), "********");
+        }
+        return uriRedacted;
+    }
+
 }
