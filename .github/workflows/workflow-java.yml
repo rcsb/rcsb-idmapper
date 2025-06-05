@@ -2,15 +2,10 @@ name: Run CI/CD Workflow
 
 on:
   push:
-    tags:
+    branches:
       - '*'
     paths-ignore:
       - 'k8s/**'
-  workflow_dispatch:
-  # Wait on push-to-master workflow (that calls release within it) so that there's no race condition in pushing to harbor
-  workflow_run:
-    workflows:
-      - 'Push2Master'
 
 jobs:
   run-workflow:
