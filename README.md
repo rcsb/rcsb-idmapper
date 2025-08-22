@@ -12,4 +12,3 @@ The URI connection scheme: `mongodb://username:password@host[:port]/database?aut
   - `database` Required. The name of the database to connect to
   - `authSource=admin` Required. The name of the database to authenticate
   - `options` Optional. Connection specific options
-
