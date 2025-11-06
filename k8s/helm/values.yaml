@@ -142,6 +142,8 @@ resources: {}
 #   memory: 128Mi
 
 idMapperAppProperties:
+  # mongoDwUser is the MongoDB DataWarehouse user name
+  mongoDwUser: readonly
   # mongoDbUri the MongoDB URI pointing to DataWarehouse. Must have 2 %s placeholders for user/pwd
   mongoDbUri:
     a:

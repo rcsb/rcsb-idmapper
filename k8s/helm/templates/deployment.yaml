@@ -85,11 +85,8 @@ spec:
           env:
             - name: MONGODB_URI
               value: {{ index $.Values.idMapperAppProperties.mongoDbUri . }}
-            - name: MONGODB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "helm_chart.fullname" $ }}-secret
-                  key: mongodb_user
+            - name: MONGO_USER
+              value: {{ $.Values.idMapperAppProperties.mongoDwUser }}
             - name: MONGODB_PWD
               valueFrom:
                 secretKeyRef:
