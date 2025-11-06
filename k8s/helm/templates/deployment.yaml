@@ -85,7 +85,7 @@ spec:
           env:
             - name: MONGODB_URI
               value: {{ index $.Values.idMapperAppProperties.mongoDbUri . }}
-            - name: MONGO_USER
+            - name: MONGODB_USER
               value: {{ $.Values.idMapperAppProperties.mongoDwUser }}
             - name: MONGODB_PWD
               valueFrom:
