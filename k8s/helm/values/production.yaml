@@ -114,5 +114,5 @@ resources: {}
 
 idMapperAppProperties:
   mongoDbUri:
-    a: mongodb+srv://%s:%s@production-mongodb-dw-a-svc.production.svc.cluster.local/admin?replicaSet=production-mongodb-dw-a&ssl=false&readPreference=secondaryPreferred
-    b: mongodb+srv://%s:%s@production-mongodb-dw-b-svc.production.svc.cluster.local/admin?replicaSet=production-mongodb-dw-b&ssl=false&readPreference=secondaryPreferred
+    a: mongodb+srv://%s:%s@production-mongodb-dw-a-svc.production.svc.cluster.local/dw?replicaSet=production-mongodb-dw-a&ssl=false&readPreference=secondaryPreferred
+    b: mongodb+srv://%s:%s@production-mongodb-dw-b-svc.production.svc.cluster.local/dw?replicaSet=production-mongodb-dw-b&ssl=false&readPreference=secondaryPreferred
