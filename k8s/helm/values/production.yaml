@@ -67,42 +67,35 @@ ingress:
       209.177.156.77/32, 147.75.68.120/29, 163.114.227.0/24, 163.114.228.0/24, 163.114.224.0/24, 147.75.66.200/29,
       163.114.230.0/24, 163.114.232.0/24
   kubernetes.io/tls-acme: "true"
-  hostsA:
-    - host: idmapper-a.east.k8s.rcsb.org
+  hosts:
+    - host: idmapper.rcsb.org
       paths:
         - path: /
           pathType: ImplementationSpecific
-    - host: idmapper-a.west.k8s.rcsb.org
+    - host: idmapper-west.rcsb.org
       paths:
         - path: /
           pathType: ImplementationSpecific
-    - host: idmapper-a.rcsb.org
+    - host: idmapper-east.rcsb.org
       paths:
         - path: /
           pathType: ImplementationSpecific
-  hostsB:
-    - host: idmapper-b.east.k8s.rcsb.org
+    - host: idmapper.west.k8s.rcsb.org
       paths:
         - path: /
           pathType: ImplementationSpecific
-    - host: idmapper-b.west.k8s.rcsb.org
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-    - host: idmapper-b.rcsb.org
+    - host: idmapper.east.k8s.rcsb.org
       paths:
         - path: /
           pathType: ImplementationSpecific
   tls:
     secretName: rcsb-idmapper-tls
-    hostsA:
-      - idmapper-a.east.k8s.rcsb.org
-      - idmapper-a.west.k8s.rcsb.org
-      - idmapper-a.rcsb.org
-    hostsB:
-      - idmapper-b.east.k8s.rcsb.org
-      - idmapper-b.west.k8s.rcsb.org
-      - idmapper-b.rcsb.org
+    hosts:
+      - idmapper.rcsb.org
+      - idmapper-west.rcsb.org
+      - idmapper-east.rcsb.org
+      - idmapper.west.k8s.rcsb.org
+      - idmapper.east.k8s.rcsb.org
 
 # TODO: Review resource limit values.
 resources: {}
