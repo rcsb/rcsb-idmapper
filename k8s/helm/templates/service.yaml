@@ -31,7 +31,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.containerPort }}
+      targetPort: {{ $.Values.service.targetPort }}
       protocol: TCP
   selector:
     {{- include "helm_chart.selectorLabels" . | nindent 4 }}
