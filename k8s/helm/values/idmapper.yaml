@@ -1,0 +1,112 @@
+replicaCount: 2
+revisionHistoryLimit: 3
+
+enablePodAntiAffinity: true
+
+autoscaling:
+  enabled: false
+
+# The Docker image reference which this Helm chart will run.
+# TODO: Ensure the repository/image name is correct.
+image:
+  repository: "harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper"
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "production"
+
+imagePullSecrets: "harbor-docker-registry-conf"
+
+deploymentStrategy:
+  type: "RollingUpdate"
+  maxSurge: 25%
+  maxUnavailable: 25%
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# TODO: Enable/disable probes as required, and set appropriate values.
+livenessProbe:
+  enable: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 6
+  http:
+    path: /
+readinessProbe:
+  enable: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 6
+  http:
+    path: /
+startupProbe:
+  enable: true
+  periodSeconds: 300
+  failureThreshold: 4
+  http:
+    path: /
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: haproxy
+  annotations:
+    cert-manager.io/cluster-issuer: rutgers-acme
+    kubernetes.io/tls-acme: "true"
+    # The non-UCSD/Rutgers subnets are for NS1 monitors
+    haproxy.org/allow-list: >-
+      128.6.158.0/23, 132.249.210.0/24, 132.249.213.0/24, 163.114.226.0/24, 163.114.225.0/24,
+      209.177.156.77/32, 147.75.68.120/29, 163.114.227.0/24, 163.114.228.0/24, 163.114.224.0/24, 147.75.66.200/29,
+      163.114.230.0/24, 163.114.232.0/24
+  hosts:
+    - host: idmapper.rcsb.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: idmapper-west.rcsb.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: idmapper-east.rcsb.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: idmapper.west.k8s.rcsb.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - host: idmapper.east.k8s.rcsb.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - idmapper.rcsb.org
+        - idmapper-west.rcsb.org
+        - idmapper-east.rcsb.org
+        - idmapper.west.k8s.rcsb.org
+        - idmapper.east.k8s.rcsb.org
+      secretName: rcsb-idmapper-tls
+
+# TODO: Review resource limit values.
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+idMapperAppProperties:
+  mongoDbUri:
+    a: mongodb://%s:%s@production-mongodb-dw-a-svc.production.svc.cluster.local:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+    b: mongodb://%s:%s@production-mongodb-dw-b-svc.production.svc.cluster.local:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
