@@ -7,7 +7,6 @@ autoscaling:
   enabled: false
 
 # The Docker image reference which this Helm chart will run.
-# TODO: Ensure the repository/image name is correct.
 image:
   repository: "harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper"
   pullPolicy: Always
@@ -29,7 +28,6 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
-# TODO: Enable/disable probes as required, and set appropriate values.
 livenessProbe:
   enable: true
   initialDelaySeconds: 30
@@ -57,7 +55,7 @@ service:
   targetPort: 8080
 
 ingress:
-  enabled: true
+  enabled: false
   className: haproxy
   annotations:
     cert-manager.io/cluster-issuer: rutgers-acme
@@ -97,14 +95,13 @@ ingress:
         - idmapper.east.k8s.rcsb.org
       secretName: rcsb-idmapper-tls
 
-# TODO: Review resource limit values.
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-#   cpu: 100m
-#   memory: 128Mi
+resources:
+  limits:
+    cpu: 300m
+    memory: 40Gi
+  requests:
+    cpu: 1m
+    memory: 32Gi
 
 idMapperAppProperties:
   mongoDbUri:
