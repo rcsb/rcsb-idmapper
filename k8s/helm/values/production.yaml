@@ -44,8 +44,8 @@ readinessProbe:
     path: /
 startupProbe:
   enable: true
-  periodSeconds: 300
-  failureThreshold: 4
+  periodSeconds: 60
+  failureThreshold: 15
   http:
     path: /
 
