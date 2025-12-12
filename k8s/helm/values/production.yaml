@@ -95,13 +95,13 @@ ingress:
         - idmapper.east.k8s.rcsb.org
       secretName: rcsb-idmapper-tls
 
-resources:
-  limits:
-    cpu: 500m
-    memory: 40Gi
-  requests:
-    cpu: 1m
-    memory: 32Gi
+resources: {}
+#  limits:
+#    cpu: 500m
+#    memory: 40Gi
+#  requests:
+#    cpu: 1m
+#    memory: 32Gi
 
 idMapperAppProperties:
   mongoDbUri:
