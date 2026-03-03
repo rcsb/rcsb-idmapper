@@ -92,9 +92,7 @@ public class DataProvider {
             );
             case CORE_CSM -> java.util.List.of(
                     new EntryCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, r),
-                    new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, r),
-                    new NonPolymerEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_NONPOLYMER_ENTITY, r),
-                    new BranchedEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_BRANCHED_ENTITY, r)
+                    new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, r)
             );
             case DW -> java.util.List.of(
                     new ComponentsCollectionTask(MongoCollections.COLL_CHEM_COMP, r),
