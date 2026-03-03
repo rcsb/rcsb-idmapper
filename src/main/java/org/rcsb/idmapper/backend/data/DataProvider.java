@@ -12,7 +12,6 @@ import reactor.core.publisher.Flux;
 import java.io.Closeable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -28,51 +27,82 @@ import java.util.concurrent.CompletableFuture;
  */
 public class DataProvider {
 
+
     private final Logger logger = LoggerFactory.getLogger(DataProvider.class);
+    private final String connectionString;
+    private MongoDatabase db;
 
-    private final String connectionStringDw;
-    private final String connectionStringPdbxCore;
-    private final String connectionStringPdbxCompModelCore;
-
-    private MongoDatabase dbDw;
-    private MongoDatabase dbPdbxCore;
-    private MongoDatabase dbPdbxCompModelCore;
-
-    public DataProvider(String connectionStringDw,
-                        String connectionStringPdbxCore,
-                        String connectionStringPdbxCompModelCore) {
-        this.connectionStringDw = connectionStringDw;
-        this.connectionStringPdbxCore = connectionStringPdbxCore;
-        this.connectionStringPdbxCompModelCore = connectionStringPdbxCompModelCore;
+    public DataProvider(String connectionString) {
+        this.connectionString = connectionString;
     }
 
     public Closeable connect() {
-        List<MongoClient> mongoClients = new java.util.ArrayList<>();
-        dbDw = connectTo(connectionStringDw, "dw", mongoClients);
-        dbPdbxCore = connectTo(connectionStringPdbxCore, "pdbx_core", mongoClients);
-        dbPdbxCompModelCore = connectTo(connectionStringPdbxCompModelCore, "pdbx_comp_model_core", mongoClients);
-        return () -> {
-            for (MongoClient client : mongoClients) {
-                client.close();
-            }
-        };
+        var databaseName = new ConnectionString(connectionString).getDatabase();
+        if (databaseName == null)
+            throw new IllegalArgumentException("Database name must be provided in the connection string URI");
+        MongoClient mongoClient;
+        String mongoUriRedacted = getMongoUriRedacted(connectionString);
+        try {
+            mongoClient = MongoClients.create(connectionString);
+            logger.info("Connected to Mongo database using: {}", mongoUriRedacted);
+        } catch (Exception e) {
+            logger.error("Unable to connect to Mongo database using: {}", mongoUriRedacted);
+            throw e;
+        }
+        db = mongoClient.getDatabase(databaseName);
+        return mongoClient;
     }
 
-    public CompletableFuture<Void> initialize(Repository r) {
-        logger.info("Initializing data provider");
-        if (dbDw == null || dbPdbxCore == null || dbPdbxCompModelCore == null) {
-            throw new IllegalStateException("DataProvider not connected. Call connect() before initialize().");
-        }
+    public enum TaskProfile {
+        CORE_PDB,
+        CORE_CSM,
+        DW
+    }
 
-        CompletableFuture<Void> pdbxCoreFuture = runPdbxTasks(dbPdbxCore, r, "pdbx_core");
-        CompletableFuture<Void> pdbxCompModelFuture = pdbxCoreFuture.thenCompose(v ->
-                runPdbxTasks(dbPdbxCompModelCore, r, "pdbx_comp_model_core"));
-        CompletableFuture<Void> dwFuture = runDwTasks(dbDw, r);
+    public CompletableFuture<Void> initialize(Repository r, TaskProfile profile) {
+        logger.info("Initializing data provider");
+        var findFuture = new CompletableFuture<Void>();
+        var tasks = getTasks(profile, r);
+        var findPublishers = tasks.stream()
+                .map(task -> (org.reactivestreams.Publisher<Runnable>) task.findDocuments(db))
+                .toList();
+        Flux.merge(findPublishers) //prefetch
+                .subscribe(ignored -> {}, findFuture::completeExceptionally, () -> findFuture.complete(null));
+        var countFuture = new CompletableFuture<Void>();
+        var countPublishers = tasks.stream()
+                .map(task -> (org.reactivestreams.Publisher<Runnable>) task.countDocuments(db))
+                .toList();
+        Flux.merge(countPublishers) //prefetch
+                .subscribe(ignored -> {}, countFuture::completeExceptionally, () -> countFuture.complete(null));
 
         return CompletableFuture.allOf(
-                pdbxCompModelFuture,
-                dwFuture
+                findFuture,
+                countFuture
         );
+    }
+
+    private java.util.List<CollectionTask> getTasks(TaskProfile profile, Repository r) {
+        return switch (profile) {
+            case CORE_PDB -> java.util.List.of(
+                    new EntryCollectionTask(r),
+                    new PolymerEntityCollectionTask(r),
+                    new NonPolymerEntityCollectionTask(r),
+                    new BranchedEntityCollectionTask(r)
+            );
+            case CORE_CSM -> java.util.List.of(
+                    new EntryCollectionTask(r),
+                    new PolymerEntityCollectionTask(r),
+                    new NonPolymerEntityCollectionTask(r),
+                    new BranchedEntityCollectionTask(r)
+            );
+            case DW -> java.util.List.of(
+                    new ComponentsCollectionTask(r),
+                    new DepositGroupCollectionTask(r),
+                    new SequenceGroupCollectionTask(r),
+                    new UniprotGroupCollectionTask(r),
+                    new ChemCompGroupCollectionTask(r)
+            );
+        };
     }
 
     public void postInitializationCheck(Repository repository) throws Exception { //TODO special exception class
@@ -101,66 +131,4 @@ public class DataProvider {
         }
         return uriRedacted;
     }
-
-    private MongoDatabase connectTo(String connectionString, String label, List<MongoClient> clients) {
-        var databaseName = new ConnectionString(connectionString).getDatabase();
-        logger.info("Connecting to Mongo database ({}) : {}", label, databaseName);
-
-        if (databaseName == null) {
-            throw new IllegalArgumentException("Database name must be provided in the connection string URI");
-        }
-        String mongoUriRedacted = getMongoUriRedacted(connectionString);
-        logger.info("Just for easy value checking - mongoUriRedacted ({}): {}", label, mongoUriRedacted);
-        logger.info("Just for easy value checking - connectionString ({}): {}", label, connectionString);
-
-        try {
-            MongoClient mongoClient = MongoClients.create(connectionString);
-            clients.add(mongoClient);
-            logger.info("Connected to Mongo database ({}) using: {}", label, mongoUriRedacted);
-            return mongoClient.getDatabase(databaseName);
-        } catch (Exception e) {
-            logger.error("Unable to connect to Mongo database ({}) using: {}", label, mongoUriRedacted);
-            throw e;
-        }
-    }
-
-    private CompletableFuture<Void> runPdbxTasks(MongoDatabase db, Repository r, String label) {
-        logger.info("Running PDBX tasks for {}", label);
-        List<CollectionTask> tasks = List.of(
-                new EntryCollectionTask(r),
-                new PolymerEntityCollectionTask(r),
-                new BranchedEntityCollectionTask(r),
-                new NonPolymerEntityCollectionTask(r)
-        );
-        return CompletableFuture.allOf(tasks.stream().map(t -> t.findDocuments(db)).toArray(CompletableFuture[]::new));
-        //return runTasks(db, tasks);
-    }
-
-    private CompletableFuture<Void> runDwTasks(MongoDatabase db, Repository r) {
-        logger.info("Running DW tasks");
-        List<CollectionTask> tasks = List.of(
-                new ComponentsCollectionTask(r),
-                new DepositGroupCollectionTask(r),
-                new SequenceGroupCollectionTask(r),
-                new UniprotGroupCollectionTask(r),
-                new ChemCompGroupCollectionTask(r)
-        );
-        return CompletableFuture.allOf(tasks.stream().map(t -> t.findDocuments(db)).toArray(CompletableFuture[]::new));
-        //return runTasks(db, tasks);
-    }
-/*
-    private CompletableFuture<Void> runTasks(MongoDatabase db, List<CollectionTask> tasks) {
-        var findFuture = new CompletableFuture<Void>();
-        Flux.merge(128, tasks.stream().map(t -> t.findDocuments(db)).toList())
-                .subscribe(Runnable::run, findFuture::completeExceptionally, () -> findFuture.complete(null));
-        var countFuture = new CompletableFuture<Void>();
-        Flux.merge(128, tasks.stream().map(t -> t.countDocuments(db)).toList())
-                .subscribe(Runnable::run, countFuture::completeExceptionally, () -> countFuture.complete(null));
-
-        return CompletableFuture.allOf(
-                findFuture,
-                countFuture
-        );
-    }
-    */
 }

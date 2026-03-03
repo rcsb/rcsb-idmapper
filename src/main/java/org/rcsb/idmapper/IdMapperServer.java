@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -23,36 +24,36 @@ public class IdMapperServer {
     public static final String TRANSLATE = "/translate";
     public static final String GROUP = "/group";
     public static final String ALL = "/all";
+    public static final String CORE_PDB_MONGODB_URI = "CORE_PDB_MONGODB_URI";
+    public static final String CORE_CSM_MONGODB_URI = "CORE_CSM_MONGODB_URI";
     public static final String MONGODB_URI = "MONGODB_URI";
-    public static final String MONGODB_PDBX_CORE_URI = "MONGODB_PDBX_CORE_URI";
-    public static final String MONGODB_PDBX_COMP_MODEL_URI = "MONGODB_PDBX_COMP_MODEL_URI";
 
     public static final String MONGODB_USER = "MONGODB_USER";
     public static final String MONGODB_PWD = "MONGODB_PWD";
 
     public static void main(String[] args) {
 
-        String dwUriTemplate = System.getenv("MONGODB_URI");
-        if (dwUriTemplate == null) {
-            dwUriTemplate = MONGODB_URI;
-        }
+        String dwConnectionString = getConnectionString(MONGODB_URI);
+        String corePdbConnectionString = getConnectionString(CORE_PDB_MONGODB_URI);
+        String coreCsmConnectionString = getConnectionString(CORE_CSM_MONGODB_URI);
 
-        String pdbxCoreUriTemplate = System.getenv("MONGODB_PDBX_CORE_URI");
-        if (pdbxCoreUriTemplate == null) {
-            pdbxCoreUriTemplate = MONGODB_PDBX_CORE_URI;
-        }
-
-        String pdbxCompModelUriTemplate = System.getenv("MONGODB_PDBX_COMP_MODEL_URI");
-        if (pdbxCompModelUriTemplate == null) {
-            pdbxCompModelUriTemplate = MONGODB_PDBX_COMP_MODEL_URI;
-        }
-
-        String dwConnectionString = getConnectionString(dwUriTemplate, "MONGODB_URI");
-        String pdbxCoreConnectionString = getConnectionString(pdbxCoreUriTemplate, "MONGODB_PDBX_CORE_URI");
-        String pdbxCompModelConnectionString = getConnectionString(pdbxCompModelUriTemplate, "MONGODB_PDBX_COMP_MODEL_URI");
+        var dataProviders = List.of(
+                new BackendImpl.DataProviderConfig(
+                        new DataProvider(dwConnectionString),
+                        DataProvider.TaskProfile.DW
+                ),
+                new BackendImpl.DataProviderConfig(
+                        new DataProvider(corePdbConnectionString),
+                        DataProvider.TaskProfile.CORE_PDB
+                ),
+                new BackendImpl.DataProviderConfig(
+                        new DataProvider(coreCsmConnectionString),
+                        DataProvider.TaskProfile.CORE_CSM
+                )
+        );
 
         var backend = new BackendImpl(
-                new DataProvider(dwConnectionString, pdbxCoreConnectionString, pdbxCompModelConnectionString),
+                dataProviders,
                 new Repository()
         );
 
@@ -83,18 +84,24 @@ public class IdMapperServer {
         }
     }
 
-    private static String getConnectionString(String mongodb_uri, String label) {
-        String connectionString = Objects.requireNonNull(System.getenv(mongodb_uri),
-                String.format("The environment variable [ %s ] with Mongo database connection string (URI) must be set", MONGODB_URI));
+    private static String getConnectionString(String envVar) {
+        String connectionString = Objects.requireNonNull(System.getenv(envVar),
+                String.format("The environment variable [ %s ] with Mongo database connection string (URI) must be set", envVar));
+
+        System.out.println(connectionString);
+
         int numPlaceHolders = (int) Pattern.compile("%s").matcher(connectionString).results().count();
         if (numPlaceHolders != 2) {
             LOGGER.error("Mongo connection URI string [ {} ] does not contain exactly 2 placeholders. " +
-                    "Please check '{}' env var", connectionString, mongodb_uri);
+                    "Please check '{}' env var", connectionString, envVar);
             throw new IllegalArgumentException("Mongo connection URI string does not contain exactly 2 placeholders");
         }
 
-        String user = Objects.requireNonNull(System.getenv(MONGODB_USER), String.format("The environment variable [ %s ] with Mongo database user must be set", MONGODB_USER));
-        String pwd = Objects.requireNonNull(System.getenv(MONGODB_PWD), String.format("The environment variable [ %s ] with Mongo database password must be set", MONGODB_PWD));
+//        String user = Objects.requireNonNull(System.getenv(MONGODB_USER), String.format("The environment variable [ %s ] with Mongo database user must be set", MONGODB_USER));
+//        String pwd = Objects.requireNonNull(System.getenv(MONGODB_PWD), String.format("The environment variable [ %s ] with Mongo database password must be set", MONGODB_PWD));
+
+        String user = "updater";
+        String pwd = "w31teQuerie5";
 
         // note anything that goes into the mongo URI must be URL-encoded
         connectionString = String.format(connectionString,
