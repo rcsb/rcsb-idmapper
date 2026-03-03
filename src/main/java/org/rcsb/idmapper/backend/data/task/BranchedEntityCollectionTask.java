@@ -9,7 +9,6 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_BRANCHED_ENTITY;
 
 /**
  * Created on 3/10/23.
@@ -18,8 +17,8 @@ import static org.rcsb.common.constants.MongoCollections.COLL_BRANCHED_ENTITY;
  */
 public class BranchedEntityCollectionTask extends CollectionTask {
 
-    public BranchedEntityCollectionTask(Repository r) {
-        super(COLL_BRANCHED_ENTITY, r, List.of(
+    public BranchedEntityCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),

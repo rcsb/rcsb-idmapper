@@ -7,7 +7,6 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP;
 
 /**
  * Created on 4/21/23.
@@ -16,8 +15,8 @@ import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_ENTRY_DEPOSI
  */
 public class DepositGroupCollectionTask extends CollectionTask {
 
-    public DepositGroupCollectionTask(Repository r) {
-        super(COLL_GROUP_ENTRY_DEPOSIT_GROUP, r, List.of(
+    public DepositGroupCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS)

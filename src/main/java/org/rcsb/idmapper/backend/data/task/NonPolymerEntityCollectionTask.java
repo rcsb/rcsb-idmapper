@@ -9,7 +9,6 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_NONPOLYMER_ENTITY;
 
 /**
  *
@@ -19,8 +18,8 @@ import static org.rcsb.common.constants.MongoCollections.COLL_NONPOLYMER_ENTITY;
  */
 public class NonPolymerEntityCollectionTask extends CollectionTask {
 
-    public NonPolymerEntityCollectionTask(Repository r) {
-        super(COLL_NONPOLYMER_ENTITY, r, List.of(
+    public NonPolymerEntityCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),

@@ -7,7 +7,6 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY;
 
 /**
  * Created on 4/21/23.
@@ -16,8 +15,8 @@ import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_POLYMER_ENTI
  */
 public class SequenceGroupCollectionTask extends CollectionTask {
 
-    public SequenceGroupCollectionTask(Repository r) {
-        super(COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, r, List.of(
+    public SequenceGroupCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS),

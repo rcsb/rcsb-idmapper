@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import org.rcsb.common.constants.MongoCollections;
 import org.rcsb.idmapper.backend.data.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,23 +85,23 @@ public class DataProvider {
     private java.util.List<CollectionTask> getTasks(TaskProfile profile, Repository r) {
         return switch (profile) {
             case CORE_PDB -> java.util.List.of(
-                    new EntryCollectionTask(r),
-                    new PolymerEntityCollectionTask(r),
-                    new NonPolymerEntityCollectionTask(r),
-                    new BranchedEntityCollectionTask(r)
+                    new EntryCollectionTask(MongoCollections.COLL_PDBX_CORE_ENTRY, r),
+                    new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_POLYMER_ENTITY, r),
+                    new NonPolymerEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, r),
+                    new BranchedEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_BRANCHED_ENTITY, r)
             );
             case CORE_CSM -> java.util.List.of(
-                    new EntryCollectionTask(r),
-                    new PolymerEntityCollectionTask(r),
-                    new NonPolymerEntityCollectionTask(r),
-                    new BranchedEntityCollectionTask(r)
+                    new EntryCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, r),
+                    new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, r),
+                    new NonPolymerEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_NONPOLYMER_ENTITY, r),
+                    new BranchedEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_BRANCHED_ENTITY, r)
             );
             case DW -> java.util.List.of(
-                    new ComponentsCollectionTask(r),
-                    new DepositGroupCollectionTask(r),
-                    new SequenceGroupCollectionTask(r),
-                    new UniprotGroupCollectionTask(r),
-                    new ChemCompGroupCollectionTask(r)
+                    new ComponentsCollectionTask(MongoCollections.COLL_CHEM_COMP, r),
+                    new DepositGroupCollectionTask(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, r),
+                    new SequenceGroupCollectionTask(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, r),
+                    new UniprotGroupCollectionTask(MongoCollections.COLL_GROUP_POLYMER_ENTITY_UNIPROT_ACCESSION, r),
+                    new ChemCompGroupCollectionTask(MongoCollections.COLL_GROUP_NON_POLYMER_ENTITY_CHEMICAL_COMPONENT, r)
             );
         };
     }
