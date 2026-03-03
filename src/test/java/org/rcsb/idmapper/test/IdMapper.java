@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 public class IdMapper {
     public static void main(String[] args) {
-
+/*
         var mockDataProvider = mock(DataProvider.class);
         var mockRepository = mock(Repository.class);
 
@@ -69,5 +69,6 @@ public class IdMapper {
         } finally {
             backend.stop();
         }
+            */
     }
 }
