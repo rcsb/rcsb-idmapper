@@ -1,7 +1,8 @@
 package org.rcsb.idmapper;
 
-import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
+import org.rcsb.idmapper.backend.data.DataProviderConfig;
+import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
@@ -38,15 +39,15 @@ public class IdMapperServer {
         String coreCsmConnectionString = getConnectionString(CORE_CSM_MONGODB_URI);
 
         var dataProviders = List.of(
-                new BackendImpl.DataProviderConfig(
+                new DataProviderConfig(
                         new DataProvider(dwConnectionString),
                         DataProvider.TaskProfile.DW
                 ),
-                new BackendImpl.DataProviderConfig(
+                new DataProviderConfig(
                         new DataProvider(corePdbConnectionString),
                         DataProvider.TaskProfile.CORE_PDB
                 ),
-                new BackendImpl.DataProviderConfig(
+                new DataProviderConfig(
                         new DataProvider(coreCsmConnectionString),
                         DataProvider.TaskProfile.CORE_CSM
                 )

@@ -9,7 +9,7 @@ import org.rcsb.idmapper.backend.data.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
-
+import java.util.List;
 import java.io.Closeable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -82,19 +82,19 @@ public class DataProvider {
         );
     }
 
-    private java.util.List<CollectionTask> getTasks(TaskProfile profile, Repository r) {
+    private List<CollectionTask> getTasks(TaskProfile profile, Repository r) {
         return switch (profile) {
-            case CORE_PDB -> java.util.List.of(
+            case CORE_PDB -> List.of(
                     new EntryCollectionTask(MongoCollections.COLL_PDBX_CORE_ENTRY, r),
                     new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_POLYMER_ENTITY, r),
                     new NonPolymerEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, r),
                     new BranchedEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_BRANCHED_ENTITY, r)
             );
-            case CORE_CSM -> java.util.List.of(
+            case CORE_CSM -> List.of(
                     new EntryCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, r),
                     new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, r)
             );
-            case DW -> java.util.List.of(
+            case DW -> List.of(
                     new ComponentsCollectionTask(MongoCollections.COLL_CHEM_COMP, r),
                     new DepositGroupCollectionTask(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, r),
                     new SequenceGroupCollectionTask(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, r),

@@ -2,6 +2,7 @@ package org.rcsb.idmapper.backend;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.rcsb.idmapper.backend.data.DataProvider;
+import org.rcsb.idmapper.backend.data.DataProviderConfig;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.input.AllInput;
 import org.rcsb.idmapper.input.GroupInput;
@@ -29,16 +30,6 @@ import java.util.List;
  */
 public class BackendImpl {
     private final Logger logger = LoggerFactory.getLogger(BackendImpl.class);
-
-    public static final class DataProviderConfig {
-        private final DataProvider dataProvider;
-        private final DataProvider.TaskProfile taskProfile;
-
-        public DataProviderConfig(DataProvider dataProvider, DataProvider.TaskProfile taskProfile) {
-            this.dataProvider = dataProvider;
-            this.taskProfile = taskProfile;
-        }
-    }
 
     private final List<DataProviderConfig> dataProviders;
     private final Repository repository;
