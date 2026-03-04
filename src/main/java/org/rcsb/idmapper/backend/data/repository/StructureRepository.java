@@ -231,6 +231,10 @@ public class StructureRepository extends AnyRepository {
         return compsToBranchedEntity.get(compId);
     }
 
+    public Collection<String> getBranchedEntityToEntryKeys() {
+        return branchedEntityToEntry.keySet();
+    }
+
     public Collection<String> getNonPolymerInstanceToEntity(String instanceId) {
         return nonPolymerInstanceToEntity.get(instanceId);
     }

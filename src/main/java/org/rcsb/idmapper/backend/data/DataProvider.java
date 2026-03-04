@@ -104,10 +104,10 @@ public class DataProvider {
         };
     }
 
-    public void postInitializationCheck(Repository repository) throws Exception { //TODO special exception class
-        Repository.State state = repository.getState();
+    public void postInitializationCheck(Repository repository, TaskProfile taskProfile) throws Exception { //TODO special exception class
+        Repository.State state = repository.getState(taskProfile);
         if (!state.isDataComplete())
-            throw new Exception("Data completeness issue: "+state.getDataErrors());
+            throw new IllegalStateException("Data completeness issue for " + taskProfile + ": " + state.getDataErrors());
     }
 
     /**

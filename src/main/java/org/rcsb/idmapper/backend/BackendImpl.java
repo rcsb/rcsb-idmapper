@@ -48,7 +48,7 @@ public class BackendImpl {
             }
         }
         for (var config : dataProviders) {
-            config.dataProvider.postInitializationCheck(repository);
+            config.dataProvider.postInitializationCheck(repository, config.taskProfile);
         }
         logger.info("Backend is initialized. Time took: [ {} ] minutes",
                 Duration.between(start, Instant.now()).toMinutes());
