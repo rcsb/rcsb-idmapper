@@ -31,6 +31,17 @@ public class PolymerEntityCollectionTask extends CollectionTask {
         ));
     }
 
+    public PolymerEntityCollectionTask(String collectionName, Repository r, ContentType contentType) {
+        super(collectionName, r, List.of(
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_COMP_MONOMERS),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID),
+                List.of(CoreConstants.RCSB_POLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.UNIPROT_IDS)
+        ), contentType);
+    }
+
     @Override
     Runnable createDocumentRunnable(Document document) {
         return () -> {
@@ -39,7 +50,7 @@ public class PolymerEntityCollectionTask extends CollectionTask {
             String entry = container.getString(CoreConstants.ENTRY_ID);
             String entity = container.getString(CoreConstants.ENTITY_ID);
 
-            ContentType structureType = getStructureType(entry); // PDB or CSM
+            ContentType structureType = resolveStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 

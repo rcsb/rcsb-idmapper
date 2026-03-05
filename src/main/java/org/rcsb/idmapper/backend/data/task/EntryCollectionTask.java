@@ -27,6 +27,17 @@ public class EntryCollectionTask extends CollectionTask {
         ));
     }
 
+    public EntryCollectionTask(String collectionName, Repository r, ContentType contentType) {
+        super(collectionName, r, List.of(
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.PUBMED_ID),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ASSEMBLY_IDS),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.POLYMER_ENTITY_IDS),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.BRANCHED_ENTITY_IDS),
+                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.NON_POLYMER_ENTITY_IDS)
+        ), contentType);
+    }
+
     @Override
     Runnable createDocumentRunnable(final Document document) {
         return () -> {
@@ -34,7 +45,7 @@ public class EntryCollectionTask extends CollectionTask {
             Document container = document.get(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, Document.class);
             String entry = container.getString(CoreConstants.ENTRY_ID);
 
-            ContentType structureType = getStructureType(entry); // PDB or CSM
+            ContentType structureType = resolveStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 

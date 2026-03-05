@@ -29,16 +29,24 @@ public abstract class CollectionTask {
     public final Repository repository;
     public final String collectionName;
     public final List<String> includeFields;
+    private final ContentType forcedStructureType;
 
     public CollectionTask(final String coll, final Repository r, @Nonnull List<List<String>> fieldsToInclude) {
+        this(coll, r, fieldsToInclude, null);
+    }
+
+    public CollectionTask(final String coll, final Repository r, @Nonnull List<List<String>> fieldsToInclude,
+                          ContentType forcedStructureType) {
         this.repository = r;
         this.collectionName = coll;
         this.includeFields = fieldsToInclude.stream()
                 .map(f -> String.join(".", f))
                 .toList();
+        this.forcedStructureType = forcedStructureType;
     }
 
-    ContentType getStructureType(String entryId) {
+    ContentType resolveStructureType(String entryId) {
+        if (forcedStructureType != null) return forcedStructureType;
         boolean isCsm = ! IdentifierRegex.PDB_ID_REGEX.matcher(entryId).matches();
         return isCsm ? ContentType.computational : ContentType.experimental;
     }
