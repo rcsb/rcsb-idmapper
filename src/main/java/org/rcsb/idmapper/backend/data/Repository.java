@@ -339,22 +339,25 @@ public class Repository {
         State state = new State();
         switch (taskProfile) {
             case CORE_PDB -> {
-                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_ENTRY, getActualCountEntry())) != null)
+                ContentType ct = ContentType.experimental;
+                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_ENTRY, getActualCountEntry(ct))) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_POLYMER_ENTITY, getActualCountPolymerEntity())) != null)
+                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_POLYMER_ENTITY, getActualCountPolymerEntity(ct))) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, getActualCountNonPolymerEntity())) != null)
+                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, getActualCountNonPolymerEntity(ct))) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_BRANCHED_ENTITY, getActualCountBranchedEntity())) != null)
+                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_BRANCHED_ENTITY, getActualCountBranchedEntity(ct))) != null)
                     state.addError(error);
             }
             case CORE_CSM -> {
-                if ((error = checkCount(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, getActualCountEntry())) != null)
+                ContentType ct = ContentType.computational;
+                if ((error = checkCount(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, getActualCountEntry(ct))) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, getActualCountPolymerEntity())) != null)
+                if ((error = checkCount(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, getActualCountPolymerEntity(ct))) != null)
                     state.addError(error);
             }
             case DW -> {
+                // TODO: verify why MongoCollections.COLL_CHEM_COMP and MongoCollections.COLL_GROUP_NON_POLYMER_ENTITY_CHEMICAL_COMPONENT are excluded from count chekcing
                 if ((error = checkCount(MongoCollections.COLL_CHEM_COMP, getActualCountComponents())) != null)
                     state.addError(error);
                 if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, getActualCountSequenceGroups())) != null)
@@ -381,28 +384,20 @@ public class Repository {
         return null;
     }
 
-    private Long getActualCountEntry() {
-        return Integer.valueOf(getAllRepository(ContentType.experimental).getEntryIds().size()
-                + getAllRepository(ContentType.computational).getEntryIds().size()).longValue();
+    private Long getActualCountEntry(ContentType ct) {
+        return Integer.valueOf(getAllRepository(ct).getEntryIds().size()).longValue();
     }
 
-    private Long getActualCountPolymerEntity() {
-        return Integer.valueOf(getAllRepository(ContentType.experimental).getPolymerEntityIds().size()
-                + getAllRepository(ContentType.computational).getPolymerEntityIds().size()).longValue();
+    private Long getActualCountPolymerEntity(ContentType ct) {
+        return Integer.valueOf(getAllRepository(ct).getPolymerEntityIds().size()).longValue();
     }
 
-    private Long getActualCountNonPolymerEntity() {
-        return Integer.valueOf(getAllRepository(ContentType.experimental).getNonPolymerEntityIds().size()
-                + getAllRepository(ContentType.computational).getNonPolymerEntityIds().size()).longValue();
+    private Long getActualCountNonPolymerEntity(ContentType ct) {
+        return Integer.valueOf(getAllRepository(ct).getNonPolymerEntityIds().size()).longValue();
     }
 
-    private Long getActualCountBranchedEntity() {
-        return Integer.valueOf(getActualCountBranchedEntity(ContentType.experimental)
-                + getActualCountBranchedEntity(ContentType.computational)).longValue();
-    }
-
-    private int getActualCountBranchedEntity(ContentType ct) {
-        return getStructureRepository(ct).getBranchedEntityToEntryKeys().size();
+    private Long getActualCountBranchedEntity(ContentType ct) {
+        return Integer.valueOf(getStructureRepository(ct).getBranchedEntityToEntryKeys().size()).longValue();
     }
 
     private Long getActualCountComponents() {
