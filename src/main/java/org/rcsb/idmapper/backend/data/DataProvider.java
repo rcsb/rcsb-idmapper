@@ -68,13 +68,13 @@ public class DataProvider {
                 .map(task -> (org.reactivestreams.Publisher<Runnable>) task.findDocuments(db))
                 .toList();
         Flux.merge(findPublishers) //prefetch
-                .subscribe(ignored -> {}, findFuture::completeExceptionally, () -> findFuture.complete(null));
+                .subscribe(Runnable::run, findFuture::completeExceptionally, () -> findFuture.complete(null));
         var countFuture = new CompletableFuture<Void>();
         var countPublishers = tasks.stream()
                 .map(task -> (org.reactivestreams.Publisher<Runnable>) task.countDocuments(db))
                 .toList();
         Flux.merge(countPublishers) //prefetch
-                .subscribe(ignored -> {}, countFuture::completeExceptionally, () -> countFuture.complete(null));
+                .subscribe(Runnable::run, countFuture::completeExceptionally, () -> countFuture.complete(null));
 
         return CompletableFuture.allOf(
                 findFuture,
