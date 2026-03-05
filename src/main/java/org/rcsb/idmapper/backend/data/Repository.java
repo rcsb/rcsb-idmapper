@@ -346,8 +346,6 @@ public class Repository {
                     state.addError(error);
                 if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, getActualCountNonPolymerEntity(ct))) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_BRANCHED_ENTITY, getActualCountBranchedEntity(ct))) != null)
-                    state.addError(error);
             }
             case CORE_CSM -> {
                 ContentType ct = ContentType.computational;
@@ -357,16 +355,11 @@ public class Repository {
                     state.addError(error);
             }
             case DW -> {
-                // TODO: verify why MongoCollections.COLL_CHEM_COMP and MongoCollections.COLL_GROUP_NON_POLYMER_ENTITY_CHEMICAL_COMPONENT are excluded from count chekcing
-                if ((error = checkCount(MongoCollections.COLL_CHEM_COMP, getActualCountComponents())) != null)
-                    state.addError(error);
                 if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, getActualCountSequenceGroups())) != null)
                     state.addError(error);
                 if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_UNIPROT_ACCESSION, getActualCountUniprotGroups())) != null)
                     state.addError(error);
                 if ((error = checkCount(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, getActualCountDepositGroups())) != null)
-                    state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_GROUP_NON_POLYMER_ENTITY_CHEMICAL_COMPONENT, getActualCountChemCompGroups())) != null)
                     state.addError(error);
             }
             default -> throw new IllegalStateException("Unexpected value: " + taskProfile);
