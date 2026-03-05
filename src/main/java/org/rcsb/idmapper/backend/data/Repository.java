@@ -388,16 +388,6 @@ public class Repository {
     private Long getActualCountNonPolymerEntity(ContentType ct) {
         return Integer.valueOf(getAllRepository(ct).getNonPolymerEntityIds().size()).longValue();
     }
-
-    private Long getActualCountBranchedEntity(ContentType ct) {
-        return Integer.valueOf(getStructureRepository(ct).getBranchedEntityToEntryKeys().size()).longValue();
-    }
-
-    private Long getActualCountComponents() {
-        return Integer.valueOf(getAllRepository(ContentType.experimental).getCompIds().size()
-                + getAllRepository(ContentType.computational).getCompIds().size()).longValue();
-    }
-
     private Long getActualCountSequenceGroups() {
         return group.countGroups(Input.AggregationMethod.sequence_identity);
     }
@@ -409,11 +399,6 @@ public class Repository {
     private Long getActualCountDepositGroups() {
         return group.countGroups(Input.AggregationMethod.matching_deposit_group_id);
     }
-
-    private Long getActualCountChemCompGroups() {
-        return group.countGroups(Input.AggregationMethod.matching_chemical_component_id);
-    }
-
     public static class State {
         private final List<String> dataErrors = new ArrayList<>();
 
