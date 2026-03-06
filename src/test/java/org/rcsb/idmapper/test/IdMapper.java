@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
 public class IdMapper {
     public static void main(String[] args) {
@@ -37,6 +38,10 @@ public class IdMapper {
             return CompletableFuture.completedFuture(null);
         });
 
+        doNothing()
+                .when(mockDataProvider)
+                .postInitializationCheck(any(), any());
+
 
         when(mockRepository.lookup("BHH4", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental))
                 .then(invocationOnMock -> {
@@ -45,7 +50,9 @@ public class IdMapper {
 
 
         var dataProviders = List.of(
-                new DataProviderConfig(mockDataProvider, DataProvider.TaskProfile.DW)
+                new DataProviderConfig(mockDataProvider, DataProvider.TaskProfile.DW),
+                new DataProviderConfig(mockDataProvider, DataProvider.TaskProfile.CORE_PDB),
+                new DataProviderConfig(mockDataProvider, DataProvider.TaskProfile.CORE_CSM)
         );
 
         var backend = new BackendImpl(
