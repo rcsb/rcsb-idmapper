@@ -3,7 +3,7 @@ package org.rcsb.idmapper.test.backend.data;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.data.Repository;
@@ -18,7 +18,8 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 
 /**
  * Created on 5/30/23.
@@ -28,8 +29,18 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class RepositoryTest {
 
-    @Mock
-    private Repository repo;
+    /**
+     * Test repository with spy annotations for mockito
+     * The code updates are based on AI suggestions.
+     * Why the fix worked: added
+     * src/test/resources/mockito-extensions/org.mockito.plugins.MockMaker
+     * with:
+     * mock-maker-subclass
+     * This forces Mockito to use the subclass approach, which doesn’t require bytecode rewriting or agent attachment.
+     * So Mockito can create mocks/spies without hitting the JVM restriction.
+     */
+    @Spy
+    private Repository repo = new Repository();
 
     private static final StructureRepository structureMock = new StructureRepository();
     private static final ComponentRepository componentMock = new ComponentRepository();
@@ -105,8 +116,8 @@ public class RepositoryTest {
 
     @Test
     public void entryToPolymerEntity_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental);
         assertEquals(2, ids.size());
@@ -116,8 +127,8 @@ public class RepositoryTest {
 
     @Test
     public void entryToBranchedEntity_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.branched_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.branched_entity, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.branched_entity, ContentType.experimental);
         assertEquals(2, ids.size());
@@ -127,8 +138,8 @@ public class RepositoryTest {
 
     @Test
     public void entryToNonPolymerEntity_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental);
         assertEquals(3, ids.size());
@@ -139,10 +150,10 @@ public class RepositoryTest {
 
     @Test
     public void entryToPolymerInstance_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.polymer_instance, ContentType.experimental);
         assertEquals(3, ids.size());
@@ -153,10 +164,10 @@ public class RepositoryTest {
 
     @Test
     public void entryToBranchedInstance_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.branched_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_3", Input.Type.branched_entity, Input.Type.branched_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_4", Input.Type.branched_entity, Input.Type.branched_instance, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.branched_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_3", Input.Type.branched_entity, Input.Type.branched_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_4", Input.Type.branched_entity, Input.Type.branched_instance, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.branched_instance, ContentType.experimental);
         assertEquals(2, ids.size());
@@ -166,11 +177,11 @@ public class RepositoryTest {
 
     @Test
     public void entryToNonPolymerInstance_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_5", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_6", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_7", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_5", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_6", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_7", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_instance, ContentType.experimental);
         assertEquals(3, ids.size());
@@ -181,8 +192,8 @@ public class RepositoryTest {
 
     @Test
     public void entryToAssembly_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.assembly, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.assembly, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.assembly, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -191,8 +202,8 @@ public class RepositoryTest {
 
     @Test
     public void entryToPubmed_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.pubmed, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.pubmed, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.pubmed, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -201,10 +212,10 @@ public class RepositoryTest {
 
     @Test
     public void entryToUniprot_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.uniprot, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.uniprot, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.uniprot, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.uniprot, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.uniprot, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.uniprot, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.uniprot, ContentType.experimental);
         assertEquals(3, ids.size());
@@ -215,9 +226,9 @@ public class RepositoryTest {
 
     @Test
     public void entryToChemComps_MustPass() {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
 
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.mol_definition, ContentType.experimental)).thenCallRealMethod();
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.mol_definition, ContentType.experimental);
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.mol_definition, ContentType.experimental);
 
         assertEquals(entryComps.size(), ids.size());
@@ -226,10 +237,10 @@ public class RepositoryTest {
 
     @Test
     public void entryToDrugbank_MustPass() {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.getComponentRepository()).thenReturn(componentMock);
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.drug_bank, ContentType.experimental)).thenCallRealMethod();
-        entryComps.forEach(cId ->  when(repo.lookup(cId, Input.Type.mol_definition, Input.Type.drug_bank, ContentType.experimental)).thenCallRealMethod());
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doReturn(componentMock).when(repo).getComponentRepository();
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.drug_bank, ContentType.experimental);
+        entryComps.forEach(cId -> doCallRealMethod().when(repo).lookup(cId, Input.Type.mol_definition, Input.Type.drug_bank, ContentType.experimental));
 
         Collection<String> ids = repo.lookup("1ABC", Input.Type.entry, Input.Type.drug_bank, ContentType.experimental);
 
@@ -242,8 +253,8 @@ public class RepositoryTest {
 
     @Test
     public void polymerEntityToEntry_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -252,8 +263,8 @@ public class RepositoryTest {
 
     @Test
     public void polymerEntityToInstance_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental);
         assertEquals(2, ids.size());
@@ -263,9 +274,9 @@ public class RepositoryTest {
 
     @Test
     public void polymerToNonPolymerEntity_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.non_polymer_entity, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.non_polymer_entity, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.non_polymer_entity, ContentType.experimental);
         assertEquals(3, ids.size());
@@ -276,9 +287,9 @@ public class RepositoryTest {
 
     @Test
     public void polymerEntityToAssembly_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.assembly, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.assembly, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.assembly, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.assembly, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.assembly, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -287,8 +298,8 @@ public class RepositoryTest {
 
     @Test
     public void polymerEntityToChemComps_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.mol_definition, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.mol_definition, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.mol_definition, ContentType.experimental);
         assertEquals(polyComps_e1.size(), ids.size());
@@ -297,8 +308,8 @@ public class RepositoryTest {
 
     @Test
     public void polymerEntityToUniprot_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.uniprot, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.uniprot, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.uniprot, ContentType.experimental);
         assertEquals(2, ids.size());
@@ -310,8 +321,8 @@ public class RepositoryTest {
 
     @Test
     public void branchedEntityToEntry_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_3", Input.Type.branched_entity, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_3", Input.Type.branched_entity, Input.Type.entry, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_3", Input.Type.branched_entity, Input.Type.entry, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -320,8 +331,8 @@ public class RepositoryTest {
 
     @Test
     public void branchedEntityToInstance_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_3", Input.Type.branched_entity, Input.Type.branched_instance, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_3", Input.Type.branched_entity, Input.Type.branched_instance, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_3", Input.Type.branched_entity, Input.Type.branched_instance, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -330,8 +341,8 @@ public class RepositoryTest {
 
     @Test
     public void branchedEntityToChemComps_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_3", Input.Type.branched_entity, Input.Type.mol_definition, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_3", Input.Type.branched_entity, Input.Type.mol_definition, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_3", Input.Type.branched_entity, Input.Type.mol_definition, ContentType.experimental);
         List<String> comps = Stream.concat(branchedComps_e3.stream(), branchedPrd_e3.stream()).toList();
@@ -343,8 +354,8 @@ public class RepositoryTest {
 
     @Test
     public void nonPolymerEntityToEntry_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_5", Input.Type.non_polymer_entity, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_5", Input.Type.non_polymer_entity, Input.Type.entry, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_5", Input.Type.non_polymer_entity, Input.Type.entry, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -353,8 +364,8 @@ public class RepositoryTest {
 
     @Test
     public void nonPolymerEntityToInstance_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_6", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_6", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_6", Input.Type.non_polymer_entity, Input.Type.non_polymer_instance, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -363,8 +374,8 @@ public class RepositoryTest {
 
     @Test
     public void nonPolymerEntityToChemComps_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC_6", Input.Type.non_polymer_entity, Input.Type.mol_definition, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_6", Input.Type.non_polymer_entity, Input.Type.mol_definition, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC_6", Input.Type.non_polymer_entity, Input.Type.mol_definition, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -375,8 +386,8 @@ public class RepositoryTest {
 
     @Test
     public void assemblyToEntry_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC-1", Input.Type.assembly, Input.Type.entry, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.entry, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -385,9 +396,9 @@ public class RepositoryTest {
 
     @Test
     public void assemblyToPolymerEntity_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.polymer_entity, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC-1", Input.Type.assembly, Input.Type.polymer_entity, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.polymer_entity, ContentType.experimental);
         assertEquals(2, ids.size());
@@ -397,9 +408,9 @@ public class RepositoryTest {
 
     @Test
     public void assemblyToNonPolymerEntity_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.non_polymer_entity, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC-1", Input.Type.assembly, Input.Type.non_polymer_entity, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.non_polymer_entity, ContentType.experimental);
         assertEquals(3, ids.size());
@@ -410,11 +421,11 @@ public class RepositoryTest {
 
     @Test
     public void assemblyToNonPolymerInstance_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC-1", Input.Type.assembly, Input.Type.polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.polymer_instance, ContentType.experimental);
         assertEquals(3, ids.size());
@@ -425,9 +436,9 @@ public class RepositoryTest {
 
     @Test
     public void assemblyToChemComps_MustPass() {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.mol_definition, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.mol_definition, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC-1", Input.Type.assembly, Input.Type.mol_definition, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.mol_definition, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC-1", Input.Type.assembly, Input.Type.mol_definition, ContentType.experimental);
 
@@ -439,9 +450,9 @@ public class RepositoryTest {
 
     @Test
     public void polymerInstanceToEntry_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.entry, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.entry, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -450,8 +461,8 @@ public class RepositoryTest {
 
     @Test
     public void polymerInstanceToEntity_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.polymer_entity, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.polymer_entity, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -460,10 +471,10 @@ public class RepositoryTest {
 
     @Test
     public void polymerInstanceToNonPolymerEntity_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.non_polymer_entity, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.non_polymer_entity, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.non_polymer_entity, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.non_polymer_entity, ContentType.experimental);
         assertEquals(3, ids.size());
@@ -474,10 +485,10 @@ public class RepositoryTest {
 
     @Test
     public void polymerInstanceToAssembly_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.assembly, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC", Input.Type.entry, Input.Type.assembly, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.assembly, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.entry, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC", Input.Type.entry, Input.Type.assembly, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC.A", Input.Type.polymer_instance, Input.Type.assembly, ContentType.experimental);
         assertEquals(1, ids.size());
@@ -486,9 +497,9 @@ public class RepositoryTest {
 
     @Test
     public void polymerInstanceToChemComps_MustPass()  {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("1ABC.C", Input.Type.polymer_instance, Input.Type.mol_definition, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.mol_definition, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC.C", Input.Type.polymer_instance, Input.Type.mol_definition, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.mol_definition, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("1ABC.C", Input.Type.polymer_instance, Input.Type.mol_definition, ContentType.experimental);
         assertEquals(polyComps_e2.size(), ids.size());
@@ -499,9 +510,9 @@ public class RepositoryTest {
 
     @Test
     public void chemCompToEntry_MustPass() {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
 
-        when(repo.lookup("XXX", Input.Type.mol_definition, Input.Type.entry, ContentType.experimental)).thenCallRealMethod();
+        doCallRealMethod().when(repo).lookup("XXX", Input.Type.mol_definition, Input.Type.entry, ContentType.experimental);
         Collection<String> ids = repo.lookup("XXX", Input.Type.mol_definition, Input.Type.entry, ContentType.experimental);
 
         assertEquals(1, ids.size());
@@ -510,8 +521,8 @@ public class RepositoryTest {
 
     @Test
     public void chemCompToPolymerEntity_MustPass() {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("AAA", Input.Type.mol_definition, Input.Type.polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("AAA", Input.Type.mol_definition, Input.Type.polymer_entity, ContentType.experimental);
         Collection<String> ids = repo.lookup("AAA", Input.Type.mol_definition, Input.Type.polymer_entity, ContentType.experimental);
 
         assertEquals(2, ids.size());
@@ -521,8 +532,8 @@ public class RepositoryTest {
 
     @Test
     public void chemCompToBranchedEntity_MustPass() {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("NAD", Input.Type.mol_definition, Input.Type.branched_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("NAD", Input.Type.mol_definition, Input.Type.branched_entity, ContentType.experimental);
         Collection<String> ids = repo.lookup("NAD", Input.Type.mol_definition, Input.Type.branched_entity, ContentType.experimental);
 
         assertEquals(1, ids.size());
@@ -531,8 +542,8 @@ public class RepositoryTest {
 
     @Test
     public void chemCompToNonPolymerEntity_MustPass() {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("XXX", Input.Type.mol_definition, Input.Type.non_polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("XXX", Input.Type.mol_definition, Input.Type.non_polymer_entity, ContentType.experimental);
         Collection<String> ids = repo.lookup("XXX", Input.Type.mol_definition, Input.Type.non_polymer_entity, ContentType.experimental);
 
         assertEquals(1, ids.size());
@@ -541,10 +552,10 @@ public class RepositoryTest {
 
     @Test
     public void chemCompToPolymerInstance_MustPass() {
-        when(repo.getStructureRepository(ContentType.experimental)).thenReturn(structureMock);
-        when(repo.lookup("AAA", Input.Type.mol_definition, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
-        when(repo.lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental)).thenCallRealMethod();
+        doReturn(structureMock).when(repo).getStructureRepository(ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("AAA", Input.Type.mol_definition, Input.Type.polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental);
+        doCallRealMethod().when(repo).lookup("1ABC_2", Input.Type.polymer_entity, Input.Type.polymer_instance, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("AAA", Input.Type.mol_definition, Input.Type.polymer_instance, ContentType.experimental);
 
@@ -556,8 +567,8 @@ public class RepositoryTest {
 
     @Test
     public void chemCompToDrugbank_MustPass() {
-        when(repo.getComponentRepository()).thenReturn(componentMock);
-        when(repo.lookup("XXX", Input.Type.mol_definition, Input.Type.drug_bank, ContentType.experimental)).thenCallRealMethod();
+        doReturn(componentMock).when(repo).getComponentRepository();
+        doCallRealMethod().when(repo).lookup("XXX", Input.Type.mol_definition, Input.Type.drug_bank, ContentType.experimental);
 
         Collection<String> ids = repo.lookup("XXX", Input.Type.mol_definition, Input.Type.drug_bank, ContentType.experimental);
 
@@ -567,8 +578,8 @@ public class RepositoryTest {
 
     @Test
     public void polymerEntityToGroup_MustPass() {
-        when(repo.getGroupRepository()).thenReturn(groupMock);
-        when(repo.lookup("1ABC_1", Input.AggregationMethod.sequence_identity, 100)).thenCallRealMethod();
+        doReturn(groupMock).when(repo).getGroupRepository();
+        doCallRealMethod().when(repo).lookup("1ABC_1", Input.AggregationMethod.sequence_identity, 100);
 
         Collection<String> ids = repo.lookup("1ABC_1", Input.AggregationMethod.sequence_identity, 100);
 
@@ -578,7 +589,7 @@ public class RepositoryTest {
 
     @Test
     public void notImplemented_MustReturnEmptyCollection()  {
-        when(repo.lookup("P00002", Input.Type.uniprot, Input.Type.polymer_entity, ContentType.experimental)).thenCallRealMethod();
+        doCallRealMethod().when(repo).lookup("P00002", Input.Type.uniprot, Input.Type.polymer_entity, ContentType.experimental);
         Collection<String> ids = repo.lookup("P00002", Input.Type.uniprot, Input.Type.polymer_entity, ContentType.experimental);
         assertNotNull(ids);
         assertTrue(ids.isEmpty());
