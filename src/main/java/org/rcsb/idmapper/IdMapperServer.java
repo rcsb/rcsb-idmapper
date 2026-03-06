@@ -94,11 +94,10 @@ public class IdMapperServer {
             throw new IllegalArgumentException("Mongo connection URI string does not contain exactly 2 placeholders");
         }
 
-//        String user = Objects.requireNonNull(System.getenv(MONGODB_USER), String.format("The environment variable [ %s ] with Mongo database user must be set", MONGODB_USER));
-//        String pwd = Objects.requireNonNull(System.getenv(MONGODB_PWD), String.format("The environment variable [ %s ] with Mongo database password must be set", MONGODB_PWD));
-
-        String user = "updater";
-        String pwd = "w31teQuerie5";
+        String user = Objects.requireNonNull(System.getenv(MONGODB_USER),
+                String.format("The environment variable [ %s ] with Mongo database user must be set", MONGODB_USER));
+        String pwd = Objects.requireNonNull(System.getenv(MONGODB_PWD),
+                String.format("The environment variable [ %s ] with Mongo database password must be set", MONGODB_PWD));
 
         // note anything that goes into the mongo URI must be URL-encoded
         connectionString = String.format(connectionString,
