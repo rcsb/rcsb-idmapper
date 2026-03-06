@@ -108,8 +108,7 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
             var context = FrontendContext.create(input, exchange);
             @SuppressWarnings("unchecked")
             T typedContext = (T) context;
-
-            exchange.putAttachment(contextAttachmentKey, typedContext);//TODO without casting compiler ain't happy, can we do anything about it?!
+            exchange.putAttachment(contextAttachmentKey, typedContext);
             next.handleRequest(exchange);
         }
     }

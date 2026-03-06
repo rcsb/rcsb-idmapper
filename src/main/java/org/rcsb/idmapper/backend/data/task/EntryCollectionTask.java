@@ -16,17 +16,6 @@ import java.util.List;
  */
 public class EntryCollectionTask extends CollectionTask {
 
-    public EntryCollectionTask(String collectionName, Repository r) {
-        super(collectionName, r, List.of(
-                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
-                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.PUBMED_ID),
-                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ASSEMBLY_IDS),
-                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.POLYMER_ENTITY_IDS),
-                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.BRANCHED_ENTITY_IDS),
-                List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.NON_POLYMER_ENTITY_IDS)
-        ));
-    }
-
     public EntryCollectionTask(String collectionName, Repository r, ContentType contentType) {
         super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),

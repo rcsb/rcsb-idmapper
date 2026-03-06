@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @author ingvord
  * @author Yana Rose
+ * @author Chunxiao Bi
  * @since 27 Feb 2023
  */
 public class DataProvider {
@@ -92,10 +93,9 @@ public class DataProvider {
         };
     }
 
-    public void postInitializationCheck(Repository repository, TaskProfile taskProfile) throws Exception { //TODO special exception class
+    public void postInitializationCheck(Repository repository, TaskProfile taskProfile) {
         Repository.State state = repository.getState(taskProfile);
         if (!state.isDataComplete())
             throw new IllegalStateException("Data completeness issue for " + taskProfile + ": " + state.getDataErrors());
     }
-
 }

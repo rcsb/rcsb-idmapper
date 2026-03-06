@@ -17,16 +17,6 @@ import java.util.List;
  */
 public class BranchedEntityCollectionTask extends CollectionTask {
 
-    public BranchedEntityCollectionTask(String collectionName, Repository r) {
-        super(collectionName, r, List.of(
-                List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
-                List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
-                List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
-                List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_COMP_MONOMERS),
-                List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
-        ));
-    }
-
     public BranchedEntityCollectionTask(String collectionName, Repository r, ContentType contentType) {
         super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),

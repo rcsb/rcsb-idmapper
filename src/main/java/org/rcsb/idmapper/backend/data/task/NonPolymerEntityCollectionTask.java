@@ -18,15 +18,6 @@ import java.util.List;
  */
 public class NonPolymerEntityCollectionTask extends CollectionTask {
 
-    public NonPolymerEntityCollectionTask(String collectionName, Repository r) {
-        super(collectionName, r, List.of(
-                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
-                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
-                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
-                List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
-        ));
-    }
-
     public NonPolymerEntityCollectionTask(String collectionName, Repository r, ContentType contentType) {
         super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
