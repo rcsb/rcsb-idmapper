@@ -4,6 +4,7 @@ import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.AppConfigs;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
+import org.rcsb.idmapper.backend.data.DataProviderConfig;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 public class IdMapper {
     public static void main(String[] args) {
-/*
+
         var mockDataProvider = mock(DataProvider.class);
         var mockRepository = mock(Repository.class);
 
@@ -32,7 +33,7 @@ public class IdMapper {
             }
         });
 
-        when(mockDataProvider.initialize(any())).thenAnswer(invocationOnMock ->{
+        when(mockDataProvider.initialize(any(), any())).thenAnswer(invocationOnMock -> {
             return CompletableFuture.completedFuture(null);
         });
 
@@ -43,8 +44,12 @@ public class IdMapper {
                 });
 
 
+        var dataProviders = List.of(
+                new DataProviderConfig(mockDataProvider, DataProvider.TaskProfile.DW)
+        );
+
         var backend = new BackendImpl(
-                mockDataProvider,
+                dataProviders,
                 mockRepository
         );
 
@@ -69,6 +74,5 @@ public class IdMapper {
         } finally {
             backend.stop();
         }
-            */
     }
 }
