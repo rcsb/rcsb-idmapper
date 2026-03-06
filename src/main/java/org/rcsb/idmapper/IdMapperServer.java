@@ -1,8 +1,8 @@
 package org.rcsb.idmapper;
 
+import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.DataProviderConfig;
-import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
@@ -28,7 +28,6 @@ public class IdMapperServer {
     public static final String CORE_PDB_MONGODB_URI = "CORE_PDB_MONGODB_URI";
     public static final String CORE_CSM_MONGODB_URI = "CORE_CSM_MONGODB_URI";
     public static final String MONGODB_URI = "MONGODB_URI";
-
     public static final String MONGODB_USER = "MONGODB_USER";
     public static final String MONGODB_PWD = "MONGODB_PWD";
 
@@ -88,9 +87,6 @@ public class IdMapperServer {
     private static String getConnectionString(String envVar) {
         String connectionString = Objects.requireNonNull(System.getenv(envVar),
                 String.format("The environment variable [ %s ] with Mongo database connection string (URI) must be set", envVar));
-
-        System.out.println(connectionString);
-
         int numPlaceHolders = (int) Pattern.compile("%s").matcher(connectionString).results().count();
         if (numPlaceHolders != 2) {
             LOGGER.error("Mongo connection URI string [ {} ] does not contain exactly 2 placeholders. " +

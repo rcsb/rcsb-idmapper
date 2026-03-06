@@ -63,6 +63,8 @@ public class BackendImpl {
         //TODO close connection etc
     }
 
+    // builds a TranslateOutput by looking up mappings in the Repository. The method was
+    // hit by /translate request ultimately.
     private Mono<TranslateOutput> dispatchTranslateInput(TranslateInput input) {
         var ids = input.ids != null ? input.ids :
                 input.content_type
