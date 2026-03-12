@@ -43,7 +43,7 @@ public class BackendImpl {
         var start = Instant.now();
         logger.info("Initializing backend");
         for (var config : dataProviders) {
-            try (Closeable closeable = config.dataProvider.connect()) {
+            try (Closeable closeable = config.dataProvider.connect(config.taskProfile)) {
                 config.dataProvider.initialize(repository, config.taskProfile).join();
             }
         }

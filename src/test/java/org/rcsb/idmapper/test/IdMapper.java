@@ -27,7 +27,7 @@ public class IdMapper {
         var mockDataProvider = mock(DataProvider.class);
         var mockRepository = mock(Repository.class);
 
-        when(mockDataProvider.connect()).thenReturn(new Closeable() {
+        when(mockDataProvider.connect(any())).thenReturn(new Closeable() {
             @Override
             public void close() throws IOException {
 

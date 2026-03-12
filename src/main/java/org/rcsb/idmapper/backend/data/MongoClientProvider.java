@@ -10,7 +10,6 @@ import java.io.Closeable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 /**
  * A MongoClient singleton for connecting to three databases.
@@ -20,16 +19,14 @@ import java.util.regex.Pattern;
  */
 final class MongoClientProvider {
     private static final Logger logger = LoggerFactory.getLogger(MongoClientProvider.class);
-    private static final ConcurrentHashMap<String, MongoClient> CLIENTS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<DataProvider.TaskProfile, MongoClient> CLIENTS = new ConcurrentHashMap<>();
     private static final Closeable NOOP_CLOSEABLE = () -> { };
 
     private MongoClientProvider() {
     }
 
-    static MongoClient getOrCreate(String connectionString) {
-        var databaseName = new ConnectionString(connectionString).getDatabase();
-        String clientKey = getClientKey(connectionString, databaseName);
-        return CLIENTS.computeIfAbsent(clientKey, key -> {
+    static MongoClient getOrCreate(String connectionString, DataProvider.TaskProfile taskProfile) {
+        return CLIENTS.computeIfAbsent(taskProfile, key -> {
             String mongoUriRedacted = getMongoUriRedacted(connectionString);
             try {
                 MongoClient created = MongoClients.create(connectionString);
@@ -46,17 +43,6 @@ final class MongoClientProvider {
         return NOOP_CLOSEABLE;
     }
 
-    static void closeAll() {
-        CLIENTS.forEach((key, client) -> {
-            try {
-                client.close();
-            } catch (Exception e) {
-                logger.warn("Failed to close Mongo client for key {}", key, e);
-            }
-        });
-        CLIENTS.clear();
-    }
-
     private static String getMongoUriRedacted(String mongoUri) {
         ConnectionString uriObj = new ConnectionString(mongoUri);
         String uriRedacted = mongoUri;
@@ -69,13 +55,5 @@ final class MongoClientProvider {
             uriRedacted = uriRedacted.replace(uriObj.getUsername(), "********");
         }
         return uriRedacted;
-    }
-
-    private static String getClientKey(String mongoUri, String databaseName) {
-        if (databaseName == null || databaseName.isBlank()) {
-            return mongoUri;
-        }
-        String dbSegment = "/" + Pattern.quote(databaseName);
-        return mongoUri.replaceFirst(dbSegment + "(?=\\?|$)", "");
     }
 }

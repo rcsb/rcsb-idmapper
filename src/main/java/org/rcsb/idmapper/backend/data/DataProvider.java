@@ -35,11 +35,11 @@ public class DataProvider {
         this.connectionString = connectionString;
     }
 
-    public Closeable connect() {
+    public Closeable connect(TaskProfile taskProfile) {
         var databaseName = new ConnectionString(connectionString).getDatabase();
         if (databaseName == null)
             throw new IllegalArgumentException("Database name must be provided in the connection string URI");
-        MongoClient mongoClient = MongoClientProvider.getOrCreate(connectionString);
+        MongoClient mongoClient = MongoClientProvider.getOrCreate(connectionString, taskProfile);
         db = mongoClient.getDatabase(databaseName);
         return MongoClientProvider.noopCloseable();
     }
