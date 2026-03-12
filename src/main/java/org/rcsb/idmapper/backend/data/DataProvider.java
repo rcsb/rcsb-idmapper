@@ -74,14 +74,14 @@ public class DataProvider {
     private List<CollectionTask> getTasks(TaskProfile profile, Repository r) {
         return switch (profile) {
             case CORE_PDB -> List.of(
-                    new EntryCollectionTask(MongoCollections.COLL_PDBX_CORE_ENTRY, r, org.rcsb.common.constants.ContentType.experimental),
-                    new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_POLYMER_ENTITY, r, org.rcsb.common.constants.ContentType.experimental),
-                    new NonPolymerEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, r, org.rcsb.common.constants.ContentType.experimental),
-                    new BranchedEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_BRANCHED_ENTITY, r, org.rcsb.common.constants.ContentType.experimental)
+                    new EntryCollectionTask(MongoCollections.COLL_PDBX_CORE_ENTRY, r),
+                    new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_POLYMER_ENTITY, r),
+                    new NonPolymerEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, r),
+                    new BranchedEntityCollectionTask(MongoCollections.COLL_PDBX_CORE_BRANCHED_ENTITY, r)
             );
             case CORE_CSM -> List.of(
-                    new EntryCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, r, org.rcsb.common.constants.ContentType.computational),
-                    new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, r, org.rcsb.common.constants.ContentType.computational)
+                    new EntryCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, r),
+                    new PolymerEntityCollectionTask(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, r)
             );
             case DW -> List.of(
                     new ComponentsCollectionTask(MongoCollections.COLL_CHEM_COMP, r),

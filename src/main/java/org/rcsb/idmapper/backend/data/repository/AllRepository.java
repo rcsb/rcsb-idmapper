@@ -6,6 +6,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Collects the universe of IDs for each structure-related type (entries, assemblies, entities,
+ * instances, and components).
+ * <p>
+ * The name "All" reflects that this class stores the complete set of IDs for each type, rather
+ * than mapping between types. These collections are used for "all(...)" queries and data
+ * completeness checks.
+ * <p>
  * Created on 4/20/23.
  *
  * @author Yana Rose

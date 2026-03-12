@@ -1,11 +1,11 @@
 package org.rcsb.idmapper.backend.data.task;
 
 import org.bson.Document;
-import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.backend.data.repository.AllRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
 import org.rcsb.mojave.CoreConstants;
+
 import java.util.List;
 
 /**
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class EntryCollectionTask extends CollectionTask {
 
-    public EntryCollectionTask(String collectionName, Repository r, ContentType contentType) {
+    public EntryCollectionTask(String collectionName, Repository r) {
         super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.PUBMED_ID),
@@ -24,7 +24,7 @@ public class EntryCollectionTask extends CollectionTask {
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.POLYMER_ENTITY_IDS),
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.BRANCHED_ENTITY_IDS),
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.NON_POLYMER_ENTITY_IDS)
-        ), contentType);
+        ));
     }
 
     @Override
@@ -34,7 +34,6 @@ public class EntryCollectionTask extends CollectionTask {
             Document container = document.get(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, Document.class);
             String entry = container.getString(CoreConstants.ENTRY_ID);
 
-            ContentType structureType = resolveStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 

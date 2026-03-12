@@ -1,7 +1,6 @@
 package org.rcsb.idmapper.backend.data.task;
 
 import org.bson.Document;
-import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.backend.data.repository.AllRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
@@ -18,13 +17,13 @@ import java.util.List;
  */
 public class NonPolymerEntityCollectionTask extends CollectionTask {
 
-    public NonPolymerEntityCollectionTask(String collectionName, Repository r, ContentType contentType) {
+    public NonPolymerEntityCollectionTask(String collectionName, Repository r) {
         super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.CHEM_REF_DEF_ID)
-        ), contentType);
+        ));
     }
 
     @Override
@@ -35,7 +34,6 @@ public class NonPolymerEntityCollectionTask extends CollectionTask {
             String entry = container.getString(CoreConstants.ENTRY_ID);
             String entity = container.getString(CoreConstants.ENTITY_ID);
 
-            ContentType structureType = resolveStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 
