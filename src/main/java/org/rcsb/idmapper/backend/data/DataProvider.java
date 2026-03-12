@@ -3,6 +3,7 @@ package org.rcsb.idmapper.backend.data;
 import com.mongodb.ConnectionString;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import org.reactivestreams.Publisher;
 import org.rcsb.common.constants.MongoCollections;
 import org.rcsb.idmapper.backend.data.task.*;
 import org.slf4j.Logger;
@@ -54,13 +55,13 @@ public class DataProvider {
         var findFuture = new CompletableFuture<Void>();
         var tasks = getTasks(profile, r);
         var findPublishers = tasks.stream()
-                .map(task -> (org.reactivestreams.Publisher<Runnable>) task.findDocuments(db))
+                .map(task -> (Publisher<Runnable>) task.findDocuments(db))
                 .toList();
         Flux.merge(findPublishers) //prefetch
                 .subscribe(Runnable::run, findFuture::completeExceptionally, () -> findFuture.complete(null));
         var countFuture = new CompletableFuture<Void>();
         var countPublishers = tasks.stream()
-                .map(task -> (org.reactivestreams.Publisher<Runnable>) task.countDocuments(db))
+                .map(task -> (Publisher<Runnable>) task.countDocuments(db))
                 .toList();
         Flux.merge(countPublishers) //prefetch
                 .subscribe(Runnable::run, countFuture::completeExceptionally, () -> countFuture.complete(null));

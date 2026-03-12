@@ -54,7 +54,7 @@ public abstract class CollectionTask {
                 .toList();
     }
 
-    public static ContentType getStructureContentType(String collectionName) {
+    private static ContentType getStructureContentType(String collectionName) {
         return COLL_NAME_TO_CONTENT_TYPE_MAP.get(collectionName);
     }
 
