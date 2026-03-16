@@ -107,3 +107,9 @@ idMapperAppProperties:
   mongoDbUri:
     a: mongodb://%s:%s@production-mongodb-dw-a-svc.production.svc.cluster.local:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
     b: mongodb://%s:%s@production-mongodb-dw-b-svc.production.svc.cluster.local:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+  mongoPdbxCoreUri:
+    a: mongodb://%s:%s@production-mongodb-dw-a-svc.production.svc.cluster.local:27017/pdbx_core?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+    b: mongodb://%s:%s@production-mongodb-dw-b-svc.production.svc.cluster.local:27017/pdbx_core?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+  mongoPdbxCompModelUri:
+    a: mongodb://%s:%s@production-mongodb-dw-a-svc.production.svc.cluster.local:27017/pdbx_comp_model_core?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+    b: mongodb://%s:%s@production-mongodb-dw-b-svc.production.svc.cluster.local:27017/pdbx_comp_model_core?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
