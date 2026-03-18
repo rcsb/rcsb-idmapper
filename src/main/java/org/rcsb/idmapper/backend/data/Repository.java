@@ -334,10 +334,10 @@ public class Repository {
         }
     }
 
-    public State getState(DataProvider.TaskProfile taskProfile) {
+    public State getState(DataSource dataSource) {
         String error;
         State state = new State();
-        switch (taskProfile) {
+        switch (dataSource) {
             case CORE_PDB -> {
                 ContentType ct = ContentType.experimental;
                 if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_ENTRY, getActualCountEntry(ct))) != null)
@@ -362,7 +362,7 @@ public class Repository {
                 if ((error = checkCount(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, getActualCountDepositGroups())) != null)
                     state.addError(error);
             }
-            default -> throw new IllegalStateException("Unexpected value: " + taskProfile);
+            default -> throw new IllegalStateException("Unexpected value: " + dataSource);
         }
         return state;
     }

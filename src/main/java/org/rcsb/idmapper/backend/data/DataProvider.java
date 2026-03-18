@@ -35,22 +35,16 @@ public class DataProvider {
         this.connectionString = connectionString;
     }
 
-    public Closeable connect(TaskProfile taskProfile) {
+    public Closeable connect(DataSource dataSource) {
         var databaseName = new ConnectionString(connectionString).getDatabase();
         if (databaseName == null)
             throw new IllegalArgumentException("Database name must be provided in the connection string URI");
-        MongoClient mongoClient = MongoClientProvider.getOrCreate(connectionString, taskProfile);
+        MongoClient mongoClient = MongoClientProvider.getOrCreate(connectionString, dataSource);
         db = mongoClient.getDatabase(databaseName);
         return MongoClientProvider.noopCloseable();
     }
 
-    public enum TaskProfile {
-        CORE_PDB,
-        CORE_CSM,
-        DW
-    }
-
-    public CompletableFuture<Void> initialize(Repository r, TaskProfile profile) {
+    public CompletableFuture<Void> initialize(Repository r, DataSource profile) {
         logger.info("Initializing data provider '{}'", db.getName());
         var findFuture = new CompletableFuture<Void>();
         var tasks = getTasks(profile, r);
@@ -72,7 +66,7 @@ public class DataProvider {
         );
     }
 
-    private List<CollectionTask> getTasks(TaskProfile profile, Repository r) {
+    private List<CollectionTask> getTasks(DataSource profile, Repository r) {
         return switch (profile) {
             case CORE_PDB -> List.of(
                     new EntryCollectionTask(MongoCollections.COLL_PDBX_CORE_ENTRY, r),
@@ -94,9 +88,9 @@ public class DataProvider {
         };
     }
 
-    public void postInitializationCheck(Repository repository, TaskProfile taskProfile) {
-        Repository.State state = repository.getState(taskProfile);
+    public void postInitializationCheck(Repository repository, DataSource dataSource) {
+        Repository.State state = repository.getState(dataSource);
         if (!state.isDataComplete())
-            throw new IllegalStateException("Data completeness issue for " + taskProfile + ": " + state.getDataErrors());
+            throw new IllegalStateException("Data completeness issue for " + dataSource + ": " + state.getDataErrors());
     }
 }

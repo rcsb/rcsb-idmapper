@@ -4,6 +4,7 @@ import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.DataProviderConfig;
 import org.rcsb.idmapper.backend.data.Repository;
+import org.rcsb.idmapper.backend.data.DataSource;
 import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
@@ -40,15 +41,15 @@ public class IdMapperServer {
         var dataProviders = List.of(
                 new DataProviderConfig(
                         new DataProvider(dwConnectionString),
-                        DataProvider.TaskProfile.DW
+                        DataSource.DW
                 ),
                 new DataProviderConfig(
                         new DataProvider(corePdbConnectionString),
-                        DataProvider.TaskProfile.CORE_PDB
+                        DataSource.CORE_PDB
                 ),
                 new DataProviderConfig(
                         new DataProvider(coreCsmConnectionString),
-                        DataProvider.TaskProfile.CORE_CSM
+                        DataSource.CORE_CSM
                 )
         );
 

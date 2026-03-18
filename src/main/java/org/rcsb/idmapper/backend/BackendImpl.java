@@ -44,12 +44,12 @@ public class BackendImpl {
         logger.info("Initializing backend");
         for (var config : dataProviders) {
             try (@SuppressWarnings("unused") Closeable ignored =
-                         config.dataProvider.connect(config.taskProfile)) {
-                config.dataProvider.initialize(repository, config.taskProfile).join();
+                         config.dataProvider.connect(config.dataSource)) {
+                config.dataProvider.initialize(repository, config.dataSource).join();
             }
         }
         for (var config : dataProviders) {
-            config.dataProvider.postInitializationCheck(repository, config.taskProfile);
+            config.dataProvider.postInitializationCheck(repository, config.dataSource);
         }
         logger.info("Backend is initialized. Time took: [ {} ] minutes",
                 Duration.between(start, Instant.now()).toMinutes());

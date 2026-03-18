@@ -19,14 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 final class MongoClientProvider {
     private static final Logger logger = LoggerFactory.getLogger(MongoClientProvider.class);
-    private static final ConcurrentHashMap<DataProvider.TaskProfile, MongoClient> CLIENTS = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<DataSource, MongoClient> CLIENTS = new ConcurrentHashMap<>();
     private static final Closeable NOOP_CLOSEABLE = () -> { };
 
     private MongoClientProvider() {
     }
 
-    static MongoClient getOrCreate(String connectionString, DataProvider.TaskProfile taskProfile) {
-        return CLIENTS.computeIfAbsent(taskProfile, key -> {
+    static MongoClient getOrCreate(String connectionString, DataSource dataSource) {
+        return CLIENTS.computeIfAbsent(dataSource, key -> {
             String mongoUriRedacted = getMongoUriRedacted(connectionString);
             try {
                 MongoClient created = MongoClients.create(connectionString);

@@ -2,10 +2,10 @@ package org.rcsb.idmapper.backend.data;
 
 public final class DataProviderConfig {
     public final DataProvider dataProvider;
-    public final DataProvider.TaskProfile taskProfile;
+    public final DataSource dataSource;
 
-    public DataProviderConfig(DataProvider dataProvider, DataProvider.TaskProfile taskProfile) {
+    public DataProviderConfig(DataProvider dataProvider, DataSource dataSource) {
         this.dataProvider = dataProvider;
-        this.taskProfile = taskProfile;
+        this.dataSource = dataSource;
     }
 }

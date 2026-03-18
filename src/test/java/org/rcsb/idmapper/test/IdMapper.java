@@ -6,6 +6,7 @@ import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.DataProviderConfig;
 import org.rcsb.idmapper.backend.data.Repository;
+import org.rcsb.idmapper.backend.data.DataSource;
 import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
@@ -50,9 +51,9 @@ public class IdMapper {
 
 
         var dataProviders = List.of(
-                new DataProviderConfig(mockDataProvider, DataProvider.TaskProfile.DW),
-                new DataProviderConfig(mockDataProvider, DataProvider.TaskProfile.CORE_PDB),
-                new DataProviderConfig(mockDataProvider, DataProvider.TaskProfile.CORE_CSM)
+                new DataProviderConfig(mockDataProvider, DataSource.DW),
+                new DataProviderConfig(mockDataProvider, DataSource.CORE_PDB),
+                new DataProviderConfig(mockDataProvider, DataSource.CORE_CSM)
         );
 
         var backend = new BackendImpl(
