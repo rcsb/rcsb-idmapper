@@ -371,6 +371,8 @@ public class Repository {
         if (!documentCounts.containsKey(collName))
             return String.format("Count for %s collection was not collected", collName);
         long expectedCount = documentCounts.get(collName);
+        if (expectedCount == 0)
+            return String.format("No documents found in %s collection", collName);
         if (expectedCount != actualCount)
             return String.format("Collected %d documents from %s collection. Expected total count: %d",
                     actualCount, collName, expectedCount);
