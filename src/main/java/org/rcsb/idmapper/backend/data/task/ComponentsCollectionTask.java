@@ -6,7 +6,6 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_CHEM_COMP;
 
 /**
  *
@@ -16,8 +15,8 @@ import static org.rcsb.common.constants.MongoCollections.COLL_CHEM_COMP;
  */
 public class ComponentsCollectionTask extends CollectionTask {
 
-    public ComponentsCollectionTask(Repository r) {
-        super(COLL_CHEM_COMP, r, List.of(
+    public ComponentsCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, CoreConstants.COMP_ID),
                 List.of(CoreConstants.RCSB_CHEM_COMP_CONTAINER_IDENTIFIERS, CoreConstants.DRUGBANK_ID)
         ));

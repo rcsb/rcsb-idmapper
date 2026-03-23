@@ -3,7 +3,7 @@ package org.rcsb.idmapper.backend.data.task;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.bson.Document;
 import org.rcsb.common.constants.ContentType;
-import org.rcsb.common.constants.IdentifierRegex;
+import org.rcsb.common.constants.MongoCollections;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -13,11 +13,16 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Map;
 
 import static com.mongodb.client.model.Projections.*;
 
 /**
- *
+ * Base class for tasks that operate on collections in the database.
+ * <p>
+ * Provides common functionality for collection-based tasks, including
+ * repository access, collection name, and field inclusion configuration.
+ * <p>
  * Created on 3/10/23.
  *
  * @author Yana Rose
@@ -26,21 +31,31 @@ public abstract class CollectionTask {
 
     private final Logger logger = LoggerFactory.getLogger(CollectionTask.class);
 
+    private static final Map<String, ContentType> COLL_NAME_TO_CONTENT_TYPE_MAP = Map.of(
+            MongoCollections.COLL_PDBX_CORE_ENTRY, ContentType.experimental,
+            MongoCollections.COLL_PDBX_CORE_POLYMER_ENTITY, ContentType.experimental,
+            MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, ContentType.experimental,
+            MongoCollections.COLL_PDBX_CORE_BRANCHED_ENTITY, ContentType.experimental,
+            MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, ContentType.computational,
+            MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, ContentType.computational
+    );
+
     public final Repository repository;
     public final String collectionName;
     public final List<String> includeFields;
+    public final ContentType structureType;
 
     public CollectionTask(final String coll, final Repository r, @Nonnull List<List<String>> fieldsToInclude) {
         this.repository = r;
         this.collectionName = coll;
+        this.structureType = getStructureContentType(coll);
         this.includeFields = fieldsToInclude.stream()
                 .map(f -> String.join(".", f))
                 .toList();
     }
 
-    ContentType getStructureType(String entryId) {
-        boolean isCsm = ! IdentifierRegex.PDB_ID_REGEX.matcher(entryId).matches();
-        return isCsm ? ContentType.computational : ContentType.experimental;
+    private static ContentType getStructureContentType(String collectionName) {
+        return COLL_NAME_TO_CONTENT_TYPE_MAP.get(collectionName);
     }
 
     public Flux<Runnable> findDocuments(final MongoDatabase db) {

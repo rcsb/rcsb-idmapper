@@ -1,7 +1,6 @@
 package org.rcsb.idmapper.backend.data.task;
 
 import org.bson.Document;
-import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.backend.data.repository.AllRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
@@ -9,7 +8,6 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_NONPOLYMER_ENTITY;
 
 /**
  *
@@ -19,8 +17,8 @@ import static org.rcsb.common.constants.MongoCollections.COLL_NONPOLYMER_ENTITY;
  */
 public class NonPolymerEntityCollectionTask extends CollectionTask {
 
-    public NonPolymerEntityCollectionTask(Repository r) {
-        super(COLL_NONPOLYMER_ENTITY, r, List.of(
+    public NonPolymerEntityCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
                 List.of(CoreConstants.RCSB_NONPOLYMER_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
@@ -36,7 +34,6 @@ public class NonPolymerEntityCollectionTask extends CollectionTask {
             String entry = container.getString(CoreConstants.ENTRY_ID);
             String entity = container.getString(CoreConstants.ENTITY_ID);
 
-            ContentType structureType = getStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 

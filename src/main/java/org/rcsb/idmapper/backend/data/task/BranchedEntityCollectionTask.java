@@ -1,7 +1,6 @@
 package org.rcsb.idmapper.backend.data.task;
 
 import org.bson.Document;
-import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.backend.data.repository.AllRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
@@ -9,7 +8,6 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_BRANCHED_ENTITY;
 
 /**
  * Created on 3/10/23.
@@ -18,8 +16,8 @@ import static org.rcsb.common.constants.MongoCollections.COLL_BRANCHED_ENTITY;
  */
 public class BranchedEntityCollectionTask extends CollectionTask {
 
-    public BranchedEntityCollectionTask(Repository r) {
-        super(COLL_BRANCHED_ENTITY, r, List.of(
+    public BranchedEntityCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ENTITY_ID),
                 List.of(CoreConstants.RCSB_BRANCHED_ENTITY_CONTAINER_IDENTIFIERS, CoreConstants.ASYM_IDS),
@@ -36,7 +34,6 @@ public class BranchedEntityCollectionTask extends CollectionTask {
             String entry = container.getString(CoreConstants.ENTRY_ID);
             String entity = container.getString(CoreConstants.ENTITY_ID);
 
-            ContentType structureType = getStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 

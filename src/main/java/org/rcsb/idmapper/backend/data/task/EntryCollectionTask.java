@@ -1,7 +1,6 @@
 package org.rcsb.idmapper.backend.data.task;
 
 import org.bson.Document;
-import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.backend.data.repository.AllRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
@@ -9,20 +8,16 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_ENTRY;
-
 /**
  * For every {@link Document} item that publisher emits, it will parse entry to children mappings,
  * and then update the {@link StructureRepository}.
- *
  * Created on 3/10/23.
- *
  * @author Yana Rose
  */
 public class EntryCollectionTask extends CollectionTask {
 
-    public EntryCollectionTask(Repository r) {
-        super(COLL_ENTRY, r, List.of(
+    public EntryCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ENTRY_ID),
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.PUBMED_ID),
                 List.of(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, CoreConstants.ASSEMBLY_IDS),
@@ -39,7 +34,6 @@ public class EntryCollectionTask extends CollectionTask {
             Document container = document.get(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, Document.class);
             String entry = container.getString(CoreConstants.ENTRY_ID);
 
-            ContentType structureType = getStructureType(entry); // PDB or CSM
             AllRepository ar = repository.getAllRepository(structureType);
             StructureRepository sr = repository.getStructureRepository(structureType);
 

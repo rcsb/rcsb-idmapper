@@ -7,7 +7,6 @@ import org.rcsb.mojave.CoreConstants;
 
 import java.util.List;
 
-import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_NON_POLYMER_ENTITY_CHEMICAL_COMPONENT;
 
 /**
  * Created on 5/05/25.
@@ -16,8 +15,8 @@ import static org.rcsb.common.constants.MongoCollections.COLL_GROUP_NON_POLYMER_
  */
 public class ChemCompGroupCollectionTask extends CollectionTask {
 
-    public ChemCompGroupCollectionTask(Repository r) {
-        super(COLL_GROUP_NON_POLYMER_ENTITY_CHEMICAL_COMPONENT, r, List.of(
+    public ChemCompGroupCollectionTask(String collectionName, Repository r) {
+        super(collectionName, r, List.of(
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_ID),
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_PROVENANCE_ID),
                 List.of(CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS, CoreConstants.GROUP_MEMBER_IDS)

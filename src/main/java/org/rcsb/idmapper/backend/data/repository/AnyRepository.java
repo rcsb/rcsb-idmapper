@@ -6,6 +6,13 @@ import org.rcsb.common.constants.IdentifierSeparator;
 import java.util.List;
 
 /**
+ * Shared base class for repositories that need common utilities.
+ * <p>
+ * Provides shared sizing defaults, helper methods for direct/reverse multimap updates,
+ * and utilities to construct composite identifiers (entry+assembly/entity/instance).
+ * The name "Any" reflects that these utilities apply to any concrete repository type,
+ * rather than representing a domain-specific data store.
+ * <p>
  * Created on 4/20/23.
  *
  * @author Yana Rose

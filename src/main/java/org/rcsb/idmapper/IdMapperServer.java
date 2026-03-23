@@ -2,7 +2,9 @@ package org.rcsb.idmapper;
 
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
+import org.rcsb.idmapper.backend.data.DataProviderConfig;
 import org.rcsb.idmapper.backend.data.Repository;
+import org.rcsb.idmapper.backend.data.DataSource;
 import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -23,16 +26,35 @@ public class IdMapperServer {
     public static final String TRANSLATE = "/translate";
     public static final String GROUP = "/group";
     public static final String ALL = "/all";
+    public static final String CORE_PDB_MONGODB_URI = "CORE_PDB_MONGODB_URI";
+    public static final String CORE_CSM_MONGODB_URI = "CORE_CSM_MONGODB_URI";
     public static final String MONGODB_URI = "MONGODB_URI";
     public static final String MONGODB_USER = "MONGODB_USER";
     public static final String MONGODB_PWD = "MONGODB_PWD";
 
     public static void main(String[] args) {
 
-        String connectionString = getConnectionString();
+        String dwConnectionString = getConnectionString(MONGODB_URI);
+        String corePdbConnectionString = getConnectionString(CORE_PDB_MONGODB_URI);
+        String coreCsmConnectionString = getConnectionString(CORE_CSM_MONGODB_URI);
+
+        var dataProviders = List.of(
+                new DataProviderConfig(
+                        new DataProvider(dwConnectionString),
+                        DataSource.DW
+                ),
+                new DataProviderConfig(
+                        new DataProvider(corePdbConnectionString),
+                        DataSource.CORE_PDB
+                ),
+                new DataProviderConfig(
+                        new DataProvider(coreCsmConnectionString),
+                        DataSource.CORE_CSM
+                )
+        );
 
         var backend = new BackendImpl(
-                new DataProvider(connectionString),
+                dataProviders,
                 new Repository()
         );
 
@@ -63,18 +85,20 @@ public class IdMapperServer {
         }
     }
 
-    private static String getConnectionString() {
-        String connectionString = Objects.requireNonNull(System.getenv(MONGODB_URI),
-                String.format("The environment variable [ %s ] with Mongo database connection string (URI) must be set", MONGODB_URI));
+    private static String getConnectionString(String envVar) {
+        String connectionString = Objects.requireNonNull(System.getenv(envVar),
+                String.format("The environment variable [ %s ] with Mongo database connection string (URI) must be set", envVar));
         int numPlaceHolders = (int) Pattern.compile("%s").matcher(connectionString).results().count();
         if (numPlaceHolders != 2) {
             LOGGER.error("Mongo connection URI string [ {} ] does not contain exactly 2 placeholders. " +
-                    "Please check '{}' env var", connectionString, MONGODB_URI);
+                    "Please check '{}' env var", connectionString, envVar);
             throw new IllegalArgumentException("Mongo connection URI string does not contain exactly 2 placeholders");
         }
 
-        String user = Objects.requireNonNull(System.getenv(MONGODB_USER), String.format("The environment variable [ %s ] with Mongo database user must be set", MONGODB_USER));
-        String pwd = Objects.requireNonNull(System.getenv(MONGODB_PWD), String.format("The environment variable [ %s ] with Mongo database password must be set", MONGODB_PWD));
+        String user = Objects.requireNonNull(System.getenv(MONGODB_USER),
+                String.format("The environment variable [ %s ] with Mongo database user must be set", MONGODB_USER));
+        String pwd = Objects.requireNonNull(System.getenv(MONGODB_PWD),
+                String.format("The environment variable [ %s ] with Mongo database password must be set", MONGODB_PWD));
 
         // note anything that goes into the mongo URI must be URL-encoded
         connectionString = String.format(connectionString,

@@ -142,3 +142,11 @@ idMapperAppProperties:
   mongoDbUri:
     a:
     b:
+  # mongoPdbxCoreUri the MongoDB URI pointing to pdbx_core. Must have 2 %s placeholders for user/pwd
+  mongoPdbxCoreUri:
+    a:
+    b:
+  # mongoPdbxCompModelUri the MongoDB URI pointing to pdbx_comp_model_core. Must have 2 %s placeholders for user/pwd
+  mongoPdbxCompModelUri:
+    a:
+    b:

@@ -334,21 +334,36 @@ public class Repository {
         }
     }
 
-    public State getState() {
+    public State getState(DataSource dataSource) {
         String error;
         State state = new State();
-        if ((error = checkCount(MongoCollections.COLL_ENTRY, getActualCountEntry())) != null)
-            state.addError(error);
-        if ((error = checkCount(MongoCollections.COLL_POLYMER_ENTITY, getActualCountPolymerEntity())) != null)
-            state.addError(error);
-        if ((error = checkCount(MongoCollections.COLL_NONPOLYMER_ENTITY, getActualCountNonPolymerEntity())) != null)
-            state.addError(error);
-        if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, getActualCountSequenceGroups())) != null)
-            state.addError(error);
-        if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_UNIPROT_ACCESSION, getActualCountUniprotGroups())) != null)
-            state.addError(error);
-        if ((error = checkCount(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, getActualCountDepositGroups())) != null)
-            state.addError(error);
+        switch (dataSource) {
+            case CORE_PDB -> {
+                ContentType ct = ContentType.experimental;
+                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_ENTRY, getActualCountEntry(ct))) != null)
+                    state.addError(error);
+                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_POLYMER_ENTITY, getActualCountPolymerEntity(ct))) != null)
+                    state.addError(error);
+                if ((error = checkCount(MongoCollections.COLL_PDBX_CORE_NONPOLYMER_ENTITY, getActualCountNonPolymerEntity(ct))) != null)
+                    state.addError(error);
+            }
+            case CORE_CSM -> {
+                ContentType ct = ContentType.computational;
+                if ((error = checkCount(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_ENTRY, getActualCountEntry(ct))) != null)
+                    state.addError(error);
+                if ((error = checkCount(MongoCollections.COLL_PDBX_COMP_MODEL_CORE_POLYMER_ENTITY, getActualCountPolymerEntity(ct))) != null)
+                    state.addError(error);
+            }
+            case DW -> {
+                if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, getActualCountSequenceGroups())) != null)
+                    state.addError(error);
+                if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_UNIPROT_ACCESSION, getActualCountUniprotGroups())) != null)
+                    state.addError(error);
+                if ((error = checkCount(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, getActualCountDepositGroups())) != null)
+                    state.addError(error);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + dataSource);
+        }
         return state;
     }
 
@@ -362,21 +377,17 @@ public class Repository {
         return null;
     }
 
-    private Long getActualCountEntry() {
-        return Integer.valueOf(getAllRepository(ContentType.experimental).getEntryIds().size()
-                + getAllRepository(ContentType.computational).getEntryIds().size()).longValue();
+    private Long getActualCountEntry(ContentType ct) {
+        return Integer.valueOf(getAllRepository(ct).getEntryIds().size()).longValue();
     }
 
-    private Long getActualCountPolymerEntity() {
-        return Integer.valueOf(getAllRepository(ContentType.experimental).getPolymerEntityIds().size()
-                + getAllRepository(ContentType.computational).getPolymerEntityIds().size()).longValue();
+    private Long getActualCountPolymerEntity(ContentType ct) {
+        return Integer.valueOf(getAllRepository(ct).getPolymerEntityIds().size()).longValue();
     }
 
-    private Long getActualCountNonPolymerEntity() {
-        return Integer.valueOf(getAllRepository(ContentType.experimental).getNonPolymerEntityIds().size()
-                + getAllRepository(ContentType.computational).getNonPolymerEntityIds().size()).longValue();
+    private Long getActualCountNonPolymerEntity(ContentType ct) {
+        return Integer.valueOf(getAllRepository(ct).getNonPolymerEntityIds().size()).longValue();
     }
-
     private Long getActualCountSequenceGroups() {
         return group.countGroups(Input.AggregationMethod.sequence_identity);
     }
@@ -388,7 +399,6 @@ public class Repository {
     private Long getActualCountDepositGroups() {
         return group.countGroups(Input.AggregationMethod.matching_deposit_group_id);
     }
-
     public static class State {
         private final List<String> dataErrors = new ArrayList<>();
 

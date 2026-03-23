@@ -4,7 +4,9 @@ import org.rcsb.common.constants.ContentType;
 import org.rcsb.idmapper.AppConfigs;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.backend.data.DataProvider;
+import org.rcsb.idmapper.backend.data.DataProviderConfig;
 import org.rcsb.idmapper.backend.data.Repository;
+import org.rcsb.idmapper.backend.data.DataSource;
 import org.rcsb.idmapper.frontend.JsonMapper;
 import org.rcsb.idmapper.frontend.RSocketFrontendImpl;
 import org.rcsb.idmapper.frontend.UndertowFrontendImpl;
@@ -18,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
 
 public class IdMapper {
     public static void main(String[] args) {
@@ -25,16 +28,20 @@ public class IdMapper {
         var mockDataProvider = mock(DataProvider.class);
         var mockRepository = mock(Repository.class);
 
-        when(mockDataProvider.connect()).thenReturn(new Closeable() {
+        when(mockDataProvider.connect(any())).thenReturn(new Closeable() {
             @Override
             public void close() throws IOException {
 
             }
         });
 
-        when(mockDataProvider.initialize(any())).thenAnswer(invocationOnMock ->{
+        when(mockDataProvider.initialize(any(), any())).thenAnswer(invocationOnMock -> {
             return CompletableFuture.completedFuture(null);
         });
+
+        doNothing()
+                .when(mockDataProvider)
+                .postInitializationCheck(any(), any());
 
 
         when(mockRepository.lookup("BHH4", Input.Type.entry, Input.Type.polymer_entity, ContentType.experimental))
@@ -43,8 +50,14 @@ public class IdMapper {
                 });
 
 
+        var dataProviders = List.of(
+                new DataProviderConfig(mockDataProvider, DataSource.DW),
+                new DataProviderConfig(mockDataProvider, DataSource.CORE_PDB),
+                new DataProviderConfig(mockDataProvider, DataSource.CORE_CSM)
+        );
+
         var backend = new BackendImpl(
-                mockDataProvider,
+                dataProviders,
                 mockRepository
         );
 

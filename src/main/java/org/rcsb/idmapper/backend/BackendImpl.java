@@ -2,6 +2,7 @@ package org.rcsb.idmapper.backend;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.rcsb.idmapper.backend.data.DataProvider;
+import org.rcsb.idmapper.backend.data.DataProviderConfig;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.input.AllInput;
 import org.rcsb.idmapper.input.GroupInput;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 import java.io.Closeable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * This class is responsible for communication with upstream data provider
@@ -29,24 +31,28 @@ import java.time.Instant;
 public class BackendImpl {
     private final Logger logger = LoggerFactory.getLogger(BackendImpl.class);
 
-    private final DataProvider dataProvider;
+    private final List<DataProviderConfig> dataProviders;
     private final Repository repository;
 
-    public BackendImpl(DataProvider dataProvider, Repository repository) {
-        this.dataProvider = dataProvider;
+    public BackendImpl(List<DataProviderConfig> dataProviders, Repository repository) {
+        this.dataProviders = dataProviders;
         this.repository = repository;
     }
 
     public void initialize() throws Exception {
-        try (Closeable closeable = dataProvider.connect()) {
-            var start = Instant.now();
-            logger.info("Initializing backend");
-            dataProvider.initialize(repository)
-                    .join();
-            dataProvider.postInitializationCheck(repository);
-            logger.info("Backend is initialized. Time took: [ {} ] minutes",
-                    Duration.between(start, Instant.now()).toMinutes());
+        var start = Instant.now();
+        logger.info("Initializing backend");
+        for (var config : dataProviders) {
+            try (@SuppressWarnings("unused") Closeable ignored =
+                         config.dataProvider.connect(config.dataSource)) {
+                config.dataProvider.initialize(repository, config.dataSource).join();
+            }
         }
+        for (var config : dataProviders) {
+            config.dataProvider.postInitializationCheck(repository, config.dataSource);
+        }
+        logger.info("Backend is initialized. Time took: [ {} ] minutes",
+                Duration.between(start, Instant.now()).toMinutes());
     }
 
     public void start() {
@@ -58,6 +64,8 @@ public class BackendImpl {
         //TODO close connection etc
     }
 
+    // builds a TranslateOutput by looking up mappings in the Repository. The method was
+    // hit by /translate request ultimately.
     private Mono<TranslateOutput> dispatchTranslateInput(TranslateInput input) {
         var ids = input.ids != null ? input.ids :
                 input.content_type

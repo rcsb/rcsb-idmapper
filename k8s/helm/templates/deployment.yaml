@@ -85,6 +85,10 @@ spec:
           env:
             - name: MONGODB_URI
               value: {{ index $.Values.idMapperAppProperties.mongoDbUri . }}
+            - name: CORE_PDB_MONGODB_URI
+              value: {{ index $.Values.idMapperAppProperties.mongoPdbxCoreUri . }}
+            - name: CORE_CSM_MONGODB_URI
+              value: {{ index $.Values.idMapperAppProperties.mongoPdbxCompModelUri . }}
             - name: MONGODB_USER
               value: {{ $.Values.idMapperAppProperties.mongoDwUser }}
             - name: MONGODB_PWD

@@ -3,7 +3,7 @@ ID Mapper is designed to facilitate the mapping of PDB and related identifiers.
 
 ## Configuration
 
-The environment variable with the database connection string (URI) expected by the application is `MONGODB_URI`.
+The application expects these environment variables to provide MongoDB connection URIs: `MONGODB_URI`, `CORE_PDB_MONGODB_URI`, and `CORE_CSM_MONGODB_URI`.
 The URI connection scheme: `mongodb://%s:%s@host[:port]/database?authSource=admin&[options]`
   - `mongodb://` Required. Prefix to identify that this is a string in the standard connection format 
   - `%s:%s` Required. Placeholders for the username and password. Use env variables `MONGODB_USER` and `MONGODB_PWD` to specify the values
