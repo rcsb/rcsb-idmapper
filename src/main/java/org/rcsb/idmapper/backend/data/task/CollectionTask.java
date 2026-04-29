@@ -59,8 +59,13 @@ public abstract class CollectionTask {
     }
 
     public Flux<Runnable> findDocuments(final MongoDatabase db) {
-        Publisher<Document> publisher = db.getCollection(collectionName)
+        Document filter = getFilter();
+        Publisher<Document> publisher = filter == null
+                ? db.getCollection(collectionName)
                 .find()
+                .projection(fields(excludeId(), include(includeFields)))
+                : db.getCollection(collectionName)
+                .find(filter)
                 .projection(fields(excludeId(), include(includeFields)));
         return Flux.from(publisher)
                 .doOnSubscribe(s -> logger.info("Subscribed document task to collection [ {} ]", collectionName))
@@ -72,7 +77,10 @@ public abstract class CollectionTask {
     }
 
     public Mono<Runnable> countDocuments(final MongoDatabase db) {
-        return Mono.from(db.getCollection(collectionName).countDocuments())
+        Document filter = getFilter();
+        return Mono.from(filter == null
+                        ? db.getCollection(collectionName).countDocuments()
+                        : db.getCollection(collectionName).countDocuments(filter))
                 .doOnSubscribe(s -> logger.info("Subscribed count task to collection [ {} ]", collectionName))
                 .doOnSuccess(count -> logger.info("Collection [ {} ] has [ {} ] documents", collectionName, count))
                 .doOnError(t -> logger.error(t.getMessage()))
@@ -80,6 +88,10 @@ public abstract class CollectionTask {
     }
 
     abstract Runnable createDocumentRunnable(Document d);
+
+    protected Document getFilter() {
+        return null;
+    }
 
     public Runnable createCountRunnable(Long count) {
         return () -> repository.addCount(collectionName, count);

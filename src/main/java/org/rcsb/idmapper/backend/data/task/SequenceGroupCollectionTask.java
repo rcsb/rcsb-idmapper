@@ -14,6 +14,14 @@ import java.util.List;
  * @author Yana Rose
  */
 public class SequenceGroupCollectionTask extends CollectionTask {
+    private static final String GROUP_PROVENANCE_FIELD =
+            CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS + "." + CoreConstants.GROUP_PROVENANCE_ID;
+    private static final Document FILTER = new Document(
+            GROUP_PROVENANCE_FIELD,
+            new Document("$in", List.of(
+                    Input.AggregationMethod.sequence_identity.name(),
+                    "match_sequence_identity"
+            )));
 
     public SequenceGroupCollectionTask(String collectionName, Repository r) {
         super(collectionName, r, List.of(
@@ -39,5 +47,18 @@ public class SequenceGroupCollectionTask extends CollectionTask {
             repository.getGroupRepository()
                     .addGroupMembers(Input.AggregationMethod.sequence_identity, cutoff, group, members);
         };
+    }
+
+    @Override
+    protected Document getFilter() {
+        return FILTER;
+    }
+
+    @Override
+    public Runnable createCountRunnable(Long count) {
+        return () -> repository.addCount(
+                Repository.groupMetadataCountKey(Input.AggregationMethod.sequence_identity.name()),
+                count
+        );
     }
 }

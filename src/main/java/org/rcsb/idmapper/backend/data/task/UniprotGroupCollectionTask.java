@@ -14,6 +14,10 @@ import java.util.List;
  * @author Yana Rose
  */
 public class UniprotGroupCollectionTask extends CollectionTask {
+    private static final String GROUP_PROVENANCE_FIELD =
+            CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS + "." + CoreConstants.GROUP_PROVENANCE_ID;
+    private static final Document FILTER = new Document(
+            GROUP_PROVENANCE_FIELD, Input.AggregationMethod.matching_uniprot_accession.name());
 
     public UniprotGroupCollectionTask(String collectionName, Repository r) {
         super(collectionName, r, List.of(
@@ -35,5 +39,18 @@ public class UniprotGroupCollectionTask extends CollectionTask {
             repository.getGroupRepository()
                     .addGroupMembers(Input.AggregationMethod.matching_uniprot_accession, null, group, members);
         };
+    }
+
+    @Override
+    protected Document getFilter() {
+        return FILTER;
+    }
+
+    @Override
+    public Runnable createCountRunnable(Long count) {
+        return () -> repository.addCount(
+                Repository.groupMetadataCountKey(Input.AggregationMethod.matching_uniprot_accession.name()),
+                count
+        );
     }
 }

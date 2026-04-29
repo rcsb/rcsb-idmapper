@@ -14,6 +14,10 @@ import java.util.List;
  * @author Yana Rose
  */
 public class ChemCompGroupCollectionTask extends CollectionTask {
+    private static final String GROUP_PROVENANCE_FIELD =
+            CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS + "." + CoreConstants.GROUP_PROVENANCE_ID;
+    private static final Document FILTER = new Document(
+            GROUP_PROVENANCE_FIELD, Input.AggregationMethod.matching_chemical_component_id.name());
 
     public ChemCompGroupCollectionTask(String collectionName, Repository r) {
         super(collectionName, r, List.of(
@@ -36,5 +40,10 @@ public class ChemCompGroupCollectionTask extends CollectionTask {
                     .addGroupMembers(Input.AggregationMethod.matching_chemical_component_id, null, group, members);
 
         };
+    }
+
+    @Override
+    protected Document getFilter() {
+        return FILTER;
     }
 }

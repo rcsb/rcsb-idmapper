@@ -7,6 +7,7 @@ import org.rcsb.idmapper.backend.data.repository.ComponentRepository;
 import org.rcsb.idmapper.backend.data.repository.GroupRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
 import org.rcsb.idmapper.input.Input;
+import org.rcsb.mojave.CoreConstants;
 
 import java.util.*;
 
@@ -355,11 +356,11 @@ public class Repository {
                     state.addError(error);
             }
             case DW -> {
-                if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, getActualCountSequenceGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(Input.AggregationMethod.sequence_identity.name()), getActualCountSequenceGroups())) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_UNIPROT_ACCESSION, getActualCountUniprotGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(Input.AggregationMethod.matching_uniprot_accession.name()), getActualCountUniprotGroups())) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, getActualCountDepositGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(Input.AggregationMethod.matching_deposit_group_id.name()), getActualCountDepositGroups())) != null)
                     state.addError(error);
             }
             default -> throw new IllegalStateException("Unexpected value: " + dataSource);
@@ -401,6 +402,11 @@ public class Repository {
     private Long getActualCountDepositGroups() {
         return group.countGroups(Input.AggregationMethod.matching_deposit_group_id);
     }
+
+    public static String groupMetadataCountKey(String provenanceId) {
+        return MongoCollections.COLL_GROUP_METADATA + "|" + CoreConstants.GROUP_PROVENANCE_ID + "=" + provenanceId;
+    }
+
     public static class State {
         private final List<String> dataErrors = new ArrayList<>();
 
