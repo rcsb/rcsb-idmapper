@@ -4,6 +4,7 @@ import org.bson.Document;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.input.Input;
 import org.rcsb.mojave.CoreConstants;
+import org.rcsb.mojave.enumeration.RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId;
 
 import java.util.List;
 
@@ -14,10 +15,12 @@ import java.util.List;
  * @author Yana Rose
  */
 public class UniprotGroupCollectionTask extends CollectionTask {
+    private static final String PROVENANCE_ID =
+            RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId.PROVENANCE_MATCHING_UNIPROT_ACCESSION.value();
     private static final String GROUP_PROVENANCE_FIELD =
             CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS + "." + CoreConstants.GROUP_PROVENANCE_ID;
     private static final Document FILTER = new Document(
-            GROUP_PROVENANCE_FIELD, Input.AggregationMethod.matching_uniprot_accession.name());
+            GROUP_PROVENANCE_FIELD, PROVENANCE_ID);
 
     public UniprotGroupCollectionTask(String collectionName, Repository r) {
         super(collectionName, r, List.of(
@@ -44,6 +47,11 @@ public class UniprotGroupCollectionTask extends CollectionTask {
     @Override
     protected Document getFilter() {
         return FILTER;
+    }
+
+    @Override
+    protected String getFilterLogDetails() {
+        return CoreConstants.GROUP_PROVENANCE_ID + "=" + PROVENANCE_ID;
     }
 
     @Override
