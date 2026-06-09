@@ -8,6 +8,7 @@ import org.rcsb.idmapper.backend.data.repository.GroupRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
 import org.rcsb.idmapper.input.Input;
 import org.rcsb.mojave.CoreConstants;
+import org.rcsb.mojave.enumeration.RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId;
 
 import java.util.*;
 
@@ -356,11 +357,17 @@ public class Repository {
                     state.addError(error);
             }
             case DW -> {
-                if ((error = checkCount(groupMetadataCountKey(Input.AggregationMethod.sequence_identity.name()), getActualCountSequenceGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(
+                        RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId.PROVENANCE_SEQUENCE_IDENTITY.value()),
+                        getActualCountSequenceGroups())) != null)
                     state.addError(error);
-                if ((error = checkCount(groupMetadataCountKey(Input.AggregationMethod.matching_uniprot_accession.name()), getActualCountUniprotGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(
+                        RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId.PROVENANCE_MATCHING_UNIPROT_ACCESSION.value()),
+                        getActualCountUniprotGroups())) != null)
                     state.addError(error);
-                if ((error = checkCount(groupMetadataCountKey(Input.AggregationMethod.matching_deposit_group_id.name()), getActualCountDepositGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(
+                        RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId.PROVENANCE_MATCHING_DEPOSIT_GROUP_ID.value()),
+                        getActualCountDepositGroups())) != null)
                     state.addError(error);
             }
             default -> throw new IllegalStateException("Unexpected value: " + dataSource);

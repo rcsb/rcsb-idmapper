@@ -58,7 +58,7 @@ public class DepositGroupCollectionTask extends CollectionTask {
     @Override
     public Runnable createCountRunnable(Long count) {
         return () -> repository.addCount(
-                Repository.groupMetadataCountKey(Input.AggregationMethod.matching_deposit_group_id.name()),
+                Repository.groupMetadataCountKey(PROVENANCE_ID),
                 count
         );
     }

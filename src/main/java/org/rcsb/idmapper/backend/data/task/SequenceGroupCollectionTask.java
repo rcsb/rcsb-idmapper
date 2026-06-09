@@ -61,7 +61,7 @@ public class SequenceGroupCollectionTask extends CollectionTask {
     @Override
     public Runnable createCountRunnable(Long count) {
         return () -> repository.addCount(
-                Repository.groupMetadataCountKey(Input.AggregationMethod.sequence_identity.name()),
+                Repository.groupMetadataCountKey(PROVENANCE_ID),
                 count
         );
     }
