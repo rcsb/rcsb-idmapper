@@ -1,10 +1,10 @@
 package org.rcsb.idmapper.backend.data.task;
 
 import org.bson.Document;
+import org.rcsb.idmapper.backend.data.AggregationMethodProvenanceMapper;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.input.Input;
 import org.rcsb.mojave.CoreConstants;
-import org.rcsb.mojave.enumeration.RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId;
 
 import java.util.List;
 
@@ -15,8 +15,9 @@ import java.util.List;
  * @author Yana Rose
  */
 public class DepositGroupCollectionTask extends CollectionTask {
+    private static final Input.AggregationMethod AGGREGATION_METHOD = Input.AggregationMethod.matching_deposit_group_id;
     private static final String PROVENANCE_ID =
-            RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId.PROVENANCE_MATCHING_DEPOSIT_GROUP_ID.value();
+            AggregationMethodProvenanceMapper.toProvenanceId(AGGREGATION_METHOD);
     private static final String GROUP_PROVENANCE_FIELD =
             CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS + "." + CoreConstants.GROUP_PROVENANCE_ID;
     private static final Document FILTER = new Document(
@@ -40,7 +41,7 @@ public class DepositGroupCollectionTask extends CollectionTask {
 
             repository.getGroupRepository().addGroupProvenance(group, provenance);
             repository.getGroupRepository()
-                    .addGroupMembers(Input.AggregationMethod.matching_deposit_group_id, null, group, members);
+                    .addGroupMembers(AggregationMethodProvenanceMapper.toAggregationMethod(provenance), null, group, members);
 
         };
     }

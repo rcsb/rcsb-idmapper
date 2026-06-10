@@ -8,7 +8,6 @@ import org.rcsb.idmapper.backend.data.repository.GroupRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
 import org.rcsb.idmapper.input.Input;
 import org.rcsb.mojave.CoreConstants;
-import org.rcsb.mojave.enumeration.RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId;
 
 import java.util.*;
 
@@ -358,15 +357,15 @@ public class Repository {
             }
             case DW -> {
                 if ((error = checkCount(groupMetadataCountKey(
-                        RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId.PROVENANCE_SEQUENCE_IDENTITY.value()),
+                        AggregationMethodProvenanceMapper.toProvenanceId(Input.AggregationMethod.sequence_identity)),
                         getActualCountSequenceGroups())) != null)
                     state.addError(error);
                 if ((error = checkCount(groupMetadataCountKey(
-                        RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId.PROVENANCE_MATCHING_UNIPROT_ACCESSION.value()),
+                        AggregationMethodProvenanceMapper.toProvenanceId(Input.AggregationMethod.matching_uniprot_accession)),
                         getActualCountUniprotGroups())) != null)
                     state.addError(error);
                 if ((error = checkCount(groupMetadataCountKey(
-                        RcsbGroupProvenanceContainerIdentifiersGroupProvenanceId.PROVENANCE_MATCHING_DEPOSIT_GROUP_ID.value()),
+                        AggregationMethodProvenanceMapper.toProvenanceId(Input.AggregationMethod.matching_deposit_group_id)),
                         getActualCountDepositGroups())) != null)
                     state.addError(error);
             }
