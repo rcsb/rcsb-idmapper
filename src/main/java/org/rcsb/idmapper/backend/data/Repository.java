@@ -410,7 +410,13 @@ public class Repository {
     }
 
     public static String groupMetadataCountKey(String provenanceId) {
-        return MongoCollections.COLL_GROUP_METADATA + "|" + CoreConstants.GROUP_PROVENANCE_ID + "=" + provenanceId;
+        Input.AggregationMethod aggregationMethod = AggregationMethodProvenanceMapper.toAggregationMethod(provenanceId);
+        String collectionName = switch (aggregationMethod) {
+            case sequence_identity, matching_uniprot_accession -> MongoCollections.COLL_GROUP_METADATA_POLYMER_ENTITY;
+            case matching_deposit_group_id -> MongoCollections.COLL_GROUP_METADATA_ENTRY;
+            case matching_chemical_component_id -> MongoCollections.COLL_GROUP_METADATA_NON_POLYMER_ENTITY;
+        };
+        return collectionName + "|" + CoreConstants.GROUP_PROVENANCE_ID + "=" + provenanceId;
     }
 
     public static class State {
