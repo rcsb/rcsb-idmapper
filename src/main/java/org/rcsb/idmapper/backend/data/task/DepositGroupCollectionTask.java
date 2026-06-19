@@ -18,10 +18,6 @@ public class DepositGroupCollectionTask extends CollectionTask {
     private static final Input.AggregationMethod AGGREGATION_METHOD = Input.AggregationMethod.matching_deposit_group_id;
     private static final String PROVENANCE_ID =
             AggregationMethodProvenanceMapper.toProvenanceId(AGGREGATION_METHOD);
-    private static final String GROUP_PROVENANCE_FIELD =
-            CoreConstants.RCSB_GROUP_CONTAINER_IDENTIFIERS + "." + CoreConstants.GROUP_PROVENANCE_ID;
-    private static final Document FILTER = new Document(
-            GROUP_PROVENANCE_FIELD, PROVENANCE_ID);
 
     public DepositGroupCollectionTask(String collectionName, Repository r) {
         super(collectionName, r, List.of(
@@ -44,16 +40,6 @@ public class DepositGroupCollectionTask extends CollectionTask {
                     .addGroupMembers(AggregationMethodProvenanceMapper.toAggregationMethod(provenance), null, group, members);
 
         };
-    }
-
-    @Override
-    protected Document getFilter() {
-        return FILTER;
-    }
-
-    @Override
-    protected String getFilterLogDetails() {
-        return CoreConstants.GROUP_PROVENANCE_ID + "=" + PROVENANCE_ID;
     }
 
     @Override
