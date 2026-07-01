@@ -12,6 +12,7 @@ spec:
   replicas: {{ $.Values.replicaCount }}
   {{- end }}
   revisionHistoryLimit: {{ $.Values.revisionHistoryLimit }}
+  progressDeadlineSeconds: {{ $.Values.progressDeadlineSeconds | default 1800 }}
   selector:
     matchLabels:
       {{- include "helm_chart.selectorLabels" $ | nindent 6 }}
@@ -65,7 +66,9 @@ spec:
           {{- end }}
           {{- if $.Values.readinessProbe.enable }}
           readinessProbe:
+            {{- if $.Values.readinessProbe.initialDelaySeconds }}
             initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
+            {{- end }}
             periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
             failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
             httpGet:

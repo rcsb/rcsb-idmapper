@@ -1,6 +1,8 @@
 replicaCount: 2
 revisionHistoryLimit: 3
 
+progressDeadlineSeconds: 1800
+
 enablePodAntiAffinity: true
 
 autoscaling:
@@ -37,15 +39,17 @@ livenessProbe:
     path: /
 readinessProbe:
   enable: true
-  initialDelaySeconds: 30
+  # No initialDelaySeconds: the startupProbe already gates readiness until the app is up.
   periodSeconds: 10
   failureThreshold: 6
   http:
     path: /
 startupProbe:
   enable: true
-  periodSeconds: 60
-  failureThreshold: 15
+  # Fine-grained checks so a pod goes Ready close to its real boot time. Budget must
+  # exceed the worst-case ~8-min boot: 10s * 72 = 720s (12 min) before failed to start.
+  periodSeconds: 10
+  failureThreshold: 72
   http:
     path: /
 
