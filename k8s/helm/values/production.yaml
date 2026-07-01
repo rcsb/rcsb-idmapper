@@ -1,7 +1,7 @@
 replicaCount: 2
 revisionHistoryLimit: 3
 
-progressDeadlineSeconds: 1800
+progressDeadlineSeconds: 2100
 
 enablePodAntiAffinity: true
 
@@ -47,9 +47,9 @@ readinessProbe:
 startupProbe:
   enable: true
   # Fine-grained checks so a pod goes Ready close to its real boot time. Budget must
-  # exceed the worst-case ~8-min boot: 10s * 72 = 720s (12 min) before failed to start.
+  # exceed the worst-case ~15-min boot: 10s * 108 = 1080s (18 min) before failed to start.
   periodSeconds: 10
-  failureThreshold: 72
+  failureThreshold: 108
   http:
     path: /
 
