@@ -7,6 +7,7 @@ import org.rcsb.idmapper.backend.data.repository.ComponentRepository;
 import org.rcsb.idmapper.backend.data.repository.GroupRepository;
 import org.rcsb.idmapper.backend.data.repository.StructureRepository;
 import org.rcsb.idmapper.input.Input;
+import org.rcsb.mojave.CoreConstants;
 
 import java.util.*;
 
@@ -355,11 +356,17 @@ public class Repository {
                     state.addError(error);
             }
             case DW -> {
-                if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, getActualCountSequenceGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(
+                        AggregationMethodProvenanceMapper.toProvenanceId(Input.AggregationMethod.sequence_identity)),
+                        getActualCountSequenceGroups())) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_GROUP_POLYMER_ENTITY_UNIPROT_ACCESSION, getActualCountUniprotGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(
+                        AggregationMethodProvenanceMapper.toProvenanceId(Input.AggregationMethod.matching_uniprot_accession)),
+                        getActualCountUniprotGroups())) != null)
                     state.addError(error);
-                if ((error = checkCount(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, getActualCountDepositGroups())) != null)
+                if ((error = checkCount(groupMetadataCountKey(
+                        AggregationMethodProvenanceMapper.toProvenanceId(Input.AggregationMethod.matching_deposit_group_id)),
+                        getActualCountDepositGroups())) != null)
                     state.addError(error);
             }
             default -> throw new IllegalStateException("Unexpected value: " + dataSource);
@@ -401,6 +408,17 @@ public class Repository {
     private Long getActualCountDepositGroups() {
         return group.countGroups(Input.AggregationMethod.matching_deposit_group_id);
     }
+
+    public static String groupMetadataCountKey(String provenanceId) {
+        Input.AggregationMethod aggregationMethod = AggregationMethodProvenanceMapper.toAggregationMethod(provenanceId);
+        String collectionName = switch (aggregationMethod) {
+            case sequence_identity, matching_uniprot_accession -> MongoCollections.COLL_GROUP_METADATA_POLYMER_ENTITY;
+            case matching_deposit_group_id -> MongoCollections.COLL_GROUP_METADATA_ENTRY;
+            case matching_chemical_component_id -> MongoCollections.COLL_GROUP_METADATA_NON_POLYMER_ENTITY;
+        };
+        return collectionName + "|" + CoreConstants.GROUP_PROVENANCE_ID + "=" + provenanceId;
+    }
+
     public static class State {
         private final List<String> dataErrors = new ArrayList<>();
 

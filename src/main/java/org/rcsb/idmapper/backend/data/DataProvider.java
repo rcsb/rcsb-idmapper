@@ -80,10 +80,10 @@ public class DataProvider {
             );
             case DW -> List.of(
                     new ComponentsCollectionTask(MongoCollections.COLL_CHEM_COMP, r),
-                    new DepositGroupCollectionTask(MongoCollections.COLL_GROUP_ENTRY_DEPOSIT_GROUP, r),
-                    new SequenceGroupCollectionTask(MongoCollections.COLL_GROUP_POLYMER_ENTITY_SEQUENCE_IDENTITY, r),
-                    new UniprotGroupCollectionTask(MongoCollections.COLL_GROUP_POLYMER_ENTITY_UNIPROT_ACCESSION, r),
-                    new ChemCompGroupCollectionTask(MongoCollections.COLL_GROUP_NON_POLYMER_ENTITY_CHEMICAL_COMPONENT, r)
+                    new DepositGroupCollectionTask(MongoCollections.COLL_GROUP_METADATA_ENTRY, r),
+                    new SequenceGroupCollectionTask(MongoCollections.COLL_GROUP_METADATA_POLYMER_ENTITY, r),
+                    new UniprotGroupCollectionTask(MongoCollections.COLL_GROUP_METADATA_POLYMER_ENTITY, r),
+                    new ChemCompGroupCollectionTask(MongoCollections.COLL_GROUP_METADATA_NON_POLYMER_ENTITY, r)
             );
         };
     }
