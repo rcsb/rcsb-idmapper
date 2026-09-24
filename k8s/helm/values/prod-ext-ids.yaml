@@ -1,0 +1,39 @@
+# The Docker image reference which this Helm chart will run.
+image:
+  repository: "harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper"
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "dev-cb-extids"
+
+# ingress declares the Ingress resource to be created and allow access to the service from the external internet.
+# Set ingress.enabled to true to create this Ingress resource. Double-check the host values for your application.
+ingress:
+  enabled: true
+  className: haproxy
+  annotations:
+    cert-manager.io/cluster-issuer: rutgers-acme
+    kubernetes.io/tls-acme: "true"
+    # The non-UCSD/Rutgers subnets are for NS1 monitors
+    haproxy.org/allow-list: >-
+      128.6.158.0/23, 132.249.210.0/24, 132.249.213.0/24, 163.114.226.0/24, 163.114.225.0/24,
+      209.177.156.77/32, 147.75.68.120/29, 163.114.227.0/24, 163.114.228.0/24, 163.114.224.0/24, 147.75.66.200/29,
+      163.114.230.0/24, 163.114.232.0/24
+  hosts:
+    - host: beta-idmapper.east.k8s.rcsb.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+    - hosts:
+        - beta-idmapper.east.k8s.rcsb.org
+      secretName: beta-idmapper.east.k8s.rcsb.org-tls
+
+idMapperAppProperties:
+  mongoDbUri:
+    a: mongodb://%s:%s@prod-ext-ids-mongodb-dw-a-svc.prod-ext-ids.svc.cluster.local:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+    b: mongodb://%s:%s@prod-ext-ids-mongodb-dw-b-svc.prod-ext-ids.svc.cluster.local:27017/dw?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+  mongoPdbxCoreUri:
+    a: mongodb://%s:%s@prod-ext-ids-mongodb-dw-a-svc.prod-ext-ids.svc.cluster.local:27017/pdbx_core?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+    b: mongodb://%s:%s@prod-ext-ids-mongodb-dw-b-svc.prod-ext-ids.svc.cluster.local:27017/pdbx_core?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+  mongoPdbxCompModelUri:
+    a: mongodb://%s:%s@prod-ext-ids-mongodb-dw-a-svc.prod-ext-ids.svc.cluster.local:27017/pdbx_comp_model_core?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
+    b: mongodb://%s:%s@prod-ext-ids-mongodb-dw-b-svc.prod-ext-ids.svc.cluster.local:27017/pdbx_comp_model_core?authSource=admin&connectTimeoutMS=3000000&socketTimeoutMS=3000000&readPreference=secondaryPreferred
