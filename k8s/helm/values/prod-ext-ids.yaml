@@ -1,9 +1,58 @@
+replicaCount: 1
+revisionHistoryLimit: 2
+
+enablePodAntiAffinity: true
+
+autoscaling:
+  enabled: false
+
 # The Docker image reference which this Helm chart will run.
 image:
   repository: "harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "dev-cb-extids"
+
+imagePullSecrets: "harbor-docker-registry-conf"
+
+deploymentStrategy:
+  type: "RollingUpdate"
+  maxSurge: 25%
+  maxUnavailable: 25%
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+livenessProbe:
+  enable: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 6
+  http:
+    path: /
+readinessProbe:
+  enable: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 6
+  http:
+    path: /
+startupProbe:
+  enable: true
+  periodSeconds: 300
+  failureThreshold: 4
+  http:
+    path: /
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
 
 # ingress declares the Ingress resource to be created and allow access to the service from the external internet.
 # Set ingress.enabled to true to create this Ingress resource. Double-check the host values for your application.
@@ -27,6 +76,14 @@ ingress:
     - hosts:
         - beta-idmapper.east.k8s.rcsb.org
       secretName: beta-idmapper.east.k8s.rcsb.org-tls
+
+resources: {}
+#  limits:
+#    cpu: 500m
+#    memory: 40Gi
+#  requests:
+#    cpu: 1m
+#    memory: 32Gi
 
 idMapperAppProperties:
   mongoDbUri:
