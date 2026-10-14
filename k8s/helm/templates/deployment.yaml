@@ -99,4 +99,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "helm_chart.fullname" $ }}-secret
                   key: mongodb_pwd
+            - name: DB_FLAVOR
+              value: {{ default "legacy" $.Values.idMapperAppProperties.dbFlavor | quote }}
 {{- end }}
