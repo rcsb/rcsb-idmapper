@@ -1,6 +1,8 @@
 package org.rcsb.idmapper;
 
+import org.rcsb.common.constants.PdbIdFlavor;
 import org.rcsb.idmapper.backend.BackendImpl;
+import org.rcsb.idmapper.backend.IdFlavorSupport;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.DataProviderConfig;
 import org.rcsb.idmapper.backend.data.Repository;
@@ -31,12 +33,15 @@ public class IdMapperServer {
     public static final String MONGODB_URI = "MONGODB_URI";
     public static final String MONGODB_USER = "MONGODB_USER";
     public static final String MONGODB_PWD = "MONGODB_PWD";
+    public static final String DB_FLAVOR = "DB_FLAVOR";
 
     public static void main(String[] args) {
 
         String dwConnectionString = getConnectionString(MONGODB_URI);
         String corePdbConnectionString = getConnectionString(CORE_PDB_MONGODB_URI);
         String coreCsmConnectionString = getConnectionString(CORE_CSM_MONGODB_URI);
+        PdbIdFlavor configuredFlavor = IdFlavorSupport.parseConfiguredFlavor(System.getenv(DB_FLAVOR));
+        LOGGER.info("Configured db flavor is {}", configuredFlavor);
 
         var dataProviders = List.of(
                 new DataProviderConfig(
@@ -55,7 +60,8 @@ public class IdMapperServer {
 
         var backend = new BackendImpl(
                 dataProviders,
-                new Repository()
+                new Repository(),
+                configuredFlavor
         );
 
         //TODO there may be multiple frontends e.g. one for RSocket, another for Undertow. Hence a factory will be needed

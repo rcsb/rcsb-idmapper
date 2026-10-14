@@ -1,16 +1,23 @@
 package org.rcsb.idmapper.backend.data;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.client.model.Projections;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import org.bson.Document;
 import org.reactivestreams.Publisher;
+import org.rcsb.common.constants.IdentifierRegex;
 import org.rcsb.common.constants.MongoCollections;
+import org.rcsb.common.constants.PdbIdFlavor;
 import org.rcsb.idmapper.backend.data.task.*;
+import org.rcsb.mojave.CoreConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import java.util.List;
 import java.io.Closeable;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -64,6 +71,30 @@ public class DataProvider {
                 findFuture,
                 countFuture
         );
+    }
+
+    public PdbIdFlavor detectCorePdbFlavor() {
+        if (db == null) {
+            throw new IllegalStateException("Cannot detect DB flavor before connection is established");
+        }
+        try {
+            Document sampledDoc = Mono.from(db.getCollection(MongoCollections.COLL_PDBX_CORE_ENTRY)
+                            .find()
+                            .projection(Projections.include(
+                                    CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS + "." + CoreConstants.ENTRY_ID))
+                            .first())
+                    .block();
+
+            return Optional.ofNullable(sampledDoc)
+                    .map(doc -> doc.get(CoreConstants.RCSB_ENTRY_CONTAINER_IDENTIFIERS, Document.class))
+                    .map(ids -> ids.getString(CoreConstants.ENTRY_ID))
+                    .map(IdentifierRegex::identifyFlavor)
+                    .orElse(PdbIdFlavor.LEGACY);
+        } catch (Exception e) {
+            String message = "Failed to detect PDB ID flavor from DB " + db.getName();
+            logger.error(message, e);
+            throw new RuntimeException(message, e);
+        }
     }
 
     private List<CollectionTask> getTasks(DataSource profile, Repository r) {

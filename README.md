@@ -13,3 +13,7 @@ The URI connection scheme: `mongodb://%s:%s@host[:port]/database?authSource=admi
   - `authSource=admin` Required. The name of the database to authenticate
   - `options` Optional. Connection specific options
 
+The application also supports optional env var `DB_FLAVOR` with values `legacy` or `extended`.
+If `DB_FLAVOR` is missing or blank, it defaults to `legacy`.
+At startup, the service samples `pdbx_core_entry` from `CORE_PDB_MONGODB_URI` and detects backend flavor from `entry_id`.
+If configured `DB_FLAVOR` does not match detected backend flavor, startup is aborted.

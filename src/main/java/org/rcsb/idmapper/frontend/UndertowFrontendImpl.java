@@ -10,6 +10,7 @@ import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.util.AttachmentKey;
 import io.undertow.util.Headers;
+import io.undertow.util.StatusCodes;
 import org.rcsb.idmapper.IdMapperServer;
 import org.rcsb.idmapper.backend.BackendImpl;
 import org.rcsb.idmapper.input.AllInput;
@@ -123,7 +124,19 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
         @Override
         public void handleRequest(HttpServerExchange exchange) throws Exception {
             var context = exchange.getAttachment(contextAttachmentKey);
-            var output = backend.dispatch(context.input).block();
+            var output = context.output;
+            try {
+                output = backend.dispatch(context.input).block();
+            } catch (IllegalArgumentException e) {
+                sendBadRequest(exchange, e.getMessage());
+                return;
+            } catch (RuntimeException e) {
+                if (e.getCause() instanceof IllegalArgumentException iae) {
+                    sendBadRequest(exchange, iae.getMessage());
+                    return;
+                }
+                throw e;
+            }
             @SuppressWarnings("unchecked")
             T typedContext = (T) context.setOutput(output);
 
@@ -147,5 +160,12 @@ public class UndertowFrontendImpl<T extends FrontendContext<HttpServerExchange>>
                 mapper.toJson(context.output, writer);
             }
         }
+    }
+
+    private void sendBadRequest(HttpServerExchange exchange, String message) {
+        if (exchange.isResponseComplete()) return;
+        exchange.setStatusCode(StatusCodes.BAD_REQUEST);
+        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, TEXT_PLAIN);
+        exchange.getResponseSender().send(message == null ? "Bad Request" : message);
     }
 }

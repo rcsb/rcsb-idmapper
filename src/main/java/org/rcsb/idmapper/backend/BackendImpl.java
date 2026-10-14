@@ -1,8 +1,10 @@
 package org.rcsb.idmapper.backend;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.rcsb.common.constants.PdbIdFlavor;
 import org.rcsb.idmapper.backend.data.DataProvider;
 import org.rcsb.idmapper.backend.data.DataProviderConfig;
+import org.rcsb.idmapper.backend.data.DataSource;
 import org.rcsb.idmapper.backend.data.Repository;
 import org.rcsb.idmapper.input.AllInput;
 import org.rcsb.idmapper.input.GroupInput;
@@ -20,6 +22,7 @@ import java.io.Closeable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class is responsible for communication with upstream data provider
@@ -33,10 +36,16 @@ public class BackendImpl {
 
     private final List<DataProviderConfig> dataProviders;
     private final Repository repository;
+    private final PdbIdFlavor configuredDbFlavor;
 
     public BackendImpl(List<DataProviderConfig> dataProviders, Repository repository) {
+        this(dataProviders, repository, PdbIdFlavor.LEGACY);
+    }
+
+    public BackendImpl(List<DataProviderConfig> dataProviders, Repository repository, PdbIdFlavor configuredDbFlavor) {
         this.dataProviders = dataProviders;
         this.repository = repository;
+        this.configuredDbFlavor = configuredDbFlavor;
     }
 
     public void initialize() throws Exception {
@@ -45,6 +54,9 @@ public class BackendImpl {
         for (var config : dataProviders) {
             try (@SuppressWarnings("unused") Closeable ignored =
                          config.dataProvider.connect(config.dataSource)) {
+                if (config.dataSource == DataSource.CORE_PDB) {
+                    validateCorePdbFlavor(config.dataProvider);
+                }
                 config.dataProvider.initialize(repository, config.dataSource).join();
             }
         }
@@ -53,6 +65,15 @@ public class BackendImpl {
         }
         logger.info("Backend is initialized. Time took: [ {} ] minutes",
                 Duration.between(start, Instant.now()).toMinutes());
+    }
+
+    private void validateCorePdbFlavor(DataProvider corePdbDataProvider) {
+        PdbIdFlavor detectedFlavor = Objects.requireNonNullElse(corePdbDataProvider.detectCorePdbFlavor(), PdbIdFlavor.LEGACY);
+        logger.info("Detected PDB ID flavor for CORE_PDB: {} (configured DB_FLAVOR={})", detectedFlavor, configuredDbFlavor);
+        if (!configuredDbFlavor.equals(detectedFlavor)) {
+            throw new IllegalStateException("PDB ID flavor mismatch for CORE_PDB: configured DB_FLAVOR=" +
+                    configuredDbFlavor + " but detected=" + detectedFlavor + ". Application startup aborted.");
+        }
     }
 
     public void start() {
@@ -73,11 +94,15 @@ public class BackendImpl {
                         .flatMap(ct -> repository.all(input.from, ct).stream())
                         .distinct()
                         .toList();
-        return Flux.fromIterable(ids)
-                .flatMap(id -> Flux.fromIterable(input.content_type)
-                        .map(ct -> Pair.of(id, ct)))
-                .flatMap(p -> Flux.fromIterable(repository.lookup(p.getKey(), input.from, input.to, p.getValue()))
-                                .map(toId -> Pair.of(p.getKey(), toId)))
+        var lookupIds = input.ids != null
+                ? ids.stream().map(id -> Pair.of(id, IdFlavorSupport.normalizeTranslateInputId(id, input.from, configuredDbFlavor))).toList()
+                : ids.stream().map(id -> Pair.of(id, id)).toList();
+
+        return Flux.fromIterable(lookupIds)
+                .flatMap(idPair -> Flux.fromIterable(input.content_type)
+                        .map(ct -> Pair.of(idPair, ct)))
+                .flatMap(p -> Flux.fromIterable(repository.lookup(p.getKey().getValue(), input.from, input.to, p.getValue()))
+                                .map(toId -> Pair.of(p.getKey().getKey(), toId)))
                 .reduce(new TranslateOutput(), (container, p1) -> {
                     container.results.put(p1.getValue(), p1.getKey());
                     return container;
@@ -87,8 +112,9 @@ public class BackendImpl {
 
     private Mono<TranslateOutput> dispatchGroupInput(GroupInput input) {
         return Flux.fromIterable(input.ids)
-                .flatMap(id -> Flux.fromIterable(repository.lookup(id, input.aggregation_method, input.similarity_cutoff))
-                        .map(gId -> Pair.of(id, gId)))
+                .map(id -> Pair.of(id, IdFlavorSupport.normalizeGroupInputId(id, input.aggregation_method, configuredDbFlavor)))
+                .flatMap(idPair -> Flux.fromIterable(repository.lookup(idPair.getValue(), input.aggregation_method, input.similarity_cutoff))
+                        .map(gId -> Pair.of(idPair.getKey(), gId)))
                 .reduce(new TranslateOutput(), (container, p1) -> {
                     container.results.put(p1.getValue(), p1.getKey());
                     return container;
