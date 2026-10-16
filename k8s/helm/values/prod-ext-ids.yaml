@@ -11,7 +11,7 @@ image:
   repository: "harbor.devops.k8s.rcsb.org/rcsb/rcsb-idmapper"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "dev-cb-extids"
+  tag: "production"
 
 imagePullSecrets: "harbor-docker-registry-conf"
 
