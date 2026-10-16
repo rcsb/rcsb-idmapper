@@ -68,14 +68,14 @@ ingress:
       209.177.156.77/32, 147.75.68.120/29, 163.114.227.0/24, 163.114.228.0/24, 163.114.224.0/24, 147.75.66.200/29,
       163.114.230.0/24, 163.114.232.0/24
   hosts:
-    - host: beta-idmapper.east.k8s.rcsb.org
+    - host: idmapper-beta.east.k8s.rcsb.org
       paths:
         - path: /
           pathType: ImplementationSpecific
   tls:
     - hosts:
-        - beta-idmapper.east.k8s.rcsb.org
-      secretName: beta-idmapper.east.k8s.rcsb.org-tls
+        - idmapper-beta.east.k8s.rcsb.org
+      secretName: idmapper-beta.east.k8s.rcsb.org-tls
 
 resources: {}
 #  limits:
